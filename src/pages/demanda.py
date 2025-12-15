@@ -18,15 +18,19 @@ from src.utils.constants import MODELOS_ML, MODELO_DEFAULT
 
 def obtener_opciones_modelos():
     """
-    Genera opciones de modelos para el dropdown.
+    Genera opciones de modelos para el dropdown con tooltips.
     Solo incluye modelos que estan instalados y disponibles.
     """
     disponibles = listar_estrategias()
     opciones = []
     for modelo, disponible in disponibles.items():
-        if disponible:
-            label = MODELOS_ML.get(modelo, modelo)
-            opciones.append({"label": label, "value": modelo})
+        if disponible and modelo in MODELOS_ML:
+            info = MODELOS_ML[modelo]
+            opciones.append({
+                "label": info['nombre'],
+                "value": modelo,
+                "title": info['tooltip']
+            })
     return opciones
 
 
@@ -131,7 +135,7 @@ def crear_kpis_demanda() -> html.Div:
                 titulo="Error Promedio (MAE)",
                 valor="--",
                 subtitulo="Desviacion en unidades",
-                icono="trending-up",
+                icono="alert-circle",
                 color="info",
                 valor_id="forecast-error-valor",
                 tooltip="MAE: Desviacion promedio de la prediccion en unidades",

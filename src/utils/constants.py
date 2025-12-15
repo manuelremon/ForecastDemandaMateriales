@@ -9,12 +9,30 @@ Evita duplicacion de valores en multiples archivos.
 # ============================================================================
 
 MODELOS_ML = {
-    'random_forest': 'Random Forest',
-    'gradient_boosting': 'Gradient Boosting',
-    'linear': 'Regresion Lineal',
-    'xgboost': 'XGBoost',
-    'prophet': 'Prophet (Facebook)',
-    'arima': 'ARIMA/SARIMAX'
+    'random_forest': {
+        'nombre': 'Random Forest',
+        'tooltip': 'Combina múltiples árboles de decisión. Robusto, estable y excelente para datos con ruido. Recomendado para la mayoría de casos.'
+    },
+    'gradient_boosting': {
+        'nombre': 'Gradient Boosting',
+        'tooltip': 'Construye árboles secuencialmente corrigiendo errores. Alta precisión pero más lento. Bueno para patrones complejos.'
+    },
+    'linear': {
+        'nombre': 'Regresión Lineal',
+        'tooltip': 'Modelo simple y rápido. Ideal para tendencias lineales claras. Menos preciso con datos no lineales.'
+    },
+    'xgboost': {
+        'nombre': 'XGBoost',
+        'tooltip': 'Versión optimizada de Gradient Boosting. Muy rápido y preciso. Requiere instalación adicional.'
+    },
+    'prophet': {
+        'nombre': 'Prophet (Meta)',
+        'tooltip': 'Diseñado para series temporales con estacionalidad. Excelente para datos con patrones anuales/semanales.'
+    },
+    'arima': {
+        'nombre': 'ARIMA/SARIMAX',
+        'tooltip': 'Modelo estadístico clásico para series temporales. Captura tendencias y estacionalidad. Requiere datos bien estructurados.'
+    }
 }
 
 # Modelo por defecto
@@ -23,25 +41,33 @@ MODELO_DEFAULT = 'random_forest'
 
 def obtener_opciones_modelos(incluir_avanzados: bool = True) -> list:
     """
-    Genera opciones para dropdown de modelos ML.
+    Genera opciones para dropdown de modelos ML con tooltips.
 
     Args:
         incluir_avanzados: Si incluir modelos que requieren instalacion extra
 
     Returns:
-        Lista de dicts con label y value para dropdown
+        Lista de dicts con label, value y title (tooltip) para dropdown
     """
     modelos_base = ['random_forest', 'gradient_boosting', 'linear']
     modelos_avanzados = ['xgboost', 'prophet', 'arima']
 
     modelos = modelos_base + (modelos_avanzados if incluir_avanzados else [])
 
-    return [{"label": MODELOS_ML[m], "value": m} for m in modelos]
+    return [
+        {
+            "label": MODELOS_ML[m]['nombre'],
+            "value": m,
+            "title": MODELOS_ML[m]['tooltip']
+        }
+        for m in modelos
+    ]
 
 
 def obtener_nombre_modelo(codigo: str) -> str:
     """Obtiene el nombre legible de un modelo por su codigo"""
-    return MODELOS_ML.get(codigo, codigo)
+    modelo = MODELOS_ML.get(codigo)
+    return modelo['nombre'] if modelo else codigo
 
 
 # ============================================================================

@@ -47,7 +47,7 @@ def crear_area_configuracion() -> html.Div:
             html.Div([
                 html.Label("Modelo ML", className="filter-label-unified"),
                 dcc.Dropdown(id="select-modelo-masivo", value=MODELO_DEFAULT, clearable=False,
-                            options=obtener_opciones_modelos(incluir_avanzados=False),
+                            options=obtener_opciones_modelos(incluir_avanzados=True),
                             className="dash-dropdown filter-dropdown")
             ], style=w_modelo),
             # Horizonte (112px)

@@ -27,7 +27,7 @@ app = Dash(
         "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
     ],
     suppress_callback_exceptions=True,
-    title="Forecast ML",
+    title="Forecast MR",
     update_title="Cargando..."
 )
 
@@ -67,10 +67,9 @@ def create_sidebar():
     from src.components.icons import lucide_icon
 
     return html.Div([
-        # Logo/Titulo centrado
+        # Logo de la aplicación
         html.Div([
-            html.Img(src="/assets/logo.png", style={"height": "36px", "width": "auto", "marginBottom": "4px"}),
-            html.Div("Forecast", style={"fontWeight": "700", "fontSize": "0.85rem"}),
+            html.Img(src="/assets/logo.png", style={"width": "90px", "height": "auto", "margin": "0 auto"}),
         ], className="text-center mb-3 pb-2", style={"borderBottom": "1px solid rgba(255,255,255,0.1)"}),
 
         # Navegacion compacta
@@ -135,83 +134,194 @@ def create_sidebar():
 
 
 def create_info_modal():
-    """Crea el modal de información de la aplicación"""
+    """Crea el modal de información de la aplicación - Mejorado"""
     from src.components.icons import lucide_icon
+
+    # Función helper para crear tarjetas de modelo
+    def modelo_card(nombre, descripcion, recomendado=False, color="primary"):
+        badge = dbc.Badge("Recomendado", color="success", className="ms-2") if recomendado else None
+        return html.Div([
+            html.Div([
+                html.Strong(nombre),
+                badge
+            ], className="mb-1"),
+            html.Small(descripcion, className="text-muted")
+        ], className=f"p-2 mb-2 border-start border-{color} border-3 bg-light rounded-end")
 
     return dbc.Modal([
         dbc.ModalHeader(dbc.ModalTitle([
-            lucide_icon("info", size="sm", className="me-2"),
-            "Información de la Aplicación"
-        ]), close_button=True),
+            lucide_icon("sparkles", size="sm", className="me-2"),
+            "Forecast MR - Guía de Usuario"
+        ]), close_button=True, className="bg-primary text-white"),
         dbc.ModalBody([
-            # Sección: Qué es
-            html.H5([lucide_icon("target", size="sm", className="me-2"), "¿Qué es Forecast ML?"],
-                   className="text-primary mb-3"),
-            html.P([
-                "Forecast ML es una aplicación de ", html.Strong("predicción de demanda"),
-                " que utiliza algoritmos de Machine Learning para estimar el consumo futuro de materiales ",
-                "basándose en datos históricos."
-            ], className="mb-4"),
-
-            # Sección: Modelos ML
-            html.H5([lucide_icon("cpu", size="sm", className="me-2"), "Modelos de Predicción"],
-                   className="text-primary mb-3"),
-            html.Ul([
-                html.Li([html.Strong("Random Forest: "), "Modelo ensemble que combina múltiples árboles de decisión. Robusto ante outliers y datos ruidosos."]),
-                html.Li([html.Strong("Gradient Boosting: "), "Construye árboles secuencialmente, corrigiendo errores previos. Alta precisión."]),
-                html.Li([html.Strong("Linear Regression: "), "Modelo simple y rápido. Ideal para tendencias lineales."]),
-                html.Li([html.Strong("Ridge/Lasso: "), "Regresión con regularización para evitar overfitting."]),
-                html.Li([html.Strong("SVR: "), "Support Vector Regression. Efectivo con datos no lineales."]),
-            ], className="mb-4"),
-
-            # Sección: Datos
-            html.H5([lucide_icon("database", size="sm", className="me-2"), "Datos Utilizados"],
-                   className="text-primary mb-3"),
-            html.P("La aplicación analiza:", className="mb-2"),
-            html.Ul([
-                html.Li("Consumo histórico por material, centro y almacén"),
-                html.Li("Patrones semanales (día de la semana)"),
-                html.Li("Estacionalidad mensual y anual"),
-                html.Li("Tendencias a largo plazo"),
-            ], className="mb-4"),
-
-            # Sección: Tips
-            html.H5([lucide_icon("lightbulb", size="sm", className="me-2"), "Tips para Mejores Resultados"],
-                   className="text-warning mb-3"),
+            # Banner principal
             dbc.Alert([
-                html.Ul([
-                    html.Li("Usa al menos 6 meses de datos históricos para mejores predicciones"),
-                    html.Li("Datos más recientes tienen mayor peso en el modelo"),
-                    html.Li("Random Forest es el modelo más estable para la mayoría de casos"),
-                    html.Li("Ajusta el horizonte según tu necesidad (7-365 días)"),
-                    html.Li("El nivel de confianza 95% ofrece buen balance precisión/rango"),
-                ], className="mb-0")
-            ], color="warning", className="mb-4"),
+                html.Div([
+                    lucide_icon("line-chart", size="md", className="me-3"),
+                    html.Div([
+                        html.H5("Sistema de Predicción de Demanda", className="mb-1 alert-heading"),
+                        html.P("Utiliza Machine Learning para estimar el consumo futuro de materiales basándose en datos históricos.",
+                              className="mb-0 small")
+                    ])
+                ], className="d-flex align-items-center")
+            ], color="primary", className="mb-4"),
 
-            # Sección: Métricas
-            html.H5([lucide_icon("chart-bar", size="sm", className="me-2"), "Interpretación de Métricas"],
-                   className="text-primary mb-3"),
-            html.Ul([
-                html.Li([html.Strong("R² (Coeficiente de determinación): "), "Valores cercanos a 1.0 indican mejor ajuste."]),
-                html.Li([html.Strong("MAE (Error Absoluto Medio): "), "Promedio de errores. Menor es mejor."]),
-                html.Li([html.Strong("RMSE: "), "Similar a MAE pero penaliza más los errores grandes."]),
-            ], className="mb-4"),
+            # Tabs para organizar contenido
+            dbc.Tabs([
+                # Tab 1: Modelos ML
+                dbc.Tab([
+                    html.Div([
+                        html.P("Selecciona el modelo según tus necesidades:", className="text-muted mb-3"),
 
-            # Sección: Uso
-            html.H5([lucide_icon("rocket", size="sm", className="me-2"), "¿Cómo usar la aplicación?"],
-                   className="text-success mb-3"),
-            html.Ol([
-                html.Li("Descarga la plantilla Excel desde el sidebar"),
-                html.Li("Llena los datos de consumo histórico"),
-                html.Li("Importa el archivo Excel"),
-                html.Li("Selecciona el material, centro y almacén"),
-                html.Li("Configura el modelo, horizonte y confianza"),
-                html.Li("Haz clic en 'Generar' para ver la predicción"),
-            ]),
+                        html.H6([lucide_icon("zap", size="xs", className="me-1"), "Modelos Rápidos"], className="text-success mb-2"),
+                        modelo_card("Random Forest", "Combina múltiples árboles de decisión. Robusto, estable y excelente para datos con ruido.", recomendado=True, color="success"),
+                        modelo_card("Regresión Lineal", "Simple y rápido. Ideal para tendencias lineales claras.", color="info"),
+
+                        html.H6([lucide_icon("brain", size="xs", className="me-1"), "Modelos Avanzados"], className="text-primary mb-2 mt-3"),
+                        modelo_card("Gradient Boosting", "Alta precisión construyendo árboles secuencialmente. Bueno para patrones complejos.", color="primary"),
+                        modelo_card("XGBoost", "Versión optimizada de Gradient Boosting. Muy rápido y preciso.", color="primary"),
+
+                        html.H6([lucide_icon("calendar", size="xs", className="me-1"), "Series Temporales"], className="text-warning mb-2 mt-3"),
+                        modelo_card("Prophet (Meta)", "Diseñado para datos con estacionalidad. Excelente para patrones anuales/semanales.", color="warning"),
+                        modelo_card("ARIMA/SARIMAX", "Modelo estadístico clásico. Captura tendencias y estacionalidad.", color="warning"),
+                    ], className="p-3")
+                ], label="Modelos ML", tab_id="tab-modelos"),
+
+                # Tab 2: Cómo usar
+                dbc.Tab([
+                    html.Div([
+                        dbc.Row([
+                            dbc.Col([
+                                html.Div([
+                                    html.Div("1", className="badge bg-primary rounded-circle me-2", style={"fontSize": "1rem", "padding": "8px 12px"}),
+                                    html.Span("Descargar Plantilla", className="fw-bold")
+                                ], className="d-flex align-items-center mb-2"),
+                                html.P("Haz clic en el botón de descarga en el sidebar para obtener la plantilla Excel.", className="text-muted small ms-4")
+                            ], md=6, className="mb-3"),
+                            dbc.Col([
+                                html.Div([
+                                    html.Div("2", className="badge bg-primary rounded-circle me-2", style={"fontSize": "1rem", "padding": "8px 12px"}),
+                                    html.Span("Llenar Datos", className="fw-bold")
+                                ], className="d-flex align-items-center mb-2"),
+                                html.P("Completa el consumo histórico con fechas, materiales, centros y cantidades.", className="text-muted small ms-4")
+                            ], md=6, className="mb-3"),
+                            dbc.Col([
+                                html.Div([
+                                    html.Div("3", className="badge bg-primary rounded-circle me-2", style={"fontSize": "1rem", "padding": "8px 12px"}),
+                                    html.Span("Importar Excel", className="fw-bold")
+                                ], className="d-flex align-items-center mb-2"),
+                                html.P("Sube el archivo usando el botón de importar en el sidebar.", className="text-muted small ms-4")
+                            ], md=6, className="mb-3"),
+                            dbc.Col([
+                                html.Div([
+                                    html.Div("4", className="badge bg-primary rounded-circle me-2", style={"fontSize": "1rem", "padding": "8px 12px"}),
+                                    html.Span("Configurar y Generar", className="fw-bold")
+                                ], className="d-flex align-items-center mb-2"),
+                                html.P("Selecciona filtros, modelo y horizonte. Clic en 'Generar' para ver predicciones.", className="text-muted small ms-4")
+                            ], md=6, className="mb-3"),
+                        ]),
+
+                        html.Hr(),
+
+                        html.H6([lucide_icon("layout-grid", size="xs", className="me-1"), "Modos de Forecast"], className="mb-3"),
+                        dbc.Row([
+                            dbc.Col([
+                                dbc.Card([
+                                    dbc.CardBody([
+                                        html.H6([lucide_icon("line-chart", size="xs", className="me-1"), "Individual"], className="text-primary"),
+                                        html.P("Analiza un material específico con gráficos detallados y métricas completas.", className="small mb-0")
+                                    ])
+                                ], className="h-100")
+                            ], md=6),
+                            dbc.Col([
+                                dbc.Card([
+                                    dbc.CardBody([
+                                        html.H6([lucide_icon("layers", size="xs", className="me-1"), "Masivo"], className="text-primary"),
+                                        html.P("Procesa múltiples materiales simultáneamente. Exporta resultados a Excel/PDF.", className="small mb-0")
+                                    ])
+                                ], className="h-100")
+                            ], md=6),
+                        ])
+                    ], className="p-3")
+                ], label="Cómo Usar", tab_id="tab-uso"),
+
+                # Tab 3: Métricas
+                dbc.Tab([
+                    html.Div([
+                        html.P("Interpreta los resultados del modelo:", className="text-muted mb-3"),
+
+                        dbc.Card([
+                            dbc.CardBody([
+                                html.Div([
+                                    dbc.Badge("R²", color="success", className="me-2", style={"fontSize": "0.9rem"}),
+                                    html.Strong("Coeficiente de Determinación")
+                                ], className="mb-2"),
+                                html.P("Mide qué tan bien el modelo explica los datos. Valores de 0 a 1.", className="small mb-2"),
+                                dbc.Progress([
+                                    dbc.Progress(value=30, color="danger", bar=True, label="Malo <0.5"),
+                                    dbc.Progress(value=30, color="warning", bar=True, label="Regular 0.5-0.7"),
+                                    dbc.Progress(value=40, color="success", bar=True, label="Bueno >0.7"),
+                                ], className="mb-0", style={"height": "20px"})
+                            ])
+                        ], className="mb-3"),
+
+                        dbc.Card([
+                            dbc.CardBody([
+                                html.Div([
+                                    dbc.Badge("MAE", color="info", className="me-2", style={"fontSize": "0.9rem"}),
+                                    html.Strong("Error Absoluto Medio")
+                                ], className="mb-2"),
+                                html.P("Promedio de la diferencia entre predicción y valor real. Menor es mejor. Se mide en las mismas unidades que los datos.", className="small mb-0")
+                            ])
+                        ], className="mb-3"),
+
+                        dbc.Card([
+                            dbc.CardBody([
+                                html.Div([
+                                    dbc.Badge("RMSE", color="warning", className="me-2", style={"fontSize": "0.9rem"}),
+                                    html.Strong("Raíz del Error Cuadrático Medio")
+                                ], className="mb-2"),
+                                html.P("Similar al MAE pero penaliza más los errores grandes. Útil para detectar predicciones muy desviadas.", className="small mb-0")
+                            ])
+                        ]),
+                    ], className="p-3")
+                ], label="Métricas", tab_id="tab-metricas"),
+
+                # Tab 4: Tips
+                dbc.Tab([
+                    html.Div([
+                        dbc.Alert([
+                            html.H6([lucide_icon("lightbulb", size="xs", className="me-1"), "Mejores Prácticas"], className="alert-heading"),
+                            html.Hr(),
+                            html.Ul([
+                                html.Li([html.Strong("Datos históricos: "), "Mínimo 6 meses para predicciones confiables"]),
+                                html.Li([html.Strong("Modelo recomendado: "), "Random Forest para la mayoría de casos"]),
+                                html.Li([html.Strong("Horizonte: "), "Ajusta según necesidad (7 días a 1 año)"]),
+                                html.Li([html.Strong("Confianza 95%: "), "Buen balance entre precisión y rango"]),
+                                html.Li([html.Strong("Datos limpios: "), "Elimina valores atípicos o erróneos antes de importar"]),
+                            ], className="mb-0")
+                        ], color="success", className="mb-3"),
+
+                        dbc.Alert([
+                            html.H6([lucide_icon("alert-triangle", size="xs", className="me-1"), "Precauciones"], className="alert-heading"),
+                            html.Hr(),
+                            html.Ul([
+                                html.Li("Prophet y ARIMA requieren más tiempo de procesamiento"),
+                                html.Li("Pocos datos (<10 registros) usan promedio móvil automáticamente"),
+                                html.Li("Materiales nuevos sin historial no pueden predecirse con precisión"),
+                                html.Li("Eventos extraordinarios (pandemia, crisis) pueden afectar predicciones"),
+                            ], className="mb-0")
+                        ], color="warning"),
+                    ], className="p-3")
+                ], label="Tips", tab_id="tab-tips"),
+
+            ], id="modal-tabs", active_tab="tab-modelos", className="mb-3"),
+
         ]),
-        dbc.ModalFooter(
-            dbc.Button("Cerrar", id="btn-cerrar-info-modal", className="ms-auto")
-        ),
+        dbc.ModalFooter([
+            html.Small("Forecast MR v1.0 | Machine Learning para Predicción de Demanda | Manuel Remón | Neuquén, Argentina", className="text-muted me-auto"),
+            dbc.Button("Cerrar", id="btn-cerrar-info-modal", color="primary")
+        ]),
     ], id="modal-info", size="lg", scrollable=True)
 
 
