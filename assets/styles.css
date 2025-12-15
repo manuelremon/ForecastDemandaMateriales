@@ -581,34 +581,6 @@ textarea::placeholder {
 .modal-title { color: var(--ios-black) !important; font-weight: 600 !important; font-size: var(--font-lg) !important; }
 .modal-backdrop { background: rgba(31, 31, 33, 0.5) !important; backdrop-filter: blur(5px) !important; }
 
-/* Modal KPIs Grid */
-.kpi-modal-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-lg);
-}
-
-.kpi-modal-item {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-md);
-    padding: var(--space-md);
-    background: rgba(247, 247, 247, 0.5);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--glass-border);
-}
-
-.kpi-modal-icon {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--glass-bg);
-    border-radius: var(--radius-sm);
-    flex-shrink: 0;
-}
-
 /* ============================================
    Dropdowns
    ============================================ */

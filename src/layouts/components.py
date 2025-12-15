@@ -19,7 +19,8 @@ def kpi_card(
     color: str = "primary",
     tooltip: Optional[str] = None,
     tooltip_id: Optional[str] = None,
-    valor_id: Optional[str] = None
+    valor_id: Optional[str] = None,
+    hoverable: bool = False
 ) -> Union[dbc.Card, html.Div]:
     """
     Tarjeta KPI con estilo Glassmorphism iOS
@@ -34,8 +35,9 @@ def kpi_card(
         tooltip: Texto del tooltip informativo (opcional)
         tooltip_id: ID unico para el tooltip (requerido si tooltip se proporciona)
         valor_id: ID para el elemento del valor (util para actualizaciones dinamicas)
+        hoverable: Si True, agrega efecto hover con elevacion (default False)
     """
-    # Colores iOS
+    # Colores iOS con fallback
     color_map = {
         "primary": "#007AFF",
         "success": "#4CD964",
@@ -46,6 +48,7 @@ def kpi_card(
     }
     accent_color = color_map.get(color, "#007AFF")
     kpi_class = f"kpi-{color}"
+    hover_class = " hoverable" if hoverable else ""
 
     # Contenido de tendencia
     tendencia_content = []
@@ -114,14 +117,9 @@ def kpi_card(
                 ], width=3, className="d-flex align-items-center justify-content-end")
             ])
         ], style={"padding": "20px"})
-    ], className=f"h-100 kpi-card {kpi_class}",
+    ], className=f"h-100 kpi-card glass-card-enhanced {kpi_class}{hover_class}",
        style={
-           "background": "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.75) 100%)",
-           "backdropFilter": "blur(20px)",
-           "WebkitBackdropFilter": "blur(20px)",
-           "border": "1px solid rgba(255,255,255,0.25)",
            "borderRadius": "20px",
-           "boxShadow": "0 8px 32px rgba(31, 31, 33, 0.12)"
        })
 
     if tooltip and tooltip_id:
@@ -557,6 +555,13 @@ def filter_row(
         elif filter_type == "input":
             component = dbc.Input(
                 id=filter_id, type="text", placeholder=placeholder, value=value,
+                debounce=debounce, className=f"form-control {className}".strip(), style=style
+            )
+        elif filter_type == "number":
+            number_props = filter_config.get("number_props", {})
+            component = dbc.Input(
+                id=filter_id, type="number", placeholder=placeholder, value=value,
+                min=number_props.get("min"), max=number_props.get("max"), step=number_props.get("step", 1),
                 debounce=debounce, className=f"form-control {className}".strip(), style=style
             )
         elif filter_type == "textarea":

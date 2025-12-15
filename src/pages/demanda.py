@@ -8,130 +8,106 @@ from dash import html, dcc
 import dash_ag_grid as dag
 from src.layouts.components import (
     kpi_card, summary_card, empty_state, empty_table, empty_chart,
-    empty_filter, empty_search, filter_row
+    empty_filter, empty_search
 )
 from src.components.icons import lucide_icon
 from src.components.icons.icon_button import icon_button
+from src.ml.strategies import listar_estrategias
+from src.utils.constants import MODELOS_ML, MODELO_DEFAULT
+
+
+def obtener_opciones_modelos():
+    """
+    Genera opciones de modelos para el dropdown.
+    Solo incluye modelos que estan instalados y disponibles.
+    """
+    disponibles = listar_estrategias()
+    opciones = []
+    for modelo, disponible in disponibles.items():
+        if disponible:
+            label = MODELOS_ML.get(modelo, modelo)
+            opciones.append({"label": label, "value": modelo})
+    return opciones
 
 
 def crear_controles_forecast() -> html.Div:
-    """Crea los controles de configuracion del forecast"""
+    """Crea los controles de configuracion del forecast - UNA SOLA LINEA centrada"""
+    # Anchos fijos personalizados
+    w_material = {"width": "500px", "minWidth": "500px"}  # Material (dropdown)
+    w_codigo = {"width": "130px", "minWidth": "130px"}    # Codigo SAP
+    w_small = {"width": "85px", "minWidth": "85px"}       # Centro, Almacen, Confianza
+    w_modelo = {"width": "110px", "minWidth": "110px"}    # Modelo ML
+    w_horizonte = {"width": "200px", "minWidth": "200px"} # Slider Horizonte
+    w_boton = {"width": "95px", "minWidth": "95px"}       # Boton Generar
+
     return html.Div([
-        # Primera fila: Codigo SAP + Centro + Almacen
-        dbc.Row([
-            dbc.Col([
-                html.Label("Codigo SAP", className="filter-label"),
-                dbc.InputGroup([
-                    dbc.Input(
-                        id="input-codigo-sap",
-                        type="text",
-                        placeholder="Ej: 10301804",
-                        className="form-control",
-                        debounce=True
-                    ),
-                    icon_button(
-                        icon="search",
-                        id="btn-buscar-material",
-                        color="primary",
-                        outline=True,
-                        size="sm",
-                        icon_position="only",
-                        className="px-3"
-                    ),
-                ], size="sm"),
-                # Dropdown oculto para compatibilidad
-                dcc.Dropdown(
-                    id="select-material-demanda",
-                    style={"display": "none"}
-                ),
-            ], md=4, lg=4),
-            dbc.Col([
-                html.Label("Centro", className="filter-label"),
-                dcc.Dropdown(
-                    id="filtro-centro-demanda",
-                    placeholder="Seleccione centro",
-                    className="dash-dropdown"
-                )
-            ], md=4, lg=3),
-            dbc.Col([
-                html.Label("Almacen", className="filter-label"),
-                dcc.Dropdown(
-                    id="filtro-almacen-demanda",
-                    placeholder="Seleccione almacen",
-                    className="dash-dropdown"
-                )
-            ], md=4, lg=3),
-        ], className="mb-3 align-items-end"),
+        # Material encontrado (arriba de los filtros)
+        html.Div(id="material-encontrado", className="text-center mb-2"),
 
-        # Material encontrado (debajo de búsqueda)
-        dbc.Row([
-            dbc.Col([
-                html.Div(id="material-encontrado", className="d-flex align-items-center ps-2")
-            ], md=4, lg=4)
-        ], className="mb-3"),
-
-        # Segunda fila: Modelo ML, Horizonte, Confianza, Boton
-        filter_row([
-            {
-                "label": "Modelo ML",
-                "id": "select-modelo-ml",
-                "type": "dropdown",
-                "md": 3,
-                "value": "random_forest",
-                "clearable": False,
-                "options": [
-                    {"label": "Random Forest", "value": "random_forest"},
-                    {"label": "Gradient Boosting", "value": "gradient_boosting"},
-                    {"label": "Regresion Lineal", "value": "linear"},
-                ]
-            },
-            {
-                "label": "Horizonte",
-                "id": "slider-horizonte",
-                "type": "slider",
-                "md": 4,
-                "value": 30,
-                "slider_props": {
-                    "min": 7,
-                    "max": 365,
-                    "step": None,
-                    "marks": {
-                        7: "7d",
-                        30: "1M",
-                        90: "3M",
-                        180: "6M",
-                        365: "1A"
-                    },
-                    "tooltip": {"placement": "bottom", "always_visible": True}
-                }
-            },
-            {
-                "label": "Confianza",
-                "id": "select-confianza",
-                "type": "dropdown",
-                "md": 2,
-                "value": 0.95,
-                "clearable": False,
-                "options": [
-                    {"label": "80%", "value": 0.80},
-                    {"label": "90%", "value": 0.90},
-                    {"label": "95%", "value": 0.95},
-                    {"label": "99%", "value": 0.99},
-                ]
-            },
-            {
-                "label": " ",
-                "id": "btn-generar-forecast",
-                "type": "button",
-                "md": 3,
-                "button_props": {
-                    "icon": "play",
-                    "text": "Generar Forecast",
-                    "color": "primary"
-                }
-            }
-        ])
-    ])
+        # TODOS los filtros en UNA SOLA LINEA centrada
+        html.Div([
+            # Material (dropdown) - A LA IZQUIERDA
+            html.Div([
+                html.Label("Material", className="filter-label-unified"),
+                dcc.Dropdown(id="select-material-demanda", placeholder="--",
+                            className="dash-dropdown filter-dropdown",
+                            searchable=True, clearable=True)
+            ], style=w_material),
+            # Codigo SAP
+            html.Div([
+                html.Label("Codigo SAP", className="filter-label-unified"),
+                html.Div([
+                    dbc.Input(id="input-codigo-sap", type="text", placeholder="10301804",
+                             className="filter-control", debounce=True, style={"width": "90px"}),
+                    dbc.Button(
+                        lucide_icon("search", size="sm"),
+                        id="btn-buscar-material", size="sm",
+                        style={"border": "none", "boxShadow": "none", "background": "none",
+                               "color": "#6B7280", "padding": "0", "marginLeft": "4px"}),
+                ], className="d-flex align-items-center"),
+            ], style=w_codigo),
+            # Centro
+            html.Div([
+                html.Label("Centro", className="filter-label-unified"),
+                dcc.Dropdown(id="filtro-centro-demanda", placeholder="--",
+                            className="dash-dropdown filter-dropdown")
+            ], style=w_small),
+            # Almacen
+            html.Div([
+                html.Label("Almacen", className="filter-label-unified"),
+                dcc.Dropdown(id="filtro-almacen-demanda", placeholder="--",
+                            className="dash-dropdown filter-dropdown")
+            ], style=w_small),
+            # Modelo ML
+            html.Div([
+                html.Label("Modelo ML", className="filter-label-unified"),
+                dcc.Dropdown(id="select-modelo-ml", value="random_forest", clearable=False,
+                            options=obtener_opciones_modelos(), className="dash-dropdown filter-dropdown")
+            ], style=w_modelo),
+            # Horizonte slider
+            html.Div([
+                html.Label("Horizonte", className="filter-label-unified"),
+                dcc.Slider(id="slider-horizonte", min=7, max=365, step=None, value=30,
+                          marks={7: "7d", 30: "1M", 90: "3M", 180: "6M", 365: "1A"},
+                          tooltip={"placement": "bottom", "always_visible": True})
+            ], style=w_horizonte),
+            # Confianza
+            html.Div([
+                html.Label("Confianza", className="filter-label-unified"),
+                dcc.Dropdown(id="select-confianza", value=0.95, clearable=False,
+                            options=[{"label": "80%", "value": 0.80}, {"label": "90%", "value": 0.90},
+                                    {"label": "95%", "value": 0.95}, {"label": "99%", "value": 0.99}],
+                            className="dash-dropdown filter-dropdown")
+            ], style=w_small),
+            # Boton Generar
+            html.Div([
+                html.Label(" ", className="filter-label-unified"),
+                dbc.Button([lucide_icon("play", size="sm", className="me-1"), "Generar"],
+                          id="btn-generar-forecast", color="primary",
+                          className="w-100 filter-action-btn btn-enhanced")
+            ], style=w_boton),
+        ], className="d-flex flex-nowrap gap-2 align-items-end justify-content-center"),
+    ], className="filters-container-enhanced mb-3")
 
 
 def crear_kpis_demanda() -> html.Div:
@@ -146,7 +122,8 @@ def crear_kpis_demanda() -> html.Div:
                 color="success",
                 valor_id="forecast-precision-valor",
                 tooltip="R2 Score: Que tan bien el modelo explica los datos historicos (0-100%)",
-                tooltip_id="tooltip-forecast-precision"
+                tooltip_id="tooltip-forecast-precision",
+                hoverable=True
             )
         ], md=3),
         dbc.Col([
@@ -158,7 +135,8 @@ def crear_kpis_demanda() -> html.Div:
                 color="info",
                 valor_id="forecast-error-valor",
                 tooltip="MAE: Desviacion promedio de la prediccion en unidades",
-                tooltip_id="tooltip-forecast-error"
+                tooltip_id="tooltip-forecast-error",
+                hoverable=True
             )
         ], md=3),
         dbc.Col([
@@ -170,7 +148,8 @@ def crear_kpis_demanda() -> html.Div:
                 color="primary",
                 valor_id="forecast-demanda-valor",
                 tooltip="Total de unidades predichas para el horizonte seleccionado",
-                tooltip_id="tooltip-forecast-demanda"
+                tooltip_id="tooltip-forecast-demanda",
+                hoverable=True
             )
         ], md=3),
         dbc.Col([
@@ -182,7 +161,8 @@ def crear_kpis_demanda() -> html.Div:
                 color="warning",
                 valor_id="forecast-tendencia-valor",
                 tooltip="Cambio porcentual vs periodo anterior",
-                tooltip_id="tooltip-forecast-tendencia"
+                tooltip_id="tooltip-forecast-tendencia",
+                hoverable=True
             )
         ], md=3),
     ], className="g-3 mb-4")
@@ -225,7 +205,7 @@ def crear_grafico_forecast() -> html.Div:
 
         # Resumen del forecast
         html.Div(id="forecast-resumen", className="forecast-summary", style={"display": "none"})
-    ], className="chart-container")
+    ], className="chart-container chart-container-enhanced")
 
 
 def crear_graficos_patrones() -> html.Div:
@@ -250,7 +230,7 @@ def crear_graficos_patrones() -> html.Div:
                         )
                     ]
                 )
-            ], className="chart-container")
+            ], className="chart-container chart-container-enhanced")
         ], md=4),
         dbc.Col([
             html.Div([
@@ -271,7 +251,7 @@ def crear_graficos_patrones() -> html.Div:
                         )
                     ]
                 )
-            ], className="chart-container")
+            ], className="chart-container chart-container-enhanced")
         ], md=4),
         dbc.Col([
             html.Div([
@@ -292,7 +272,7 @@ def crear_graficos_patrones() -> html.Div:
                         )
                     ]
                 )
-            ], className="chart-container")
+            ], className="chart-container chart-container-enhanced")
         ], md=4),
     ], className="g-3 mb-4")
 
@@ -419,11 +399,12 @@ def crear_tabla_predicciones() -> html.Div:
 
 # Layout principal del tablero de demanda - OPTIMIZADO
 layout = html.Div([
+    # Título de la página
+    html.H4("FORECAST INDIVIDUAL", className="mb-3 text-center",
+            style={"textShadow": "2px 2px 4px rgba(0,0,0,0.2)", "fontWeight": "700", "letterSpacing": "1px"}),
+
     # 1. Controles de entrada y configuración
-    html.Div([
-        html.H5("Configuración de Forecast", className="mb-3"),
-        crear_controles_forecast(),
-    ], className="mb-4"),
+    crear_controles_forecast(),
 
     # 2. KPIs clave
     crear_kpis_demanda(),

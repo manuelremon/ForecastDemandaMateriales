@@ -1,235 +1,405 @@
 """
 Callbacks del Tablero de Forecasting Masivo
 ============================================
-Procesamiento de multiples materiales con ML
+Procesamiento de multiples materiales con ML (paralelo)
+Con progreso en tiempo real
 """
-from dash import callback, Output, Input, State, no_update, html
+from dash import callback, Output, Input, State, no_update, html, ctx
 import dash_bootstrap_components as dbc
 from dash import dcc
 import pandas as pd
-import numpy as np
-import base64
-import io
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import multiprocessing
+import threading
 
-from src.data.sap_loader import cargar_consumo_historico, buscar_material_con_mrp, obtener_centros, obtener_almacenes
+from src.data.excel_loader import (
+    obtener_centros_desde_excel,
+    obtener_almacenes_desde_excel,
+    filtrar_consumo_por_material
+)
 from src.ml.predictor import DemandPredictor
 from src.components.icons import lucide_icon
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+# Numero de workers para procesamiento paralelo
+NUM_WORKERS = min(8, multiprocessing.cpu_count())
+
+# Estado global del progreso (thread-safe)
+_progress_state = {
+    "running": False,
+    "total": 0,
+    "current": 0,
+    "message": "",
+    "results": None,
+    "error": None
+}
+_progress_lock = threading.Lock()
+
+
+def _reset_progress():
+    """Reinicia el estado del progreso"""
+    global _progress_state
+    with _progress_lock:
+        _progress_state = {
+            "running": False,
+            "total": 0,
+            "current": 0,
+            "message": "",
+            "results": None,
+            "error": None
+        }
+
+
+def _update_progress(current: int, total: int, message: str = ""):
+    """Actualiza el progreso de forma thread-safe"""
+    global _progress_state
+    with _progress_lock:
+        _progress_state["current"] = current
+        _progress_state["total"] = total
+        _progress_state["message"] = message
+
+
+def _get_progress():
+    """Obtiene el estado actual del progreso"""
+    with _progress_lock:
+        return _progress_state.copy()
+
+
+def _set_results(results, error=None):
+    """Guarda los resultados finales"""
+    global _progress_state
+    with _progress_lock:
+        _progress_state["results"] = results
+        _progress_state["error"] = error
+        _progress_state["running"] = False
+
+
+def _set_running(running: bool):
+    """Marca si el proceso está corriendo"""
+    global _progress_state
+    with _progress_lock:
+        _progress_state["running"] = running
+
+
+def procesar_material(args):
+    """
+    Procesa un material individual (funcion para paralelizar).
+
+    Args:
+        args: tupla (codigo, df_material, descripcion, modelo_tipo, horizonte)
+
+    Returns:
+        dict con resultado del forecast
+    """
+    codigo, df_historico, descripcion, modelo_tipo, horizonte = args
+
+    try:
+        if len(df_historico) == 0:
+            return {
+                "codigo": codigo,
+                "descripcion": descripcion[:50] if descripcion else codigo,
+                "demanda_total": 0,
+                "r2": 0,
+                "mae": 0,
+                "estado": "Sin datos"
+            }
+
+        # Entrenar modelo
+        predictor = DemandPredictor(modelo=modelo_tipo)
+        metrics = predictor.entrenar(df_historico, "cantidad")
+
+        # Predecir
+        df_pred = predictor.predecir(df_historico, periodos=horizonte)
+        demanda_total = df_pred["prediccion"].sum()
+
+        return {
+            "codigo": codigo,
+            "descripcion": descripcion[:50] if descripcion else codigo,
+            "demanda_total": round(demanda_total, 0),
+            "r2": round(metrics["r2"], 3),
+            "mae": round(metrics["mae"], 1),
+            "estado": "OK"
+        }
+
+    except Exception as e:
+        logger.error(f"Procesando {codigo}: {e}")
+        return {
+            "codigo": codigo,
+            "descripcion": descripcion[:50] if descripcion else codigo,
+            "demanda_total": 0,
+            "r2": 0,
+            "mae": 0,
+            "estado": f"Error: {str(e)[:30]}"
+        }
+
 
 @callback(
     Output("filtro-centro-masivo", "options"),
+    Output("filtro-centro-masivo", "value"),
+    Input("store-excel-data", "data"),
     Input("url", "pathname")
 )
-def cargar_centros_masivo(pathname):
-    """Carga centros para forecast masivo"""
-    try:
-        centros = obtener_centros()
-        return [{"label": c, "value": c} for c in centros]
-    except Exception as e:
-        logger.error(f"Cargando centros: {e}")
-        return []
+def cargar_centros_masivo(excel_data, pathname):
+    """Carga centros desde Excel si esta disponible"""
+    if excel_data and 'consumo' in excel_data:
+        df = pd.DataFrame(excel_data['consumo'])
+        centros = obtener_centros_desde_excel(df)
+        opciones = [{"label": "Todos", "value": "Todos"}] + [{"label": c, "value": c} for c in centros]
+        return opciones, "Todos"
+    else:
+        return [], None
 
 
 @callback(
     Output("filtro-almacen-masivo", "options"),
-    Input("filtro-centro-masivo", "value")
+    Output("filtro-almacen-masivo", "value"),
+    Input("filtro-centro-masivo", "value"),
+    State("store-excel-data", "data")
 )
-def cargar_almacenes_masivo(centro_seleccionado):
-    """Carga almacenes segun el centro seleccionado"""
-    try:
-        almacenes = obtener_almacenes(centro_seleccionado)
-        return [{"label": a, "value": a} for a in almacenes]
-    except Exception as e:
-        logger.error(f"Cargando almacenes: {e}")
-        return []
-
-
-def parsear_codigos_texto(texto):
-    """Extrae codigos SAP del textarea"""
-    if not texto:
-        return []
-    # Separar por lineas, comas o espacios
-    lineas = texto.replace(",", "\n").replace(";", "\n").split("\n")
-    codigos = [c.strip() for c in lineas if c.strip()]
-    # Limitar a 50 codigos
-    return codigos[:50]
-
-
-def parsear_codigos_archivo(contents, filename):
-    """Extrae codigos SAP de archivo Excel/CSV"""
-    if not contents:
-        return []
-
-    content_type, content_string = contents.split(',')
-    decoded = base64.b64decode(content_string)
-
-    try:
-        if filename.endswith('.csv'):
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-        elif filename.endswith(('.xls', '.xlsx')):
-            df = pd.read_excel(io.BytesIO(decoded))
-        else:
-            return []
-
-        # Buscar columna de codigos (codigo, material, sap, etc)
-        col_codigo = None
-        for col in df.columns:
-            if any(x in col.lower() for x in ['codigo', 'material', 'sap', 'code']):
-                col_codigo = col
-                break
-
-        if col_codigo is None and len(df.columns) > 0:
-            col_codigo = df.columns[0]
-
-        if col_codigo:
-            codigos = df[col_codigo].astype(str).str.strip().tolist()
-            return [c for c in codigos if c and c != 'nan'][:50]
-    except Exception as e:
-        logger.error(f"Parseando archivo: {e}")
-
-    return []
+def cargar_almacenes_masivo(centro_seleccionado, excel_data):
+    """Carga almacenes desde Excel si esta disponible"""
+    if excel_data and 'consumo' in excel_data:
+        df = pd.DataFrame(excel_data['consumo'])
+        almacenes = obtener_almacenes_desde_excel(df, centro_seleccionado)
+        opciones = [{"label": "Todos", "value": "Todos"}] + [{"label": a, "value": a} for a in almacenes]
+        return opciones, "Todos"
+    else:
+        return [], None
 
 
 @callback(
+    Output("progress-container-masivo", "style", allow_duplicate=True),
+    Output("progress-forecast-masivo", "value", allow_duplicate=True),
+    Output("progress-label-masivo", "children", allow_duplicate=True),
+    Output("progress-text-masivo", "children", allow_duplicate=True),
+    Output("interval-forecast-progress", "disabled", allow_duplicate=True),
+    Output("store-forecast-state", "data", allow_duplicate=True),
+    Input("btn-generar-forecast-masivo", "n_clicks"),
+    State("filtro-centro-masivo", "value"),
+    State("filtro-almacen-masivo", "value"),
+    State("select-modelo-masivo", "value"),
+    State("select-horizonte-masivo", "value"),
+    State("select-confianza-masivo", "value"),
+    State("input-limite-materiales", "value"),
+    State("store-excel-data", "data"),
+    prevent_initial_call=True
+)
+def iniciar_forecast_masivo(n_clicks, centro, almacen, modelo_tipo, horizonte, confianza, limite_materiales, excel_data):
+    """Inicia el proceso de forecast y muestra la barra de progreso"""
+
+    # Verificar si hay datos de Excel cargados
+    if not excel_data or 'consumo' not in excel_data:
+        return (
+            {"display": "none"},
+            0,
+            "0%",
+            "",
+            True,  # Interval disabled
+            {"running": False}
+        )
+
+    df_excel = pd.DataFrame(excel_data['consumo'])
+    df_excel['fecha'] = pd.to_datetime(df_excel['fecha'])
+
+    # Validar y aplicar limite de materiales
+    limite = int(limite_materiales) if limite_materiales and limite_materiales > 0 else 50
+    limite = min(limite, 500)
+
+    codigos = df_excel['codigo'].unique().tolist()[:limite]
+
+    if not codigos:
+        return (
+            {"display": "none"},
+            0,
+            "0%",
+            "",
+            True,
+            {"running": False}
+        )
+
+    # Reiniciar progreso y marcar como corriendo
+    _reset_progress()
+    _set_running(True)
+
+    total = len(codigos)
+    _update_progress(0, total, f"Iniciando forecast para {total} materiales...")
+
+    logger.info(f"Iniciando forecast masivo para {total} materiales (limite: {limite}) con {NUM_WORKERS} workers")
+
+    # Iniciar procesamiento en un thread separado
+    def procesar_en_background():
+        try:
+            # Preparar argumentos para procesamiento paralelo
+            tareas = []
+            for codigo in codigos:
+                mat_excel = df_excel[df_excel['codigo'] == codigo]
+                if len(mat_excel) > 0 and 'descripcion' in mat_excel.columns:
+                    descripcion = mat_excel['descripcion'].iloc[0] if pd.notna(mat_excel['descripcion'].iloc[0]) else codigo
+                else:
+                    descripcion = codigo
+
+                df_historico = filtrar_consumo_por_material(
+                    df_excel,
+                    codigo,
+                    centro if centro != "Todos" else None,
+                    almacen if almacen != "Todos" else None
+                )
+
+                tareas.append((codigo, df_historico, descripcion, modelo_tipo, horizonte))
+
+            # Procesar en paralelo con tracking de progreso
+            resultados = []
+            procesados = 0
+
+            with ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
+                futures = {executor.submit(procesar_material, tarea): tarea[0] for tarea in tareas}
+
+                for future in as_completed(futures):
+                    resultado = future.result()
+                    resultados.append(resultado)
+                    procesados += 1
+                    _update_progress(procesados, total, f"Procesando material {procesados}/{total}")
+
+            # Ordenar resultados
+            resultados.sort(key=lambda x: x['codigo'])
+
+            # Guardar resultados
+            _set_results(resultados)
+
+            logger.info(f"Forecast masivo completado: {len(resultados)} materiales procesados")
+
+        except Exception as e:
+            logger.error(f"Error en forecast masivo: {e}")
+            _set_results(None, str(e))
+
+    # Ejecutar en background
+    thread = threading.Thread(target=procesar_en_background, daemon=True)
+    thread.start()
+
+    # Retornar estado inicial con barra de progreso visible
+    return (
+        {"display": "block"},  # Mostrar contenedor
+        0,
+        "0%",
+        f"Preparando {total} materiales...",
+        False,  # Habilitar interval
+        {"running": True, "total": total}
+    )
+
+
+@callback(
+    Output("progress-forecast-masivo", "value"),
+    Output("progress-label-masivo", "children"),
+    Output("progress-text-masivo", "children"),
+    Output("interval-forecast-progress", "disabled"),
     Output("tabla-forecast-masivo", "rowData"),
     Output("kpi-total-materiales-masivo", "children"),
     Output("kpi-demanda-total-masivo", "children"),
     Output("kpi-precision-promedio-masivo", "children"),
     Output("status-forecast-masivo", "children"),
     Output("progress-container-masivo", "style"),
-    Output("progress-forecast-masivo", "value"),
-    Input("btn-generar-forecast-masivo", "n_clicks"),
-    State("textarea-codigos-masivo", "value"),
-    State("upload-codigos-masivo", "contents"),
-    State("upload-codigos-masivo", "filename"),
-    State("filtro-centro-masivo", "value"),
-    State("filtro-almacen-masivo", "value"),
-    State("select-modelo-masivo", "value"),
-    State("select-horizonte-masivo", "value"),
-    State("select-confianza-masivo", "value"),
+    Input("interval-forecast-progress", "n_intervals"),
+    State("store-forecast-state", "data"),
     prevent_initial_call=True
 )
-def generar_forecast_masivo(n_clicks, texto_codigos, archivo_contents, archivo_filename,
-                             centro, almacen, modelo_tipo, horizonte, confianza):
-    """Genera forecast para multiples materiales"""
+def actualizar_progreso(n_intervals, forecast_state):
+    """Actualiza la barra de progreso y muestra resultados cuando termina"""
 
-    # Obtener codigos desde texto o archivo
-    codigos = parsear_codigos_texto(texto_codigos)
+    state = _get_progress()
 
-    if archivo_contents and not codigos:
-        codigos = parsear_codigos_archivo(archivo_contents, archivo_filename)
+    if state["running"]:
+        # Proceso aún corriendo - actualizar progreso
+        total = state["total"]
+        current = state["current"]
+        percent = int((current / total) * 100) if total > 0 else 0
 
-    if not codigos:
         return (
+            percent,
+            f"{percent}%",
+            state["message"],
+            False,  # Mantener interval activo
+            no_update,  # No actualizar tabla
+            no_update,
+            no_update,
+            no_update,
+            no_update,
+            no_update
+        )
+
+    # Proceso terminado
+    results = state["results"]
+    error = state["error"]
+
+    if error:
+        # Hubo un error
+        return (
+            0,
+            "Error",
+            f"Error: {error}",
+            True,  # Desactivar interval
             [],
             "--",
             "--",
             "--",
-            dbc.Alert("Ingrese codigos SAP o cargue un archivo", color="warning"),
-            {"display": "none"},
-            0
+            dbc.Alert([
+                lucide_icon("alert-circle", size="sm", className="me-2"),
+                f"Error: {error}"
+            ], color="danger"),
+            {"display": "none"}
         )
 
-    # Procesar cada material
-    resultados = []
-    total_demanda = 0
-    total_r2 = 0
-    materiales_procesados = 0
-
-    for idx, codigo in enumerate(codigos):
-        try:
-            # Buscar informacion del material
-            info_material = buscar_material_con_mrp(codigo, limite=1)
-            descripcion = info_material[0]["descripcion"] if info_material else "Desconocido"
-
-            # Cargar datos historicos con filtros
-            df_historico = cargar_consumo_historico(material=codigo, centro=centro, dias=365)
-
-            # Filtrar por almacen si se especifico
-            if almacen and len(df_historico) > 0 and "almacen" in df_historico.columns:
-                df_historico = df_historico[df_historico["almacen"] == almacen]
-
-            if len(df_historico) == 0:
-                resultados.append({
-                    "codigo": codigo,
-                    "descripcion": descripcion,
-                    "demanda_total": 0,
-                    "r2": 0,
-                    "mae": 0,
-                    "estado": "Sin datos"
-                })
-                continue
-
-            # Agrupar por dia
-            df_historico = df_historico.groupby("fecha").agg({
-                "cantidad": "sum"
-            }).reset_index()
-
-            # Entrenar modelo
-            predictor = DemandPredictor(modelo=modelo_tipo)
-            metrics = predictor.entrenar(df_historico, "cantidad")
-
-            # Predecir
-            df_pred = predictor.predecir(df_historico, periodos=horizonte)
-            demanda_total = df_pred["prediccion"].sum()
-
-            resultados.append({
-                "codigo": codigo,
-                "descripcion": descripcion[:50],
-                "demanda_total": round(demanda_total, 0),
-                "r2": round(metrics["r2"], 3),
-                "mae": round(metrics["mae"], 1),
-                "estado": "OK"
-            })
-
-            total_demanda += demanda_total
-            total_r2 += metrics["r2"]
-            materiales_procesados += 1
-
-        except Exception as e:
-            logger.error(f"Procesando {codigo}: {e}")
-            resultados.append({
-                "codigo": codigo,
-                "descripcion": "Error",
-                "demanda_total": 0,
-                "r2": 0,
-                "mae": 0,
-                "estado": f"Error: {str(e)[:30]}"
-            })
+    if results is None:
+        # Sin resultados (no debería pasar)
+        return (
+            no_update, no_update, no_update, no_update,
+            no_update, no_update, no_update, no_update,
+            no_update, no_update
+        )
 
     # Calcular KPIs
-    precision_promedio = (total_r2 / materiales_procesados * 100) if materiales_procesados > 0 else 0
-    sin_datos = len([r for r in resultados if r["estado"] == "Sin datos"])
-    con_error = len([r for r in resultados if "Error" in r["estado"]])
+    total_demanda = sum(r['demanda_total'] for r in results)
+    materiales_ok = [r for r in results if r['estado'] == 'OK']
+    materiales_procesados = len(materiales_ok)
+    total_r2 = sum(r['r2'] for r in materiales_ok)
 
-    if materiales_procesados == len(codigos):
+    precision_promedio = (total_r2 / materiales_procesados * 100) if materiales_procesados > 0 else 0
+    sin_datos = len([r for r in results if r["estado"] == "Sin datos"])
+    con_error = len([r for r in results if "Error" in r["estado"]])
+
+    # Crear mensaje de estado
+    if materiales_procesados == len(results):
         status_msg = dbc.Alert([
             lucide_icon("check-circle", size="sm"),
-            f"Forecast generado para {materiales_procesados} materiales"
+            f" Forecast generado para {materiales_procesados} materiales"
         ], color="success")
     else:
         detalles = []
         if sin_datos > 0:
-            detalles.append(f"{sin_datos} sin datos historicos")
+            detalles.append(f"{sin_datos} sin datos")
         if con_error > 0:
-            detalles.append(f"{con_error} con errores")
+            detalles.append(f"{con_error} errores")
         status_msg = dbc.Alert([
             lucide_icon("info", size="sm"),
-            f"Forecast: {materiales_procesados} exitosos de {len(codigos)} ({', '.join(detalles)})"
+            f" {materiales_procesados} exitosos de {len(results)} ({', '.join(detalles)})"
         ], color="warning" if materiales_procesados > 0 else "danger")
 
+    # Reiniciar progreso para próxima ejecución
+    _reset_progress()
+
     return (
-        resultados,
-        f"{len(codigos)}",
+        100,
+        "100%",
+        "Completado",
+        True,  # Desactivar interval
+        results,
+        f"{len(results)}",
         f"{total_demanda:,.0f}",
         f"{precision_promedio:.1f}%",
         status_msg,
-        {"display": "none"},
-        100
+        {"display": "none"}  # Ocultar barra de progreso
     )
 
 

@@ -7,125 +7,76 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc
 import dash_ag_grid as dag
 from src.layouts.components import (
-    kpi_card, filter_row, empty_state, empty_table, empty_chart, empty_filter, empty_search
+    kpi_card, empty_state, empty_table, empty_chart, empty_filter, empty_search
 )
 from src.components.icons import lucide_icon
 from src.components.icons.icon_button import icon_button
+from src.utils.constants import (
+    obtener_opciones_modelos,
+    HORIZONTES_PREDICCION,
+    NIVELES_CONFIANZA,
+    MODELO_DEFAULT,
+    HORIZONTE_DEFAULT,
+    CONFIANZA_DEFAULT,
+    MAX_MATERIALES_MASIVO
+)
 
 
-def crear_area_entrada() -> html.Div:
-    """Area para ingresar codigos SAP"""
+def crear_area_configuracion() -> html.Div:
+    """Area de configuracion del forecast masivo - todos los filtros en una sola linea centrada"""
+    # Anchos fijos personalizados
+    w_medium = {"width": "112px", "minWidth": "112px"}   # Centro, Almacen, Horizonte, Confianza, Boton
+    w_modelo = {"width": "130px", "minWidth": "130px"}   # Modelo ML
+    w_limite = {"width": "75px", "minWidth": "75px"}     # Limite
+
     return html.Div([
-        # Primera fila: Textarea y Upload
-        dbc.Row([
-            dbc.Col([
-                html.Label("Codigos SAP (uno por linea)", className="filter-label"),
-                dcc.Textarea(
-                    id="textarea-codigos-masivo",
-                    placeholder="Ingrese codigos SAP:\n10301804\n10301805",
-                    style={
-                        "width": "100%",
-                        "height": "200px",
-                        "backgroundColor": "var(--bg-primary)",
-                        "color": "var(--text-primary)",
-                        "border": "1px solid var(--border-color)",
-                        "borderRadius": "var(--radius-md)",
-                        "padding": "10px"
-                    }
-                ),
-                html.Small("Maximo 50 codigos por lote", className="text-muted mt-1 d-block")
-            ], md=6),
-            dbc.Col([
-                html.Label("O cargar desde archivo", className="filter-label"),
-                dcc.Upload(
-                    id="upload-codigos-masivo",
-                    children=html.Div([
-                        lucide_icon("file-up", size="3x", className="mb-2", style={"color": "#BDBEC2"}),
-                        html.P("Arrasque un archivo Excel/CSV", className="mb-1"),
-                        html.Small("o haga clic para seleccionar", className="text-muted")
-                    ], className="text-center py-4"),
-                    style={
-                        "width": "100%",
-                        "height": "200px",
-                        "borderWidth": "2px",
-                        "borderStyle": "dashed",
-                        "borderRadius": "var(--radius-lg)",
-                        "borderColor": "var(--border-color)",
-                        "backgroundColor": "var(--bg-secondary)",
-                        "cursor": "pointer"
-                    }
-                ),
-            ], md=6),
-        ], className="mb-4"),
-        # Segunda fila: Filtros usando filter_row
-        filter_row([
-            {
-                "label": "Centro",
-                "id": "filtro-centro-masivo",
-                "type": "dropdown",
-                "md": 3,
-                "placeholder": "",
-                "options": []
-            },
-            {
-                "label": "Almacen",
-                "id": "filtro-almacen-masivo",
-                "type": "dropdown",
-                "md": 3,
-                "placeholder": "",
-                "options": []
-            },
-            {
-                "label": "Modelo ML",
-                "id": "select-modelo-masivo",
-                "type": "dropdown",
-                "md": 3,
-                "value": "random_forest",
-                "clearable": False,
-                "options": [
-                    {"label": "Random Forest", "value": "random_forest"},
-                    {"label": "Gradient Boosting", "value": "gradient_boosting"},
-                    {"label": "Regresion Lineal", "value": "linear"},
-                ]
-            },
-            {
-                "label": "Horizonte (dias)",
-                "id": "select-horizonte-masivo",
-                "type": "dropdown",
-                "md": 3,
-                "value": 30,
-                "clearable": False,
-                "options": [
-                    {"label": "7 dias", "value": 7},
-                    {"label": "30 dias", "value": 30},
-                    {"label": "90 dias", "value": 90},
-                ]
-            },
-            {
-                "label": "Nivel de Confianza",
-                "id": "select-confianza-masivo",
-                "type": "dropdown",
-                "md": 3,
-                "value": 0.95,
-                "clearable": False,
-                "options": [
-                    {"label": "90%", "value": 0.90},
-                    {"label": "95%", "value": 0.95},
-                ]
-            },
-            {
-                "label": " ",
-                "id": "btn-generar-forecast-masivo",
-                "type": "button",
-                "md": 3,
-                "button_props": {
-                    "icon": "play",
-                    "text": "Generar Forecast Masivo",
-                    "color": "primary"
-                }
-            }
-        ])
-    ])
+        html.Div([
+            # Centro (112px)
+            html.Div([
+                html.Label("Centro", className="filter-label-unified"),
+                dcc.Dropdown(id="filtro-centro-masivo", placeholder="--", options=[],
+                            className="dash-dropdown filter-dropdown")
+            ], style=w_medium),
+            # Almacen (112px)
+            html.Div([
+                html.Label("Almacen", className="filter-label-unified"),
+                dcc.Dropdown(id="filtro-almacen-masivo", placeholder="--", options=[],
+                            className="dash-dropdown filter-dropdown")
+            ], style=w_medium),
+            # Modelo ML (130px)
+            html.Div([
+                html.Label("Modelo ML", className="filter-label-unified"),
+                dcc.Dropdown(id="select-modelo-masivo", value=MODELO_DEFAULT, clearable=False,
+                            options=obtener_opciones_modelos(incluir_avanzados=False),
+                            className="dash-dropdown filter-dropdown")
+            ], style=w_modelo),
+            # Horizonte (112px)
+            html.Div([
+                html.Label("Horizonte", className="filter-label-unified"),
+                dcc.Dropdown(id="select-horizonte-masivo", value=HORIZONTE_DEFAULT, clearable=False,
+                            options=HORIZONTES_PREDICCION, className="dash-dropdown filter-dropdown")
+            ], style=w_medium),
+            # Nivel de Confianza (112px)
+            html.Div([
+                html.Label("Confianza", className="filter-label-unified"),
+                dcc.Dropdown(id="select-confianza-masivo", value=CONFIANZA_DEFAULT, clearable=False,
+                            options=NIVELES_CONFIANZA, className="dash-dropdown filter-dropdown")
+            ], style=w_medium),
+            # Limite (75px)
+            html.Div([
+                html.Label("Limite", className="filter-label-unified"),
+                dbc.Input(id="input-limite-materiales", type="number", value=50,
+                         min=1, max=500, step=10, className="filter-control filter-number")
+            ], style=w_limite),
+            # Boton Generar (112px)
+            html.Div([
+                html.Label(" ", className="filter-label-unified"),
+                dbc.Button([lucide_icon("play", size="sm", className="me-1"), "Generar"],
+                          id="btn-generar-forecast-masivo", color="primary",
+                          className="w-100 filter-action-btn btn-enhanced")
+            ], style=w_medium),
+        ], className="d-flex flex-nowrap gap-3 align-items-end justify-content-center"),
+    ], className="filters-container-enhanced mb-3")
 
 
 def crear_tabla_resultados() -> html.Div:
@@ -145,8 +96,8 @@ def crear_tabla_resultados() -> html.Div:
         html.Div([
             html.H6("Resultados del Forecast", className="mb-0"),
             html.Div([
-                icon_button("Exportar PDF", icon="file-text", id="btn-exportar-pdf", color="danger", outline=True, size="sm", className="me-2"),
-                icon_button("Exportar Excel", icon="file-spreadsheet", id="btn-exportar-masivo-excel", color="success", outline=True, size="sm")
+                icon_button("Exportar PDF", icon="file-text", id="btn-exportar-pdf", color="danger", outline=True, size="sm", className="me-2 btn-enhanced"),
+                icon_button("Exportar Excel", icon="file-spreadsheet", id="btn-exportar-masivo-excel", color="success", outline=True, size="sm", className="btn-enhanced")
             ])
         ], className="table-header"),
         html.Div(id="status-forecast-masivo", className="mb-3"),
@@ -182,7 +133,8 @@ def crear_kpis() -> dbc.Row:
                 subtitulo="Total analizado",
                 icono="package-open",
                 color="primary",
-                valor_id="kpi-total-materiales-masivo"
+                valor_id="kpi-total-materiales-masivo",
+                hoverable=True
             )
         ], md=4),
         dbc.Col([
@@ -192,7 +144,8 @@ def crear_kpis() -> dbc.Row:
                 subtitulo="Unidades totales",
                 icono="boxes",
                 color="success",
-                valor_id="kpi-demanda-total-masivo"
+                valor_id="kpi-demanda-total-masivo",
+                hoverable=True
             )
         ], md=4),
         dbc.Col([
@@ -202,7 +155,8 @@ def crear_kpis() -> dbc.Row:
                 subtitulo="Score del modelo",
                 icono="target",
                 color="info",
-                valor_id="kpi-precision-promedio-masivo"
+                valor_id="kpi-precision-promedio-masivo",
+                hoverable=True
             )
         ], md=4),
     ], className="g-3 mb-4")
@@ -210,17 +164,29 @@ def crear_kpis() -> dbc.Row:
 
 # Layout principal - OPTIMIZADO
 layout = html.Div([
-    # 1. Área de entrada - Compacta
-    html.Div([
-        html.H5("Ingrese Códigos SAP", className="mb-3"),
-        crear_area_entrada(),
-    ], className="mb-4"),
+    # Store para estado del forecast
+    dcc.Store(id="store-forecast-state", data={"running": False, "progress": 0, "total": 0, "current": 0}),
+    # Interval para actualizar progreso (deshabilitado por defecto)
+    dcc.Interval(id="interval-forecast-progress", interval=500, disabled=True),
 
-    # 2. Barra de progreso
+    # Título de la página
+    html.H4("FORECAST MASIVO", className="mb-3 text-center",
+            style={"textShadow": "2px 2px 4px rgba(0,0,0,0.2)", "fontWeight": "700", "letterSpacing": "1px"}),
+
+    # 1. Configuración del forecast
+    crear_area_configuracion(),
+
+    # 2. Barra de progreso mejorada con porcentaje
     html.Div([
-        dbc.Progress(id="progress-forecast-masivo", value=0, striped=True, animated=True,
-                    className="mb-2", style={"height": "20px"}),
-    ], id="progress-container-masivo", style={"display": "none"}, className="mb-4"),
+        html.Div([
+            dbc.Progress(id="progress-forecast-masivo", value=0, striped=True, animated=True,
+                        className="progress-enhanced", style={"height": "24px"}),
+            html.Span(id="progress-label-masivo", className="progress-label",
+                     children="0%")
+        ], className="position-relative"),
+        html.Small(id="progress-text-masivo", className="text-muted mt-2 d-block",
+                  children="Preparando...")
+    ], id="progress-container-masivo", style={"display": "none"}, className="mb-4 glass-card-enhanced p-3"),
 
     # 3. KPIs resumen
     crear_kpis(),

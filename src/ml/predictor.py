@@ -1,7 +1,14 @@
 """
 Predictores de Machine Learning para MRP
 =========================================
-Modelos de demanda, clasificación y optimización de stock
+Modelos de demanda, clasificación y optimización de stock.
+
+Soporta múltiples modelos de forecasting:
+- Random Forest (sklearn)
+- Gradient Boosting (sklearn)
+- XGBoost (si está instalado)
+- Prophet (si está instalado)
+- ARIMA/SARIMAX (si está instalado)
 """
 import pandas as pd
 import numpy as np
@@ -22,6 +29,14 @@ from scipy import stats
 import joblib  # Para persistencia de modelos
 
 from src.utils.logger import get_logger
+
+# Importar sistema de estrategias
+from src.ml.strategies import (
+    obtener_estrategia,
+    obtener_estrategias_disponibles,
+    obtener_nombres_modelos,
+    listar_estrategias
+)
 
 logger = get_logger(__name__)
 
@@ -173,25 +188,77 @@ def clear_model_cache(clear_disk: bool = False):
 
 class DemandPredictor:
     """
-    Predictor de demanda basado en series temporales y ML
+    Predictor de demanda basado en series temporales y ML.
 
-    Usa Random Forest y Gradient Boosting para predecir
-    demanda futura basada en patrones históricos.
+    Soporta múltiples modelos de forecasting mediante el patrón Strategy:
+    - random_forest: Random Forest (sklearn) - default
+    - gradient_boosting: Gradient Boosting (sklearn)
+    - linear: Ridge Regression (sklearn)
+    - xgboost: XGBoost (requiere instalación)
+    - prophet: Facebook Prophet (requiere instalación)
+    - arima: ARIMA/SARIMAX (requiere instalación)
+
+    Uso:
+        predictor = DemandPredictor(modelo="xgboost")
+        metricas = predictor.entrenar(df)
+        predicciones = predictor.predecir(df, periodos=30)
     """
 
-    def __init__(self, modelo: str = "random_forest"):
+    def __init__(self, modelo: str = "random_forest", **kwargs):
         """
-        Inicializa el predictor
+        Inicializa el predictor.
 
         Args:
-            modelo: Tipo de modelo ("random_forest", "gradient_boosting", "linear")
+            modelo: Tipo de modelo. Opciones disponibles:
+                - "random_forest" (default)
+                - "gradient_boosting"
+                - "linear"
+                - "xgboost" (si está instalado)
+                - "prophet" (si está instalado)
+                - "arima" (si está instalado)
+            **kwargs: Parámetros adicionales para el modelo
         """
         self.modelo_tipo = modelo
+        self._kwargs = kwargs
+
+        # Intentar usar nueva arquitectura de estrategias
+        self._estrategia = obtener_estrategia(modelo, **kwargs)
+
+        if self._estrategia is not None:
+            # Usar estrategia nueva
+            self._usar_legacy = False
+            logger.debug(f"Usando estrategia: {self._estrategia.nombre_modelo}")
+        else:
+            # Fallback a implementación legacy
+            self._usar_legacy = True
+            logger.debug(f"Usando implementación legacy para: {modelo}")
+
+        # Atributos públicos para compatibilidad
         self.modelo = None
         self.scaler = StandardScaler()
         self.is_trained = False
         self.feature_names = []
         self.metrics = {}
+
+    @staticmethod
+    def modelos_disponibles() -> Dict[str, str]:
+        """
+        Retorna diccionario de modelos disponibles.
+
+        Returns:
+            Dict {identificador: nombre_legible}
+        """
+        return obtener_nombres_modelos()
+
+    @staticmethod
+    def listar_modelos() -> List[str]:
+        """
+        Lista los identificadores de modelos disponibles.
+
+        Returns:
+            Lista de strings con identificadores de modelos
+        """
+        return obtener_estrategias_disponibles()
 
     def _preparar_features(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -268,7 +335,7 @@ class DemandPredictor:
         test_size: float = 0.2
     ) -> Dict[str, float]:
         """
-        Entrena el modelo con datos históricos
+        Entrena el modelo con datos históricos.
 
         Args:
             df: DataFrame con ['fecha', 'codigo', 'cantidad']
@@ -276,8 +343,22 @@ class DemandPredictor:
             test_size: Proporción para test
 
         Returns:
-            Dict con métricas de evaluación
+            Dict con métricas de evaluación {'mae', 'rmse', 'r2', 'mape'}
         """
+        # Usar estrategia nueva si está disponible
+        if not self._usar_legacy and self._estrategia is not None:
+            self.metrics = self._estrategia.entrenar(df, columna_objetivo, test_size)
+            self.is_trained = self._estrategia.is_trained
+            self.feature_names = self._estrategia.feature_names
+            self.modelo = self._estrategia.modelo
+            self.scaler = self._estrategia.scaler
+            # Copiar atributos para compatibilidad
+            self._media_historica = self._estrategia._media_historica
+            self._std_historica = self._estrategia._std_historica
+            self._usar_modelo_simple = self._estrategia._usar_modelo_simple
+            return self.metrics
+
+        # Legacy: implementación original
         # Guardar estadísticas básicas para fallback
         self._media_historica = df[columna_objetivo].mean()
         self._std_historica = df[columna_objetivo].std()
@@ -416,17 +497,21 @@ class DemandPredictor:
         periodos: int = 30
     ) -> pd.DataFrame:
         """
-        Genera predicciones para períodos futuros
+        Genera predicciones para períodos futuros.
 
         Args:
             df_historico: Datos históricos recientes
             periodos: Número de períodos a predecir
 
         Returns:
-            DataFrame con predicciones
+            DataFrame con ['fecha', 'prediccion', 'limite_inferior', 'limite_superior']
         """
         if not self.is_trained:
             raise ValueError("El modelo no ha sido entrenado. Llame a entrenar() primero.")
+
+        # Usar estrategia nueva si está disponible
+        if not self._usar_legacy and self._estrategia is not None:
+            return self._estrategia.predecir(df_historico, periodos)
 
         predicciones = []
         df_historico['fecha'] = pd.to_datetime(df_historico['fecha'])
@@ -517,7 +602,17 @@ class DemandPredictor:
         return pd.DataFrame(predicciones)
 
     def get_feature_importance(self) -> pd.DataFrame:
-        """Retorna la importancia de cada feature"""
+        """
+        Retorna la importancia de cada feature.
+
+        Returns:
+            DataFrame con ['feature', 'importance'] ordenado por importancia
+        """
+        # Usar estrategia nueva si está disponible
+        if not self._usar_legacy and self._estrategia is not None:
+            return self._estrategia.get_feature_importance()
+
+        # Legacy
         if not self.is_trained or not hasattr(self.modelo, 'feature_importances_'):
             return pd.DataFrame()
 
@@ -527,6 +622,22 @@ class DemandPredictor:
         }).sort_values('importance', ascending=False)
 
         return importance
+
+    @property
+    def nombre_modelo(self) -> str:
+        """Retorna el nombre legible del modelo"""
+        if not self._usar_legacy and self._estrategia is not None:
+            return self._estrategia.nombre_modelo
+
+        nombres = {
+            'random_forest': 'Random Forest',
+            'gradient_boosting': 'Gradient Boosting',
+            'linear': 'Ridge Regression',
+            'xgboost': 'XGBoost',
+            'prophet': 'Prophet',
+            'arima': 'ARIMA'
+        }
+        return nombres.get(self.modelo_tipo, self.modelo_tipo)
 
 
 class StockOptimizer:

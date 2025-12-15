@@ -11,62 +11,111 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 
-from src.data.loader import dict_a_df, obtener_filtros_unicos
 from src.data.sap_loader import cargar_consumo_historico, buscar_material_con_mrp, obtener_centros, obtener_almacenes
+from src.data.excel_loader import (
+    obtener_materiales_desde_excel,
+    filtrar_consumo_por_material,
+    obtener_centros_desde_excel,
+    obtener_almacenes_desde_excel,
+    dict_a_df,
+    obtener_filtros_unicos
+)
 from src.ml.predictor import DemandPredictor
 from src.utils.theme import PLOTLY_TEMPLATE, COLORS, color_con_alpha
 from src.utils.formatters import formato_numero
 from src.utils.logger import get_logger
+from src.utils.constants import MODELOS_ML
+from src.utils.plotly_helpers import crear_figura_vacia, crear_figura_warning
 from src.components.icons import lucide_icon
 
 logger = get_logger(__name__)
 
 
 @callback(
-    Output("select-material-demanda", "options"),
-    Input("data-store", "data")
-)
-def actualizar_lista_materiales(data):
-    """Actualiza la lista de materiales para seleccion (mantenido para compatibilidad)"""
-    if not data or "records" not in data:
-        return []
-
-    df = dict_a_df(data["records"])
-
-    # Vectorizado: crear etiquetas sin iterrows
-    df_top = df.head(100).copy()
-    df_top['descripcion_corta'] = df_top['descripcion'].str[:40] + '...'
-    df_top['label'] = df_top['codigo'] + ' - ' + df_top['descripcion_corta']
-
-    return df_top[['label', 'codigo']].rename(columns={'codigo': 'value'}).to_dict('records')
-
-
-@callback(
     Output("filtro-centro-demanda", "options"),
+    Output("filtro-centro-demanda", "value"),
+    Input("store-excel-data", "data"),
     Input("url", "pathname")
 )
-def cargar_centros_demanda(pathname):
-    """Carga centros directamente desde la base de datos al entrar a la pagina"""
-    try:
-        centros = obtener_centros()
-        return [{"label": c, "value": c} for c in centros]
-    except Exception as e:
-        logger.error(f"Cargando centros: {e}")
-        return []
+def cargar_centros_desde_excel_o_db(excel_data, pathname):
+    """Carga centros desde Excel si esta disponible, sino desde BD"""
+    if excel_data and 'consumo' in excel_data:
+        # Cargar desde Excel
+        df = pd.DataFrame(excel_data['consumo'])
+        centros = obtener_centros_desde_excel(df)
+        opciones = [{"label": "Todos", "value": "Todos"}] + [{"label": c, "value": c} for c in centros]
+        return opciones, "Todos"
+    else:
+        # Cargar desde BD (comportamiento original)
+        try:
+            centros = obtener_centros()
+            return [{"label": c, "value": c} for c in centros], None
+        except Exception as e:
+            logger.error(f"Cargando centros: {e}")
+            return [], None
 
 
 @callback(
     Output("filtro-almacen-demanda", "options"),
-    Input("filtro-centro-demanda", "value")
+    Output("filtro-almacen-demanda", "value"),
+    Input("filtro-centro-demanda", "value"),
+    State("store-excel-data", "data")
 )
-def cargar_almacenes_demanda(centro_seleccionado):
-    """Carga almacenes segun el centro seleccionado"""
-    try:
-        almacenes = obtener_almacenes(centro_seleccionado)
-        return [{"label": a, "value": a} for a in almacenes]
-    except Exception as e:
-        logger.error(f"Cargando almacenes: {e}")
-        return []
+def cargar_almacenes_desde_excel_o_db(centro_seleccionado, excel_data):
+    """Carga almacenes desde Excel si esta disponible, sino desde BD"""
+    if excel_data and 'consumo' in excel_data:
+        # Cargar desde Excel
+        df = pd.DataFrame(excel_data['consumo'])
+        almacenes = obtener_almacenes_desde_excel(df, centro_seleccionado)
+        opciones = [{"label": "Todos", "value": "Todos"}] + [{"label": a, "value": a} for a in almacenes]
+        return opciones, "Todos"
+    else:
+        # Cargar desde BD (comportamiento original)
+        try:
+            almacenes = obtener_almacenes(centro_seleccionado)
+            return [{"label": a, "value": a} for a in almacenes], None
+        except Exception as e:
+            logger.error(f"Cargando almacenes: {e}")
+            return [], None
+
+
+@callback(
+    Output("select-material-demanda", "options"),
+    Output("select-material-demanda", "style"),
+    Input("store-excel-data", "data"),
+    Input("data-store", "data")
+)
+def actualizar_lista_materiales(excel_data, data):
+    """Actualiza la lista de materiales para seleccion desde Excel o data-store"""
+    # Si hay datos de Excel, usarlos y mostrar dropdown
+    if excel_data and 'consumo' in excel_data:
+        df = pd.DataFrame(excel_data['consumo'])
+        opciones = obtener_materiales_desde_excel(df)
+        return opciones, {"display": "block", "marginTop": "8px"}
+
+    # Si hay data-store (comportamiento legacy)
+    if data and "records" in data:
+        df = dict_a_df(data["records"])
+        df_top = df.head(100).copy()
+        df_top['descripcion_corta'] = df_top['descripcion'].str[:40] + '...'
+        df_top['label'] = df_top['codigo'] + ' - ' + df_top['descripcion_corta']
+        return df_top[['label', 'codigo']].rename(columns={'codigo': 'value'}).to_dict('records'), {"display": "none"}
+
+    return [], {"display": "none"}
+
+
+@callback(
+    Output("input-codigo-sap", "value"),
+    Input("select-material-demanda", "value"),
+    prevent_initial_call=True
+)
+def sincronizar_material_seleccionado(material_seleccionado):
+    """Sincroniza el material seleccionado del dropdown al campo de entrada"""
+    if material_seleccionado:
+        return material_seleccionado
+    return no_update
+
+
 
 
 @callback(
@@ -75,47 +124,64 @@ def cargar_almacenes_demanda(centro_seleccionado):
     Input("btn-buscar-material", "n_clicks"),
     State("input-codigo-sap", "value"),
     State("data-store", "data"),
+    State("store-excel-data", "data"),
     prevent_initial_call=True
 )
-def buscar_material_por_codigo(n_clicks, codigo_sap, data):
-    """Busca material en catalogo completo (44k materiales) con indicador MRP"""
+def buscar_material_por_codigo(n_clicks, codigo_sap, data, excel_data):
+    """Busca material en Excel o catalogo completo"""
     if not codigo_sap or len(str(codigo_sap).strip()) < 3:
         return html.Span([
             lucide_icon("info", size="sm"),
-            "Ingrese al menos 3 caracteres"
+            " Ingrese al menos 3 caracteres"
         ], className="text-muted"), None
 
-    # Buscar en catalogo completo con informacion MRP
-    resultados = buscar_material_con_mrp(codigo_sap, limite=10)
+    codigo_buscar = str(codigo_sap).strip()
 
-    if len(resultados) == 0:
-        return html.Span([
-            lucide_icon("alert-triangle", size="sm"),
-            "No encontrado en catalogo"
-        ], className="text-warning"), None
+    # Primero buscar en Excel si esta disponible
+    if excel_data and 'consumo' in excel_data:
+        df = pd.DataFrame(excel_data['consumo'])
+        # Buscar coincidencias (parciales o exactas)
+        matches = df[df['codigo'].astype(str).str.contains(codigo_buscar, case=False, na=False)]
 
-    mat = resultados[0]
+        if len(matches) > 0:
+            codigo_encontrado = matches['codigo'].iloc[0]
+            if 'descripcion' in matches.columns and pd.notna(matches['descripcion'].iloc[0]):
+                descripcion = str(matches['descripcion'].iloc[0])[:45]
+            else:
+                descripcion = str(codigo_encontrado)
 
-    # Crear badge MRP
-    if mat["tiene_mrp"]:
-        badge = dbc.Badge("MRP", color="success", className="ms-2",
-                         title=f"SS:{mat['mrp_info']['ss']} PP:{mat['mrp_info']['pp']} SM:{mat['mrp_info']['sm']}")
-    else:
-        badge = dbc.Badge("Sin MRP", color="secondary", className="ms-2",
-                         title="Este material no tiene parametros MRP configurados")
+            n_coincidencias = matches['codigo'].nunique()
+            if n_coincidencias == 1:
+                return html.Span([
+                    lucide_icon("check-circle", size="sm", style={"color": "#4CD964"}),
+                    f" {descripcion}"
+                ], className="text-success"), str(codigo_encontrado)
+            else:
+                return html.Span([
+                    lucide_icon("info", size="sm", style={"color": "#007AFF"}),
+                    f" {descripcion}... ({n_coincidencias} coincidencias)"
+                ]), str(codigo_encontrado)
 
-    if len(resultados) == 1:
-        return html.Span([
-            lucide_icon("check-circle", size="sm"),
-            f"{mat['descripcion'][:45]}",
-            badge
-        ]), mat["codigo"]
-    else:
-        return html.Span([
-            lucide_icon("info", size="sm"),
-            f"{mat['descripcion'][:35]}... ({len(resultados)} coincidencias)",
-            badge
-        ]), mat["codigo"]
+    # Fallback: buscar en BD si Excel no tiene datos
+    try:
+        resultados = buscar_material_con_mrp(codigo_buscar, limite=10)
+        if len(resultados) > 0:
+            mat = resultados[0]
+            badge = dbc.Badge("MRP" if mat.get("tiene_mrp") else "Sin MRP",
+                            color="success" if mat.get("tiene_mrp") else "secondary",
+                            className="ms-2")
+            return html.Span([
+                lucide_icon("check-circle", size="sm"),
+                f" {mat['descripcion'][:45]}",
+                badge
+            ]), mat["codigo"]
+    except Exception as e:
+        logger.debug(f"BD no disponible para busqueda: {e}")
+
+    return html.Span([
+        lucide_icon("alert-triangle", size="sm", style={"color": "#FF9500"}),
+        " No encontrado"
+    ], className="text-warning"), None
 
 
 @callback(
@@ -143,18 +209,13 @@ def buscar_material_por_codigo(n_clicks, codigo_sap, data):
     State("slider-horizonte", "value"),
     State("select-confianza", "value"),
     State("data-store", "data"),
+    State("store-excel-data", "data"),
     prevent_initial_call=True
 )
-def generar_forecast(n_clicks, material, centro, almacen, modelo_tipo, horizonte, confianza, data):
+def generar_forecast(n_clicks, material, centro, almacen, modelo_tipo, horizonte, confianza, data, excel_data):
     """Genera el forecast usando ML"""
-    # Figuras vacias
-    fig_vacia = go.Figure()
-    fig_vacia.update_layout(
-        **PLOTLY_TEMPLATE["layout"],
-        annotations=[{"text": "Seleccione un material", "showarrow": False,
-                     "font": {"size": 12, "color": COLORS['text_secondary']}}],
-        margin=dict(l=20, r=20, t=20, b=20)
-    )
+    # Figura vacia por defecto
+    fig_vacia = crear_figura_vacia("Seleccione un material")
 
     valores_default = (
         fig_vacia, fig_vacia, fig_vacia, fig_vacia, [],
@@ -167,25 +228,29 @@ def generar_forecast(n_clicks, material, centro, almacen, modelo_tipo, horizonte
     if not material:
         return valores_default
 
-    # Cargar datos historicos REALES de consumo desde la base de datos
-    df_historico = cargar_consumo_historico(material=material, centro=centro, dias=365)
+    # Determinar fuente de datos: Excel o Base de Datos
+    if excel_data and 'consumo' in excel_data:
+        # Usar datos del Excel cargado
+        logger.info(f"Usando datos de Excel para material {material}")
+        df_consumo_excel = pd.DataFrame(excel_data['consumo'])
+        df_consumo_excel['fecha'] = pd.to_datetime(df_consumo_excel['fecha'])
+        df_historico = filtrar_consumo_por_material(
+            df_consumo_excel,
+            material,
+            centro if centro != "Todos" else None,
+            almacen if almacen != "Todos" else None
+        )
+    else:
+        # Cargar datos historicos REALES de consumo desde la base de datos
+        df_historico = cargar_consumo_historico(material=material, centro=centro, dias=365)
 
-    # Filtrar por almacen si se especifico
-    if almacen and len(df_historico) > 0 and "almacen" in df_historico.columns:
-        df_historico = df_historico[df_historico["almacen"] == almacen]
+        # Filtrar por almacen si se especifico
+        if almacen and len(df_historico) > 0 and "almacen" in df_historico.columns:
+            df_historico = df_historico[df_historico["almacen"] == almacen]
 
     # Validar que hay datos disponibles
     if len(df_historico) == 0:
-        fig_sin_datos = go.Figure()
-        fig_sin_datos.update_layout(
-            **PLOTLY_TEMPLATE["layout"],
-            annotations=[{
-                "text": "No hay datos historicos de consumo para este material",
-                "showarrow": False,
-                "font": {"size": 14, "color": COLORS['warning']}
-            }],
-            margin=dict(l=20, r=20, t=20, b=20)
-        )
+        fig_sin_datos = crear_figura_warning("No hay datos historicos de consumo para este material")
         return (
             fig_sin_datos, fig_sin_datos, fig_sin_datos, fig_sin_datos, [],
             "--", "--", "--", "--",
@@ -311,7 +376,7 @@ def generar_forecast(n_clicks, material, centro, almacen, modelo_tipo, horizonte
         hovertemplate='<b style="font-size:13px">%{x}</b><br><b>Demanda:</b> %{y:,.0f}<extra></extra>',
         hoverinfo="x+y"
     ))
-    layout_semanal = {k: v for k, v in PLOTLY_TEMPLATE["layout"].items() if k != "margin"}
+    layout_semanal = {k: v for k, v in PLOTLY_TEMPLATE["layout"].items() if k not in ["margin", "xaxis", "yaxis", "plot_bgcolor", "paper_bgcolor"]}
     fig_semanal.update_layout(
         **layout_semanal,
         xaxis=dict(
@@ -366,7 +431,7 @@ def generar_forecast(n_clicks, material, centro, almacen, modelo_tipo, horizonte
         hovertemplate='<b style="font-size:13px">%{x}</b><br><b>Demanda:</b> %{y:,.0f}<extra></extra>',
         hoverinfo="x+y"
     ))
-    layout_estacional = {k: v for k, v in PLOTLY_TEMPLATE["layout"].items() if k != "margin"}
+    layout_estacional = {k: v for k, v in PLOTLY_TEMPLATE["layout"].items() if k not in ["margin", "xaxis", "yaxis", "plot_bgcolor", "paper_bgcolor"]}
     fig_estacional.update_layout(
         **layout_estacional,
         xaxis=dict(
@@ -424,7 +489,7 @@ def generar_forecast(n_clicks, material, centro, almacen, modelo_tipo, horizonte
             hovertemplate='<b style="font-size:12px">%{y}</b><br><b>Importancia:</b> %{x:.2%}<extra></extra>',
             hoverinfo="y+x"
         ))
-        layout_importance = {k: v for k, v in PLOTLY_TEMPLATE["layout"].items() if k not in ["yaxis", "xaxis", "margin"]}
+        layout_importance = {k: v for k, v in PLOTLY_TEMPLATE["layout"].items() if k not in ["yaxis", "xaxis", "margin", "plot_bgcolor", "paper_bgcolor"]}
         fig_importance.update_layout(
             **layout_importance,
             xaxis=dict(
@@ -468,16 +533,10 @@ def generar_forecast(n_clicks, material, centro, almacen, modelo_tipo, horizonte
                            "limite_superior", "dia_semana"]].to_dict("records")
 
     # Info del modelo
-    modelos_nombres = {
-        "random_forest": "Random Forest",
-        "gradient_boosting": "Gradient Boosting",
-        "linear": "Regresion Lineal"
-    }
-
     info_modelo = html.Div([
         html.P([
             lucide_icon("bot", size="sm"),
-            html.Strong("Modelo: "), modelos_nombres.get(modelo_tipo, modelo_tipo)
+            html.Strong("Modelo: "), MODELOS_ML.get(modelo_tipo, modelo_tipo)
         ], className="mb-2"),
         html.P([
             lucide_icon("calendar", size="sm"),
@@ -511,7 +570,7 @@ def generar_forecast(n_clicks, material, centro, almacen, modelo_tipo, horizonte
             "Resumen del Analisis"
         ]),
         html.P([
-            f"El modelo {modelos_nombres.get(modelo_tipo, modelo_tipo)} predice una demanda total de ",
+            f"El modelo {MODELOS_ML.get(modelo_tipo, modelo_tipo)} predice una demanda total de ",
             html.Strong(f"{demanda_total:,.0f} unidades"),
             f" para los proximos {horizonte} dias, con un promedio diario de ",
             html.Strong(f"{promedio_prediccion:.1f} unidades"),

@@ -1,0 +1,598 @@
+/**
+ * Custom Styles - Forecast Application
+ * =====================================
+ * Refinamiento visual UI/UX 2025
+ * Este archivo complementa styles.css sin modificarlo
+ */
+
+/* === VARIABLES SEMANTICAS === */
+:root {
+  --color-primary: #007AFF;
+  --color-success: #4CD964;
+  --color-warning: #FF9500;
+  --color-danger: #FF3B30;
+  --color-info: #5AC8FA;
+  --color-purple: #5856D6;
+  --color-neutral: #F5F7FA;
+  --color-dark-bg: #1E293B;
+  --color-text-primary: #1F1F21;
+  --color-text-secondary: #6B7280;
+  --border-radius-base: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 20px;
+  --box-shadow-soft: 0 8px 32px rgba(31,31,33,0.12);
+  --box-shadow-hover: 0 12px 40px rgba(31,31,33,0.2);
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
+
+/* === GLASS CARD MEJORADA === */
+.glass-card-enhanced {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.75) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--box-shadow-soft);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.glass-card-enhanced.hoverable {
+  cursor: pointer;
+}
+
+.glass-card-enhanced.hoverable:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+.glass-card-enhanced.hoverable:active {
+  transform: translateY(-2px);
+}
+
+/* === CHART CONTAINER MEJORADO === */
+.chart-container-enhanced {
+  background: var(--color-neutral);
+  border-radius: var(--border-radius-base);
+  padding: 1rem;
+  transition: box-shadow var(--transition-normal);
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.chart-container-enhanced:hover {
+  box-shadow: 0 4px 16px rgba(31,31,33,0.08);
+}
+
+/* === SKELETON LOADER === */
+.skeleton-loader {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-chart {
+  height: 300px;
+  width: 100%;
+}
+
+.skeleton-kpi {
+  height: 100px;
+  width: 100%;
+}
+
+.skeleton-table {
+  height: 400px;
+  width: 100%;
+}
+
+.skeleton-text {
+  height: 1rem;
+  width: 60%;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-text-short {
+  height: 1rem;
+  width: 40%;
+}
+
+/* === BOTONES MEJORADOS === */
+.btn-enhanced {
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-enhanced:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,122,255,0.3);
+}
+
+.btn-enhanced:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0,122,255,0.2);
+}
+
+.btn-enhanced.btn-success:hover {
+  box-shadow: 0 4px 12px rgba(76,217,100,0.3);
+}
+
+.btn-enhanced.btn-danger:hover {
+  box-shadow: 0 4px 12px rgba(255,59,48,0.3);
+}
+
+.btn-enhanced.btn-warning:hover {
+  box-shadow: 0 4px 12px rgba(255,149,0,0.3);
+}
+
+/* Efecto ripple para botones */
+.btn-enhanced::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255,255,255,0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.btn-enhanced:active::after {
+  width: 200px;
+  height: 200px;
+}
+
+/* === PROGRESS BAR MEJORADO === */
+.progress-enhanced {
+  height: 24px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.05);
+  overflow: visible;
+  position: relative;
+}
+
+.progress-enhanced .progress-bar {
+  border-radius: 12px;
+  transition: width var(--transition-slow);
+  background: linear-gradient(90deg, var(--color-primary) 0%, #5AC8FA 100%);
+}
+
+.progress-label {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  line-height: 24px;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Progress con porcentaje bajo - texto oscuro */
+.progress-enhanced.low-progress .progress-label {
+  color: var(--color-text-primary);
+  text-shadow: none;
+}
+
+/* === AG-GRID ROW ALTERNATING === */
+.ag-theme-ios-glass .ag-row-even {
+  background-color: rgba(248, 250, 252, 0.5) !important;
+}
+
+.ag-theme-ios-glass .ag-row-odd {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.ag-theme-ios-glass .ag-row-hover {
+  background-color: rgba(0, 122, 255, 0.05) !important;
+}
+
+.ag-theme-ios-glass .ag-row-selected {
+  background-color: rgba(0, 122, 255, 0.1) !important;
+}
+
+/* === KPI CARDS MEJORADAS === */
+.kpi-card.glass-card-enhanced {
+  overflow: hidden;
+}
+
+.kpi-card.glass-card-enhanced .card-body {
+  position: relative;
+  z-index: 1;
+}
+
+/* Icono decorativo con mejor posicionamiento */
+.kpi-card.glass-card-enhanced .kpi-icon-bg {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  opacity: 0.1;
+  font-size: 4rem;
+  z-index: 0;
+}
+
+/* === ACCESIBILIDAD === */
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Focus visible para dropdowns de Dash */
+.dash-dropdown .Select-control:focus-within {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--border-radius-base);
+}
+
+/* Skip link para navegacion por teclado */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  padding: 8px 16px;
+  z-index: 10000;
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Reducir movimiento para usuarios que lo prefieren */
+@media (prefers-reduced-motion: reduce) {
+  .glass-card-enhanced,
+  .btn-enhanced,
+  .chart-container-enhanced,
+  .progress-enhanced .progress-bar {
+    transition: none;
+  }
+
+  .glass-card-enhanced.hoverable:hover {
+    transform: none;
+  }
+
+  .skeleton-loader {
+    animation: none;
+    background: #e8e8e8;
+  }
+}
+
+/* === RESPONSIVE AJUSTES === */
+@media (max-width: 1200px) {
+  .glass-card-enhanced {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .glass-card-enhanced.hoverable:hover {
+    transform: none; /* Desactivar hover en mobile */
+  }
+
+  .chart-container-enhanced {
+    padding: 0.75rem;
+  }
+
+  .skeleton-chart {
+    height: 250px;
+  }
+
+  .progress-enhanced {
+    height: 20px;
+  }
+
+  .progress-label {
+    font-size: 0.7rem;
+    line-height: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .skeleton-chart {
+    height: 200px;
+  }
+
+  .chart-container-enhanced {
+    padding: 0.5rem;
+    border-radius: 8px;
+  }
+}
+
+/* === UTILIDADES ADICIONALES === */
+.fade-in-up {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Contenedor con padding consistente */
+.section-container {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Titulo de seccion */
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Separador suave */
+.divider-soft {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent);
+  margin: 1.5rem 0;
+}
+
+/* Badge mejorado */
+.badge-enhanced {
+  padding: 0.35em 0.65em;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.75rem;
+  transition: transform var(--transition-fast);
+}
+
+.badge-enhanced:hover {
+  transform: scale(1.05);
+}
+
+/* Tooltip mejorado */
+.tooltip-enhanced {
+  background: var(--color-dark-bg) !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  font-size: 0.8rem !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
+/* === LOADING STATES === */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: inherit;
+}
+
+/* Spinner mejorado */
+.spinner-enhanced {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0,122,255,0.1);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* === TABLA MEJORADA === */
+.table-container-enhanced {
+  background: white;
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--box-shadow-soft);
+  overflow: hidden;
+}
+
+.table-header-enhanced {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  background: rgba(248,250,252,0.5);
+}
+
+.table-header-enhanced h6 {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* === FORMULARIOS MEJORADOS === */
+.form-group-enhanced {
+  margin-bottom: 1rem;
+}
+
+.form-group-enhanced label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.form-control-enhanced {
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-control-enhanced:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0,122,255,0.1);
+}
+
+/* === CONTRASTE MEJORADO (AA) === */
+.text-muted-enhanced {
+  color: #6B7280; /* Ratio 4.5:1 contra blanco */
+}
+
+.text-secondary-enhanced {
+  color: #4B5563; /* Ratio 7:1 contra blanco */
+}
+
+/* === CONTROLES DE FILTRO UNIFICADOS === */
+.filter-control,
+.filter-dropdown .Select-control {
+  height: 36px !important;
+  min-height: 36px !important;
+  font-size: 0.875rem !important;
+  border: 1px solid rgba(0,0,0,0.1) !important;
+  border-radius: 10px !important;
+  background: rgba(255,255,255,0.9) !important;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast) !important;
+}
+
+.filter-control:focus,
+.filter-dropdown .Select-control:focus-within {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px rgba(0,122,255,0.1) !important;
+}
+
+.filter-label-unified {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  display: block;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Fix z-index para dropdowns en filtros */
+.filter-dropdown,
+.filter-dropdown .Select,
+.filter-dropdown .Select-control,
+.filter-dropdown .Select-menu-outer,
+.dash-dropdown,
+.dash-dropdown .Select,
+.dash-dropdown .Select-menu-outer {
+  z-index: 9999 !important;
+}
+
+/* Menu desplegable - debe estar SIEMPRE encima */
+.Select-menu-outer,
+.dash-dropdown .Select-menu-outer,
+.filter-dropdown .Select-menu-outer {
+  z-index: 99999 !important;
+  position: absolute !important;
+}
+
+.filters-container-enhanced {
+  position: relative;
+  z-index: 100;
+  overflow: visible !important;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: var(--border-radius-base);
+  padding: 1rem;
+  box-shadow: var(--box-shadow-soft);
+}
+
+.filters-container-enhanced .d-flex {
+  overflow: visible !important;
+  flex-wrap: nowrap !important;
+}
+
+/* Todos los contenedores de filtro deben permitir overflow */
+.filters-container-enhanced,
+.filters-container-enhanced > div,
+.filters-container-enhanced .d-flex > div {
+  overflow: visible !important;
+}
+
+/* Contenedor de filtros con glass effect - ya definido arriba con z-index */
+
+/* Fila de filtros con gap consistente */
+.filter-row-enhanced {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+/* Separador visual entre grupos */
+.filter-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(0,0,0,0.1);
+  margin: 0 0.5rem;
+  align-self: flex-end;
+}
+
+/* Botón de acción para filtros */
+.filter-action-btn {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Input number centrado */
+.filter-number {
+  text-align: center;
+}
+
+/* Responsive para filtros */
+@media (max-width: 992px) {
+  .filters-container-enhanced {
+    padding: 0.75rem;
+  }
+
+  .filter-label-unified {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-control,
+  .filter-dropdown .Select-control {
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .filter-action-btn {
+    height: 40px;
+  }
+}
