@@ -1,0 +1,1824 @@
+/* MRP Analytics - Glassmorphism iOS Design System - OPTIMIZED VERSION */
+
+/* ============================================
+   CSS Variables - iOS Colors & Glass Effects
+   ============================================ */
+:root {
+    /* iOS Color Palette - APPROVED ONLY */
+    --ios-blue: #007AFF;
+    --ios-purple: #5856D6;
+    --ios-pink: #FF2D55;
+    --ios-red: #FF3B30;
+    --ios-red-dark: #FF3A2D;
+    --ios-red-intense: #FF1300;
+    --ios-pink-light: #FFD3E0;
+    --ios-orange: #FF9500;
+    --ios-yellow: #FFCC00;
+    --ios-green: #4CD964;
+    --ios-teal: #5AC8FA;
+    --ios-light-blue: #34AADC;
+
+    /* Neutral Grays */
+    --ios-black: #1F1F21;
+    --ios-gray-dark: #8E8E93;
+    --ios-gray: #BDBEC2;
+    --ios-gray-light: #C7C7CC;
+    --ios-gray-lighter: #D6CEC3;
+    --ios-white: #F7F7F7;
+
+    /* Slate Grays (Tailwind equiv) */
+    --slate-50: #f8fafc;
+    --slate-100: #f1f5f9;
+    --slate-200: #e2e8f0;
+    --slate-500: #64748b;
+    --slate-900: #0f172a;
+
+    /* Glassmorphism Effects */
+    --glass-bg: rgba(247, 247, 247, 0.72);
+    --glass-bg-light: rgba(247, 247, 247, 0.85);
+    --glass-blur: 20px;
+    --glass-border: rgba(247, 247, 247, 0.25);
+    --glass-shadow: 0 8px 32px rgba(31, 31, 33, 0.12);
+    --glass-shadow-hover: 0 12px 40px rgba(31, 31, 33, 0.18);
+
+    /* Dark Glass (Sidebar) */
+    --glass-dark-bg: rgba(31, 31, 33, 0.92);
+    --glass-dark-border: rgba(247, 247, 247, 0.1);
+
+    /* Spacing - OPTIMIZED */
+    --space-xs: 2px;
+    --space-sm: 4px;
+    --space-md: 8px;
+    --space-lg: 12px;
+    --space-xl: 16px;
+    --space-xxl: 24px;
+    --spacing-6: 24px;
+
+    /* Heights (Tailwind equiv) */
+    --h-8: 32px;
+    --h-10: 40px;
+    --h-12: 48px;
+    --h-14: 56px;
+    --h-18: 72px;
+
+    /* Typography - Standardized */
+    --font-xs: 11px;
+    --font-sm: 12px;
+    --font-base: 14px;
+    --font-lg: 16px;
+    --font-xl: 20px;
+    --font-2xl: 24px;
+
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+    --transition-slow: 0.4s ease;
+}
+
+/* ============================================
+   Base Styles - ESTANDARIZADO
+   ============================================ */
+
+*, *::before, *::after {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    box-sizing: border-box;
+}
+
+body, html {
+    background: linear-gradient(135deg, var(--ios-white) 0%, var(--ios-gray-lighter) 100%) !important;
+    color: var(--ios-black) !important;
+    min-height: 100vh;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: var(--font-base) !important;
+    line-height: 1.5 !important;
+    font-weight: 400 !important;
+}
+
+/* Tipografía Base */
+h1 { font-size: var(--font-2xl) !important; font-weight: 700 !important; line-height: 1.3 !important; margin: var(--space-lg) 0 !important; }
+h2 { font-size: var(--font-xl) !important; font-weight: 700 !important; line-height: 1.3 !important; margin: var(--space-lg) 0 !important; }
+h3 { font-size: var(--font-lg) !important; font-weight: 700 !important; line-height: 1.3 !important; margin: var(--space-md) 0 !important; }
+h4 { font-size: var(--font-base) !important; font-weight: 600 !important; line-height: 1.4 !important; margin: var(--space-sm) 0 !important; }
+h5 { font-size: var(--font-sm) !important; font-weight: 600 !important; line-height: 1.4 !important; margin: var(--space-sm) 0 !important; }
+h6 { font-size: var(--font-xs) !important; font-weight: 600 !important; line-height: 1.4 !important; margin: 0 !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; color: var(--ios-gray-dark) !important; }
+
+p { font-size: var(--font-base) !important; line-height: 1.6 !important; margin: var(--space-md) 0 !important; }
+small { font-size: var(--font-xs) !important; line-height: 1.4 !important; color: var(--ios-gray-dark) !important; }
+label { font-size: var(--font-sm) !important; font-weight: 600 !important; color: var(--ios-gray-dark) !important; margin-bottom: var(--space-sm) !important; display: block !important; }
+
+/* ============================================
+   Sidebar - OPTIMIZADO
+   ============================================ */
+#sidebar {
+    background: var(--glass-dark-bg) !important;
+    backdrop-filter: blur(var(--glass-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+    border-right: 1px solid var(--glass-dark-border) !important;
+    width: 180px !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    padding: 0 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    overflow-y: auto !important;
+}
+
+#sidebar .nav-link {
+    font-size: 9px !important;
+    font-weight: 500 !important;
+    padding: 6px 4px !important;
+    margin: 2px 4px !important;
+    border-radius: var(--radius-sm) !important;
+    color: rgba(247, 247, 247, 0.8) !important;
+    transition: all var(--transition-fast) !important;
+    line-height: 1.2 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 2px !important;
+}
+
+#sidebar .nav-link:hover {
+    background: rgba(247, 247, 247, 0.1) !important;
+    color: var(--ios-white) !important;
+}
+
+#sidebar .nav-link.active {
+    background: var(--ios-blue) !important;
+    color: var(--ios-white) !important;
+    font-weight: 600 !important;
+}
+
+#sidebar .nav-link svg,
+#sidebar .nav-link i {
+    width: 16px !important;
+    height: 16px !important;
+    flex-shrink: 0 !important;
+    color: var(--ios-teal) !important;
+    opacity: 0.9;
+}
+
+#sidebar .nav-link.active svg,
+#sidebar .nav-link.active i {
+    color: var(--ios-white) !important;
+}
+
+#sidebar h4, #sidebar .sidebar-brand {
+    font-size: var(--font-lg) !important;
+    font-weight: 700 !important;
+    color: var(--ios-white) !important;
+    padding: var(--space-lg) !important;
+    margin: 0 !important;
+    border-bottom: 1px solid rgba(247, 247, 247, 0.1) !important;
+}
+
+/* Sidebar Action Items - Sutil y elegante */
+.sidebar-action-item {
+    display: flex !important;
+    align-items: center !important;
+    padding: 8px 12px !important;
+    border-radius: var(--radius-sm) !important;
+    color: rgba(247, 247, 247, 0.6) !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all var(--transition-fast) !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+.sidebar-action-item:hover {
+    background: rgba(247, 247, 247, 0.08) !important;
+    color: rgba(247, 247, 247, 0.9) !important;
+}
+
+.sidebar-action-item .lucide-icon {
+    opacity: 0.6 !important;
+    flex-shrink: 0 !important;
+    filter: brightness(0) invert(1) drop-shadow(0 0 3px rgba(255, 255, 255, 0.15)) !important;
+    transition: all var(--transition-fast) !important;
+}
+
+.sidebar-action-item:hover .lucide-icon {
+    opacity: 1 !important;
+    filter: brightness(0) invert(1) drop-shadow(0 0 6px rgba(255, 255, 255, 0.3)) !important;
+    transform: scale(1.1);
+}
+
+/* ============================================
+   Botones - ESTANDARIZADO
+   ============================================ */
+.btn {
+    border-radius: var(--radius-md) !important;
+    font-weight: 600 !important;
+    font-size: var(--font-sm) !important;
+    padding: 6px 12px !important;
+    border: none !important;
+    height: auto !important;
+    line-height: 1.4 !important;
+    min-height: 32px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: var(--space-md) !important;
+    transition: all var(--transition-fast) !important;
+    cursor: pointer !important;
+}
+
+.btn-sm {
+    font-size: var(--font-xs) !important;
+    padding: 4px 8px !important;
+    min-height: 28px !important;
+}
+
+.btn-sidebar {
+    font-size: var(--font-xs) !important;
+    padding: 3px 6px !important;
+    min-height: 24px !important;
+    background: var(--ios-purple) !important;
+    border-color: var(--ios-purple) !important;
+    color: var(--ios-white) !important;
+}
+
+.btn-lg {
+    font-size: var(--font-base) !important;
+    padding: 8px 16px !important;
+    min-height: 40px !important;
+}
+
+.btn:hover {
+    transform: translateY(-1px) !important;
+}
+
+.btn:active {
+    transform: scale(0.98) !important;
+}
+
+.btn-primary { background: var(--ios-blue) !important; color: var(--ios-white) !important; border: 1px solid var(--ios-blue) !important; }
+.btn-primary:hover { filter: brightness(0.9); }
+.btn-success { background: var(--ios-green) !important; color: var(--ios-black) !important; border: 1px solid var(--ios-green) !important; }
+.btn-danger { background: var(--ios-red) !important; color: var(--ios-white) !important; border: 1px solid var(--ios-red) !important; }
+.btn-warning { background: var(--ios-orange) !important; color: var(--ios-black) !important; border: 1px solid var(--ios-orange) !important; }
+.btn-info { background: var(--ios-teal) !important; color: var(--ios-black) !important; border: 1px solid var(--ios-teal) !important; }
+.btn-secondary { background: var(--ios-gray-dark) !important; color: var(--ios-white) !important; border: 1px solid var(--ios-gray-dark) !important; }
+
+/* Botones Outline - Hover con fondo semi-transparente */
+.btn-outline-primary {
+    background: transparent !important;
+    border: 1.5px solid var(--ios-blue) !important;
+    color: var(--ios-blue) !important;
+}
+.btn-outline-primary:hover {
+    background: rgba(0, 122, 255, 0.1) !important;
+    color: var(--ios-blue) !important;
+}
+
+.btn-outline-success {
+    background: transparent !important;
+    border: 1.5px solid var(--ios-green) !important;
+    color: var(--ios-green) !important;
+}
+.btn-outline-success:hover {
+    background: rgba(76, 217, 100, 0.1) !important;
+    color: var(--ios-green) !important;
+}
+
+.btn-outline-danger {
+    background: transparent !important;
+    border: 1.5px solid var(--ios-red) !important;
+    color: var(--ios-red) !important;
+}
+.btn-outline-danger:hover {
+    background: rgba(255, 59, 48, 0.1) !important;
+    color: var(--ios-red) !important;
+}
+
+.btn-outline-warning {
+    background: transparent !important;
+    border: 1.5px solid var(--ios-orange) !important;
+    color: var(--ios-orange) !important;
+}
+.btn-outline-warning:hover {
+    background: rgba(255, 149, 0, 0.1) !important;
+    color: var(--ios-orange) !important;
+}
+
+.btn-outline-info {
+    background: transparent !important;
+    border: 1.5px solid var(--ios-teal) !important;
+    color: var(--ios-teal) !important;
+}
+.btn-outline-info:hover {
+    background: rgba(90, 200, 250, 0.1) !important;
+    color: var(--ios-teal) !important;
+}
+
+.btn-outline-secondary {
+    background: transparent !important;
+    border: 1.5px solid var(--ios-gray-dark) !important;
+    color: var(--ios-gray-dark) !important;
+}
+.btn-outline-secondary:hover {
+    background: rgba(142, 142, 147, 0.1) !important;
+    color: var(--ios-gray-dark) !important;
+}
+
+.btn-outline-light {
+    background: transparent !important;
+    border: 1.5px solid var(--ios-gray) !important;
+    color: var(--ios-black) !important;
+}
+.btn-outline-light:hover {
+    background: rgba(189, 190, 194, 0.15) !important;
+    color: var(--ios-black) !important;
+}
+
+/* ============================================
+   Form Controls - OPTIMIZADO
+   ============================================ */
+.form-control,
+.form-select,
+input[type="text"],
+input[type="number"],
+input[type="search"],
+input[type="email"],
+select,
+textarea {
+    background: var(--glass-bg-light) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid var(--ios-gray-light) !important;
+    border-radius: var(--radius-md) !important;
+    color: var(--ios-black) !important;
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+    height: 28px !important;
+    line-height: 1.2 !important;
+    transition: all var(--transition-fast) !important;
+}
+
+textarea {
+    height: auto !important;
+    min-height: 80px !important;
+    resize: vertical !important;
+}
+
+.form-control:focus,
+.form-select:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--ios-blue) !important;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15) !important;
+    background: var(--glass-bg-light) !important;
+    outline: none !important;
+}
+
+.form-control::placeholder,
+input::placeholder,
+textarea::placeholder {
+    color: var(--ios-gray-dark) !important;
+    opacity: 0.7 !important;
+}
+
+.form-label {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: var(--ios-gray-dark) !important;
+    margin-bottom: 3px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* ============================================
+   Filtros - OPTIMIZADO Y COMPACTO
+   ============================================ */
+.filters-section {
+    background: rgba(247, 247, 247, 0.7) !important;
+    backdrop-filter: blur(var(--glass-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+    border: 1px solid rgba(247, 247, 247, 0.25) !important;
+    border-radius: var(--radius-lg) !important;
+    padding: 8px 12px !important;
+    margin-bottom: 8px !important;
+    box-shadow: var(--glass-shadow) !important;
+    position: relative !important;
+    z-index: 100 !important;
+    overflow: visible !important;
+}
+
+.filter-card {
+    background: rgba(247, 247, 247, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(247, 247, 247, 0.25) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: 0 4px 16px rgba(31, 31, 33, 0.08) !important;
+    padding: 4px !important;
+}
+
+.filter-label {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: var(--ios-gray-dark) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+    margin-bottom: 3px !important;
+    display: block !important;
+}
+
+/* ============================================
+   Cards y Containers
+   ============================================ */
+.card,
+.glass-card {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(var(--glass-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--glass-shadow) !important;
+    transition: all var(--transition-normal) !important;
+    color: var(--ios-black) !important;
+}
+
+.card:hover,
+.glass-card:hover {
+    box-shadow: var(--glass-shadow-hover) !important;
+    transform: translateY(-2px);
+}
+
+.card-body {
+    padding: var(--space-lg) !important;
+    color: var(--ios-black) !important;
+}
+
+.card-header {
+    background: rgba(247, 247, 247, 0.5) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    padding: var(--space-md) var(--space-lg) !important;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+    color: var(--ios-black) !important;
+}
+
+/* ============================================
+   KPI Cards - PROPORCIONALES
+   ============================================ */
+.kpi-card {
+    background: linear-gradient(135deg, rgba(247, 247, 247, 0.9) 0%, rgba(247, 247, 247, 0.75) 100%) !important;
+    backdrop-filter: blur(var(--glass-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--glass-shadow) !important;
+    padding: 12px 16px !important;
+    transition: all var(--transition-normal) !important;
+    position: relative;
+    overflow: hidden;
+    color: var(--ios-black) !important;
+    min-height: 100px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.kpi-card.kpi-danger::before { background: var(--ios-red); }
+.kpi-card.kpi-warning::before { background: var(--ios-orange); }
+.kpi-card.kpi-success::before { background: var(--ios-green); }
+.kpi-card.kpi-primary::before { background: var(--ios-blue); }
+.kpi-card.kpi-info::before { background: var(--ios-teal); }
+.kpi-card.kpi-purple::before { background: var(--ios-purple); }
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--glass-shadow-hover) !important;
+}
+
+.kpi-card h3 { font-size: var(--font-2xl) !important; color: var(--ios-black) !important; margin-bottom: var(--space-sm) !important; }
+.kpi-card h6 { color: var(--ios-gray-dark) !important; margin: 0 !important; font-size: var(--font-xs) !important; }
+.kpi-card p { color: var(--ios-gray-dark) !important; font-size: var(--font-xs) !important; margin: 0 !important; }
+
+/* ============================================
+   Badges
+   ============================================ */
+.badge {
+    font-weight: 600 !important;
+    padding: 4px 8px !important;
+    border-radius: var(--radius-sm) !important;
+    font-size: var(--font-xs) !important;
+    display: inline-block !important;
+}
+
+.badge-danger, .bg-danger { background: var(--ios-red) !important; color: var(--ios-white) !important; }
+.badge-warning, .bg-warning { background: var(--ios-orange) !important; color: var(--ios-black) !important; }
+.badge-success, .bg-success { background: var(--ios-green) !important; color: var(--ios-black) !important; }
+.badge-info, .bg-info { background: var(--ios-teal) !important; color: var(--ios-black) !important; }
+.badge-primary, .bg-primary { background: var(--ios-blue) !important; color: var(--ios-white) !important; }
+
+/* ============================================
+   Alerts
+   ============================================ */
+.alert {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(var(--glass-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+    border-radius: var(--radius-md) !important;
+    border: none !important;
+    border-left: 3px solid !important;
+    box-shadow: var(--glass-shadow) !important;
+    padding: var(--space-lg) !important;
+    font-size: var(--font-sm) !important;
+}
+
+.alert-danger { border-left-color: var(--ios-red) !important; color: var(--ios-red) !important; }
+.alert-warning { border-left-color: var(--ios-orange) !important; color: var(--ios-orange) !important; }
+.alert-success { border-left-color: var(--ios-green) !important; color: var(--ios-green) !important; }
+.alert-info { border-left-color: var(--ios-blue) !important; color: var(--ios-blue) !important; }
+
+/* ============================================
+   Modals
+   ============================================ */
+.modal-content {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(var(--glass-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-xl) !important;
+    box-shadow: 0 25px 50px rgba(31, 31, 33, 0.25) !important;
+    color: var(--ios-black) !important;
+}
+
+.modal-header {
+    background: rgba(247, 247, 247, 0.5) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
+    padding: var(--space-lg) !important;
+    color: var(--ios-black) !important;
+}
+
+.modal-body { padding: var(--space-lg) !important; color: var(--ios-black) !important; }
+.modal-footer { background: rgba(247, 247, 247, 0.3) !important; border-top: 1px solid var(--glass-border) !important; padding: var(--space-md) var(--space-lg) !important; }
+.modal-title { color: var(--ios-black) !important; font-weight: 600 !important; font-size: var(--font-lg) !important; }
+.modal-backdrop { background: rgba(31, 31, 33, 0.5) !important; backdrop-filter: blur(5px) !important; }
+
+/* Modal KPIs Grid */
+.kpi-modal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+}
+
+.kpi-modal-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: rgba(247, 247, 247, 0.5);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--glass-border);
+}
+
+.kpi-modal-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--glass-bg);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+
+/* ============================================
+   Dropdowns
+   ============================================ */
+.dropdown-menu {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(var(--glass-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--glass-shadow) !important;
+    padding: var(--space-sm) !important;
+}
+
+.dropdown-item {
+    border-radius: var(--radius-sm) !important;
+    padding: 8px 12px !important;
+    color: var(--ios-black) !important;
+    font-size: var(--font-sm) !important;
+    transition: all var(--transition-fast) !important;
+}
+
+.dropdown-item:hover {
+    background: rgba(0, 122, 255, 0.1) !important;
+    color: var(--ios-blue) !important;
+}
+
+.dash-dropdown .Select-control {
+    background: rgba(247, 247, 247, 0.9) !important;
+    border: 1px solid var(--ios-gray-light) !important;
+    border-radius: var(--radius-md) !important;
+    color: var(--ios-black) !important;
+    font-size: var(--font-sm) !important;
+    height: 32px !important;
+}
+
+.dash-dropdown .Select-menu-outer {
+    background: rgba(247, 247, 247, 0.94) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--glass-shadow) !important;
+    z-index: 9999 !important;
+    position: absolute !important;
+}
+
+.dash-dropdown .Select-option {
+    color: var(--ios-black) !important;
+    font-size: var(--font-sm) !important;
+    padding: 8px 12px !important;
+}
+
+.dash-dropdown .Select-option.is-focused {
+    background: rgba(0, 122, 255, 0.1) !important;
+}
+
+.dash-dropdown .Select-value-label {
+    color: var(--ios-black) !important;
+    font-size: var(--font-sm) !important;
+}
+
+.dash-dropdown .Select-placeholder {
+    color: var(--ios-gray-dark) !important;
+    font-size: var(--font-sm) !important;
+}
+
+/* ============================================
+   Tabs
+   ============================================ */
+.nav-tabs {
+    border-bottom: 1px solid var(--glass-border) !important;
+    background: rgba(247, 247, 247, 0.5) !important;
+    border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+    padding: var(--space-sm) !important;
+}
+
+.nav-tabs .nav-link {
+    background: transparent !important;
+    border: none !important;
+    border-radius: var(--radius-sm) !important;
+    color: var(--ios-gray-dark) !important;
+    font-weight: 500 !important;
+    padding: 8px 12px !important;
+    font-size: var(--font-sm) !important;
+    transition: all var(--transition-fast) !important;
+}
+
+.nav-tabs .nav-link:hover {
+    background: rgba(0, 122, 255, 0.1) !important;
+    color: var(--ios-blue) !important;
+}
+
+.nav-tabs .nav-link.active {
+    background: var(--ios-blue) !important;
+    color: var(--ios-white) !important;
+}
+
+/* ============================================
+   Charts - MEJORADO CON MEJOR VISUALIZACIÓN
+   ============================================ */
+.chart-container,
+.dash-graph {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(var(--glass-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--glass-shadow) !important;
+    padding: 16px !important;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-title {
+    font-size: var(--font-base) !important;
+    font-weight: 600 !important;
+    color: var(--ios-black) !important;
+    margin-bottom: 12px !important;
+    letter-spacing: 0.2px;
+}
+
+/* Estilos para gráficos Plotly */
+.plotly .plotly-graph-div {
+    background: transparent !important;
+}
+
+.plotly .plotly-graph-div .plot {
+    background: transparent !important;
+}
+
+/* Mejoras de interactividad en gráficos */
+.plotly-graph-div {
+    border-radius: var(--radius-md) !important;
+}
+
+.plotly-graph-div:hover {
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.1));
+}
+
+/* ============================================
+   Tables
+   ============================================ */
+.table-container {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(var(--glass-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--glass-shadow) !important;
+    overflow: hidden;
+}
+
+.table-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: var(--space-md) var(--space-lg) !important;
+    background: rgba(247, 247, 247, 0.5) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    gap: var(--space-md) !important;
+    flex-wrap: wrap !important;
+}
+
+.table-header h6 {
+    font-size: var(--font-base) !important;
+    font-weight: 600 !important;
+    color: var(--ios-black) !important;
+    margin: 0 !important;
+}
+
+.ag-theme-ios-glass,
+.ag-theme-alpine-dark,
+.ag-theme-alpine,
+.ag-root-wrapper {
+    --ag-background-color: rgba(247, 247, 247, 0.85) !important;
+    --ag-header-background-color: rgba(247, 247, 247, 0.95) !important;
+    --ag-odd-row-background-color: rgba(247, 247, 247, 0.5) !important;
+    --ag-row-hover-color: rgba(0, 122, 255, 0.08) !important;
+    --ag-selected-row-background-color: rgba(0, 122, 255, 0.12) !important;
+    --ag-foreground-color: var(--ios-black) !important;
+    --ag-header-foreground-color: var(--ios-black) !important;
+    --ag-border-color: var(--ios-gray-light) !important;
+    --ag-font-family: 'Inter', -apple-system, sans-serif !important;
+    --ag-font-size: 11px !important;
+    --ag-header-height: 36px !important;
+    --ag-row-height: 32px !important;
+    --ag-cell-horizontal-padding: 8px !important;
+    border-radius: var(--radius-lg) !important;
+    overflow: hidden !important;
+    border: 1px solid var(--glass-border) !important;
+    box-shadow: var(--glass-shadow) !important;
+    backdrop-filter: blur(var(--glass-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+}
+
+.ag-header {
+    font-weight: 600 !important;
+    font-size: 11px !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+}
+
+.ag-cell {
+    display: flex !important;
+    align-items: center !important;
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+    border-right: 1px solid var(--ios-gray-light) !important;
+}
+
+.ag-row {
+    border-bottom: 1px solid var(--ios-gray-light) !important;
+}
+
+.ag-header-cell {
+    border-right: 1px solid var(--ios-gray-light) !important;
+}
+
+.ag-header-cell-label {
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+/* AG Grid Icons - Reemplazar íconos rotos con CSS puro */
+.ag-icon {
+    font-family: inherit !important;
+    font-style: normal !important;
+}
+
+/* Checkbox sin seleccionar */
+.ag-checkbox-input-wrapper::after {
+    content: '' !important;
+    display: block !important;
+    width: 14px !important;
+    height: 14px !important;
+    border: 2px solid var(--ios-gray) !important;
+    border-radius: 3px !important;
+    background: white !important;
+}
+
+/* Checkbox seleccionado */
+.ag-checkbox-input-wrapper.ag-checked::after {
+    content: '✓' !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 14px !important;
+    height: 14px !important;
+    border: 2px solid var(--ios-blue) !important;
+    border-radius: 3px !important;
+    background: var(--ios-blue) !important;
+    color: white !important;
+    font-size: 10px !important;
+    font-weight: bold !important;
+}
+
+/* Ocultar el checkbox input nativo */
+.ag-checkbox-input {
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    position: absolute !important;
+}
+
+/* Íconos de ordenamiento */
+.ag-icon-asc::before { content: '↑' !important; }
+.ag-icon-desc::before { content: '↓' !important; }
+.ag-icon-none::before { content: '' !important; }
+.ag-icon-menu::before { content: '☰' !important; }
+.ag-icon-filter::before { content: '▼' !important; font-size: 8px !important; }
+.ag-icon-columns::before { content: '⋮' !important; }
+.ag-icon-grip::before { content: '⋮⋮' !important; }
+.ag-icon-pin::before { content: '📌' !important; }
+.ag-icon-maximize::before { content: '⤢' !important; }
+.ag-icon-minimize::before { content: '⤡' !important; }
+.ag-icon-first::before { content: '⟪' !important; }
+.ag-icon-previous::before { content: '‹' !important; }
+.ag-icon-next::before { content: '›' !important; }
+.ag-icon-last::before { content: '⟫' !important; }
+
+/* Ocultar íconos vacíos/rotos */
+.ag-icon:empty::before { content: '' !important; }
+
+/* AG Grid Tooltips - Estilo iOS */
+.ag-tooltip {
+    background: rgba(31, 31, 33, 0.95) !important;
+    color: #F7F7F7 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+    max-width: 280px !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+}
+
+.ag-tooltip-custom {
+    background: rgba(31, 31, 33, 0.95) !important;
+    color: #F7F7F7 !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+}
+
+/* ============================================
+   Scrollbar
+   ============================================ */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--ios-gray); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ios-gray-dark); }
+
+/* ============================================
+   Utilities
+   ============================================ */
+.text-muted { color: var(--ios-gray-dark) !important; }
+.text-secondary { color: var(--ios-gray) !important; }
+.text-dark { color: var(--ios-black) !important; }
+
+.glass {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(var(--glass-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--glass-shadow) !important;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 768px) {
+    #sidebar {
+        position: fixed;
+        left: -220px;
+        z-index: 1000;
+        height: 100vh;
+        transition: left 0.3s ease;
+    }
+
+    #sidebar.show {
+        left: 0;
+    }
+
+    #main-content {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .kpi-card {
+        min-height: 120px;
+        padding: var(--space-md);
+    }
+
+    .chart-container {
+        height: 220px;
+        margin-bottom: var(--space-md);
+    }
+
+/* ============================================
+   Optimización de Espaciado Global
+   ============================================ */
+
+/* Mejor separación entre secciones */
+.fade-in > div:first-child {
+    margin-bottom: 0.5rem;
+}
+
+.fade-in > h5 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    color: var(--ios-black);
+    font-size: 16px;
+}
+
+/* KPI Cards - Alineación perfecta */
+.kpi-card {
+    height: 100%;
+}
+
+/* Summary Cards - Compactas */
+.summary-card {
+    min-height: 100px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+
+/* Gráficos - Espaciado consistente */
+.chart-container {
+    position: relative;
+}
+
+/* Tablas - Mejor distribución */
+.table-container {
+    margin-top: 1rem;
+}
+
+/* Filters - Espaciado compacto */
+.filter-input {
+    height: 28px !important;
+}
+
+/* Row gaps - Optimizado */
+.g-1 { --bs-gutter-x: 0.5rem; --bs-gutter-y: 0.5rem; }
+.g-2 { --bs-gutter-x: 1rem; --bs-gutter-y: 1rem; }
+.g-3 { --bs-gutter-x: 1.5rem; --bs-gutter-y: 1.5rem; }
+
+/* Margin utilities - Compactos */
+.mb-1 { margin-bottom: 0.5rem !important; }
+.mb-2 { margin-bottom: 1rem !important; }
+.mb-3 { margin-bottom: 1.5rem !important; }
+.mb-4 { margin-bottom: 2rem !important; }
+
+.mt-1 { margin-top: 0.5rem !important; }
+.mt-2 { margin-top: 1rem !important; }
+.mt-3 { margin-top: 1.5rem !important; }
+.mt-4 { margin-top: 2rem !important; }
+
+/* Alineación vertical perfecta */
+.align-items-center {
+    display: flex;
+    align-items: center;
+}
+
+.align-items-end {
+    display: flex;
+    align-items: flex-end;
+}
+
+/* Flexbox utilities */
+.d-flex { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.justify-content-between {
+    justify-content: space-between;
+}
+.justify-content-center {
+    justify-content: center;
+}
+
+/* Contenedor principal - Padding optimizado */
+.fade-in {
+    padding: 1rem;
+}
+
+/* Tarjetas de estado - Texto centrado */
+.summary-card > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+/* Headers de tabla - Alignment */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.table-header h6 {
+    margin: 0;
+    white-space: nowrap;
+}
+
+    .table-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filters-section {
+        padding: var(--space-md);
+    }
+
+    .btn {
+        padding: 4px 8px;
+        font-size: var(--font-xs);
+        min-height: 28px;
+    }
+}
+
+@media (max-width: 576px) {
+    body { font-size: var(--font-sm) !important; }
+
+    h1 { font-size: var(--font-xl) !important; }
+    h2 { font-size: var(--font-lg) !important; }
+    h3 { font-size: var(--font-base) !important; }
+
+    #sidebar {
+        width: 200px;
+    }
+
+    .kpi-card {
+        min-height: 100px;
+        padding: var(--space-md);
+    }
+
+    .kpi-card h3 {
+        font-size: var(--font-lg) !important;
+    }
+
+    .chart-container {
+        height: 180px;
+    }
+
+    .modal-dialog {
+        margin: var(--space-md);
+    }
+}
+
+/* ============================================
+   Planificación Page - Rediseño UX/UI
+   ============================================ */
+
+/* 1. Control Ribbon - Barra superior de filtros (72px) */
+.control-ribbon {
+    height: var(--h-18);
+    background: white;
+    border-bottom: 1px solid var(--slate-200);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-6);
+    padding: 0 32px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.control-ribbon .filter-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.control-ribbon .filter-label {
+    font-size: 10px !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--slate-500);
+    margin-bottom: 2px !important;
+}
+
+.control-ribbon .dash-dropdown .Select-control {
+    min-height: var(--h-8) !important;
+    height: var(--h-8) !important;
+}
+
+/* Anchos específicos de filtros */
+.filter-w-120 { width: 120px; }
+.filter-w-160 { width: 160px; }
+.filter-w-240 { width: 240px; }
+
+/* Botones en ribbon */
+.control-ribbon .btn {
+    height: var(--h-8);
+}
+
+.control-ribbon .btn-sm {
+    min-width: auto;
+    height: 32px;
+}
+
+/* 2. Filtros Avanzados - Colapsable */
+.filtros-avanzados {
+    padding: 16px 32px;
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    background: rgba(247, 247, 247, 0.98);
+    border-bottom: 1px solid var(--slate-200);
+    transition: all 0.3s ease;
+    overflow: visible;
+}
+
+.filtros-avanzados.collapsed {
+    height: 0;
+    padding: 0 32px;
+    overflow: hidden;
+    border: none;
+}
+
+.filter-w-96 { width: 96px; }
+.filter-w-220 { width: 220px; }
+
+/* 3. KPI Dashboard - Grid 4 columnas, 130px altura */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-6);
+    padding: var(--spacing-6);
+}
+
+.kpi-card-nuevo {
+    height: 130px;
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid rgba(226,232,240,0.6);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-normal);
+}
+
+.kpi-card-nuevo:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.kpi-card-nuevo::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+}
+
+.kpi-card-nuevo.kpi-primary::before { background: var(--ios-blue); }
+.kpi-card-nuevo.kpi-warning::before { background: var(--ios-orange); }
+.kpi-card-nuevo.kpi-success::before { background: var(--ios-green); }
+.kpi-card-nuevo.kpi-info::before { background: var(--ios-teal); }
+
+.kpi-card-nuevo .kpi-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.kpi-card-nuevo .kpi-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kpi-card-nuevo.kpi-primary .kpi-icon { background: rgba(0,122,255,0.1); color: var(--ios-blue); }
+.kpi-card-nuevo.kpi-warning .kpi-icon { background: rgba(255,149,0,0.1); color: var(--ios-orange); }
+.kpi-card-nuevo.kpi-success .kpi-icon { background: rgba(76,217,100,0.1); color: var(--ios-green); }
+.kpi-card-nuevo.kpi-info .kpi-icon { background: rgba(90,200,250,0.1); color: var(--ios-teal); }
+
+.kpi-card-nuevo .kpi-title {
+    font-size: var(--font-xs);
+    font-weight: 600;
+    color: var(--slate-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.kpi-card-nuevo .kpi-value {
+    font-size: var(--font-2xl);
+    font-weight: 700;
+    color: var(--slate-900);
+    margin: 0;
+}
+
+.kpi-card-nuevo .kpi-subtitle {
+    font-size: var(--font-xs);
+    color: var(--slate-500);
+    margin: 0;
+}
+
+/* 4. Charts Section - 340px, grid 2fr/1fr */
+.charts-section {
+    height: 340px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-6);
+    padding: 0 var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+}
+
+.chart-panel {
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid rgba(226,232,240,0.6);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-panel .chart-title {
+    font-size: var(--font-base);
+    font-weight: 600;
+    color: var(--slate-900);
+    margin-bottom: 16px;
+}
+
+/* 5. Table Section - Toolbar y tabla */
+.table-section {
+    padding: 0 var(--spacing-6) var(--spacing-6);
+}
+
+.table-panel {
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid rgba(226,232,240,0.6);
+    overflow: hidden;
+}
+
+.table-toolbar {
+    height: 60px;
+    padding: 0 var(--spacing-6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 1px solid var(--slate-200);
+    background: var(--slate-50);
+}
+
+.table-toolbar .table-title {
+    font-size: var(--font-base);
+    font-weight: 600;
+    color: var(--slate-900);
+    margin: 0;
+}
+
+.table-toolbar .table-search {
+    height: var(--h-10);
+    width: 100%;
+    max-width: 360px;
+    background: white;
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius-md);
+    padding: 0 16px;
+    font-size: var(--font-sm);
+}
+
+.table-toolbar .table-search:focus {
+    outline: none;
+    border-color: var(--ios-blue);
+    box-shadow: 0 0 0 3px rgba(0,122,255,0.1);
+}
+
+.table-toolbar .toolbar-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* 6. Drawer / Offcanvas - 400px */
+.offcanvas-end {
+    width: 400px !important;
+    background: white !important;
+    border-left: 1px solid var(--slate-200) !important;
+}
+
+.offcanvas-header {
+    height: var(--h-12);
+    border-bottom: 1px solid var(--slate-200);
+    padding: 0 var(--spacing-6) !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.offcanvas-title {
+    font-size: var(--font-base);
+    font-weight: 600;
+    color: var(--slate-900);
+}
+
+.offcanvas-body {
+    padding: var(--spacing-6) !important;
+}
+
+/* Responsive para KPI grid */
+@media (max-width: 1200px) {
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .charts-section {
+        height: auto;
+        grid-template-columns: 1fr;
+    }
+    .chart-panel {
+        height: 280px;
+    }
+}
+
+@media (max-width: 768px) {
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+    .control-ribbon {
+        height: auto;
+        flex-wrap: wrap;
+        padding: 12px 16px;
+        gap: 12px;
+    }
+    .filtros-avanzados {
+        height: auto;
+        flex-wrap: wrap;
+        padding: 12px 16px;
+    }
+    .filtros-avanzados.collapsed {
+        padding: 0 16px;
+    }
+    .offcanvas-end {
+        width: 100% !important;
+    }
+}
+
+/* Planificación Page Container */
+.planificacion-page {
+    background: var(--slate-50);
+    min-height: 100vh;
+}
+
+.planificacion-page .main-content {
+    padding: var(--spacing-6);
+}
+
+/* ============================================
+   Fallback para navegadores sin backdrop-filter
+   ============================================ */
+@supports not (backdrop-filter: blur(20px)) {
+    .card, .glass-card, .kpi-card { background: rgba(247, 247, 247, 0.95) !important; }
+    #sidebar { background: rgba(31, 31, 33, 0.98) !important; }
+    .modal-content { background: rgba(247, 247, 247, 0.98) !important; }
+    .dropdown-menu { background: rgba(247, 247, 247, 0.98) !important; }
+}
+
+/* ============================================
+   Sidebar Colapsable - Nuevo Sistema
+   ============================================ */
+
+/* Variables para sidebar */
+:root {
+    --sidebar-expanded: 180px;
+    --sidebar-collapsed: 64px;
+    --sidebar-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Contenedor del sidebar */
+.sidebar-container {
+    transition: width var(--sidebar-transition);
+}
+
+/* Sidebar base - estados */
+#sidebar.sidebar-expanded {
+    width: var(--sidebar-expanded) !important;
+}
+
+#sidebar.sidebar-collapsed {
+    width: var(--sidebar-collapsed) !important;
+}
+
+#sidebar {
+    transition: width var(--sidebar-transition);
+    overflow-x: hidden;
+}
+
+/* Header del sidebar */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(247, 247, 247, 0.08);
+    min-height: 48px;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: baseline;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: opacity var(--sidebar-transition);
+}
+
+.logo-text {
+    font-weight: 700;
+    color: #F7F7F7;
+    font-size: 14px;
+    letter-spacing: -0.5px;
+}
+
+.logo-subtitle {
+    font-size: 10px;
+    color: var(--ios-teal);
+    font-weight: 500;
+    opacity: 0.8;
+    margin-left: 2px;
+    transition: opacity var(--sidebar-transition), width var(--sidebar-transition);
+}
+
+/* Botón de colapsar */
+.btn-collapse {
+    background: transparent;
+    border: none;
+    color: rgba(247, 247, 247, 0.6);
+    padding: 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.btn-collapse .lucide-icon {
+    opacity: 0.6;
+    filter: brightness(0) invert(1) drop-shadow(0 0 3px rgba(255, 255, 255, 0.15));
+    transition: all var(--transition-fast);
+}
+
+.btn-collapse:hover {
+    background: rgba(247, 247, 247, 0.1);
+}
+
+.btn-collapse:hover .lucide-icon {
+    opacity: 1;
+    filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+    transform: scale(1.15);
+}
+
+/* Labels de grupo de navegación */
+.nav-group {
+    padding: 12px 16px 4px;
+}
+
+.nav-group-label {
+    font-size: 9px;
+    letter-spacing: 1.2px;
+    font-weight: 600;
+    color: rgba(247, 247, 247, 0.35);
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: opacity var(--sidebar-transition);
+}
+
+/* Sección de navegación */
+.nav-section {
+    padding: 0 8px;
+}
+
+/* Items de navegación mejorados */
+.nav-item-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.nav-icon {
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+}
+
+.nav-label {
+    white-space: nowrap;
+    overflow: hidden;
+    transition: opacity var(--sidebar-transition), width var(--sidebar-transition);
+}
+
+#sidebar .nav-section .nav-link {
+    display: flex !important;
+    align-items: center !important;
+    padding: 10px 12px !important;
+    margin: 2px 0 !important;
+    border-radius: 8px !important;
+    color: rgba(247, 247, 247, 0.75) !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    position: relative;
+    transition: all var(--transition-fast) !important;
+    flex-direction: row !important;
+    gap: 10px !important;
+}
+
+#sidebar .nav-section .nav-link:hover {
+    background: rgba(247, 247, 247, 0.08) !important;
+    color: #F7F7F7 !important;
+}
+
+#sidebar .nav-section .nav-link:hover .nav-icon {
+    transform: scale(1.1);
+}
+
+/* Estado activo mejorado */
+#sidebar .nav-section .nav-link.active {
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.9) 0%, rgba(0, 122, 255, 0.7) 100%) !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+#sidebar .nav-section .nav-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    background: #FFFFFF;
+    border-radius: 0 2px 2px 0;
+}
+
+#sidebar .nav-section .nav-link.active .nav-icon,
+#sidebar .nav-section .nav-link.active .lucide-icon {
+    color: #FFFFFF !important;
+}
+
+/* Iconos en navegación - blancos con transparencia */
+#sidebar .nav-section .nav-link .nav-icon,
+#sidebar .nav-section .nav-link .lucide-icon {
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+    filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
+    transition: all var(--transition-fast);
+}
+
+#sidebar .nav-section .nav-link:hover .nav-icon,
+#sidebar .nav-section .nav-link:hover .lucide-icon {
+    opacity: 1;
+    filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+    transform: scale(1.1);
+}
+
+/* Ocultar elementos en modo colapsado */
+.sidebar-collapsed .logo-subtitle,
+.sidebar-collapsed .nav-group-label,
+.sidebar-collapsed .nav-label,
+.sidebar-collapsed .sidebar-action-item span,
+.sidebar-collapsed .footer-text,
+.sidebar-collapsed .acciones-label {
+    opacity: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Mostrar elementos en modo expandido */
+.sidebar-expanded .logo-subtitle,
+.sidebar-expanded .nav-group-label,
+.sidebar-expanded .nav-label,
+.sidebar-expanded .sidebar-action-item span {
+    opacity: 1;
+    width: auto;
+}
+
+/* Sidebar colapsado - centrar elementos */
+.sidebar-collapsed .nav-section .nav-link {
+    justify-content: center !important;
+    padding: 12px !important;
+}
+
+.sidebar-collapsed .nav-item-content {
+    justify-content: center;
+}
+
+.sidebar-collapsed .btn-collapse {
+    margin: 0 auto;
+}
+
+.sidebar-collapsed .sidebar-header {
+    justify-content: center;
+    padding: 12px 8px;
+}
+
+.sidebar-collapsed .sidebar-logo {
+    display: none;
+}
+
+.sidebar-collapsed .nav-group {
+    padding: 8px 0;
+    text-align: center;
+}
+
+.sidebar-collapsed .sidebar-action-item {
+    justify-content: center !important;
+    padding: 10px !important;
+}
+
+.sidebar-collapsed .sidebar-actions {
+    padding: 8px 4px;
+}
+
+/* Footer */
+.sidebar-footer {
+    padding: 8px 12px;
+    border-top: 1px solid rgba(247, 247, 247, 0.08);
+    margin-top: auto;
+}
+
+.footer-text {
+    font-size: 9px !important;
+    color: rgba(247, 247, 247, 0.3) !important;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: opacity var(--sidebar-transition);
+}
+
+.sidebar-collapsed .sidebar-footer {
+    padding: 8px;
+    text-align: center;
+}
+
+.sidebar-collapsed .footer-text {
+    display: none;
+}
+
+/* Acciones del sidebar */
+.sidebar-actions {
+    padding: 8px;
+    border-top: 1px solid rgba(247, 247, 247, 0.08);
+}
+
+/* Transición suave para el contenido principal */
+#main-content {
+    transition: margin-left var(--sidebar-transition), width var(--sidebar-transition);
+}
+
+/* Tooltips del sidebar - solo visibles cuando está colapsado */
+.sidebar-tooltip .tooltip-inner {
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    padding: 8px 12px !important;
+    background: rgba(31, 31, 33, 0.95) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Ocultar tooltips cuando el sidebar está expandido */
+.sidebar-expanded ~ .sidebar-tooltip,
+.sidebar-expanded + .sidebar-tooltip,
+body:has(.sidebar-expanded) .tooltip {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Responsive - Móvil */
+@media (max-width: 991px) {
+    /* En móvil mantener comportamiento slide-in */
+    .sidebar-collapsed,
+    .sidebar-expanded {
+        width: 200px !important;
+    }
+
+    .sidebar-collapsed .nav-label,
+    .sidebar-collapsed .logo-subtitle,
+    .sidebar-collapsed .nav-group-label,
+    .sidebar-collapsed .sidebar-action-item span {
+        opacity: 1 !important;
+        width: auto !important;
+    }
+
+    .sidebar-collapsed .sidebar-logo {
+        display: flex;
+    }
+
+    .sidebar-collapsed .nav-section .nav-link {
+        justify-content: flex-start !important;
+        padding: 10px 12px !important;
+    }
+
+    #main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+
+/* ============================================
+   Forecast App - Sidebar Styles
+   ============================================ */
+.nav-link-sidebar {
+    color: rgba(255, 255, 255, 0.7) !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 8px !important;
+    margin-bottom: 0.25rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.nav-link-sidebar:hover {
+    color: white !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.nav-link-sidebar.active {
+    color: white !important;
+    background: var(--ios-blue) !important;
+}
+
+.nav-link-sidebar .lucide-icon {
+    opacity: 0.8;
+    filter: brightness(0) invert(1);
+}
