@@ -639,6 +639,269 @@ class DemandPredictor:
         }
         return nombres.get(self.modelo_tipo, self.modelo_tipo)
 
+    def entrenar_con_cv(
+        self,
+        df: pd.DataFrame,
+        columna_objetivo: str = 'cantidad',
+        n_splits: int = 5
+    ) -> Dict[str, Any]:
+        """
+        Entrena el modelo con validación cruzada temporal.
+
+        Usa TimeSeriesSplit para respetar la naturaleza temporal de los datos
+        y obtener métricas más realistas.
+
+        Args:
+            df: DataFrame con ['fecha', 'cantidad']
+            columna_objetivo: Columna a predecir
+            n_splits: Número de splits para CV
+
+        Returns:
+            Dict con métricas de CV y estadísticas
+        """
+        from sklearn.model_selection import TimeSeriesSplit
+
+        logger.info(f"Entrenando con validación cruzada ({n_splits} splits)")
+
+        # Preparar datos
+        df_prep = self._preparar_features(df)
+        df_prep = self._crear_lag_features(df_prep, columna_objetivo)
+        df_prep = df_prep.dropna()
+
+        if len(df_prep) < n_splits + 5:
+            logger.warning(f"Datos insuficientes para {n_splits} splits, usando entrenamiento simple")
+            return self.entrenar(df, columna_objetivo)
+
+        # Features
+        base_features = [
+            'dia_semana', 'dia_mes', 'mes', 'trimestre',
+            'mes_sin', 'mes_cos', 'dia_sin', 'dia_cos',
+            'es_fin_mes', 'es_inicio_mes'
+        ]
+        lag_features = [c for c in df_prep.columns if 'lag_' in c or 'ma_' in c or 'std_' in c or 'diff' in c]
+        self.feature_names = [f for f in base_features + lag_features if f in df_prep.columns]
+
+        X = df_prep[self.feature_names].values
+        y = df_prep[columna_objetivo].values
+
+        # TimeSeriesSplit
+        tscv = TimeSeriesSplit(n_splits=n_splits)
+
+        scores = {'mae': [], 'rmse': [], 'r2': [], 'mape': []}
+
+        for fold, (train_idx, val_idx) in enumerate(tscv.split(X)):
+            X_train, X_val = X[train_idx], X[val_idx]
+            y_train, y_val = y[train_idx], y[val_idx]
+
+            # Escalar
+            scaler = StandardScaler()
+            X_train_scaled = scaler.fit_transform(X_train)
+            X_val_scaled = scaler.transform(X_val)
+
+            # Entrenar modelo temporal
+            if self.modelo_tipo == "random_forest":
+                modelo_temp = RandomForestRegressor(n_estimators=100, max_depth=10, random_state=42, n_jobs=-1)
+            elif self.modelo_tipo == "gradient_boosting":
+                modelo_temp = GradientBoostingRegressor(n_estimators=100, max_depth=5, random_state=42)
+            else:
+                modelo_temp = Ridge(alpha=1.0)
+
+            modelo_temp.fit(X_train_scaled, y_train)
+            y_pred = modelo_temp.predict(X_val_scaled)
+
+            # Métricas del fold
+            scores['mae'].append(mean_absolute_error(y_val, y_pred))
+            scores['rmse'].append(np.sqrt(mean_squared_error(y_val, y_pred)))
+            scores['r2'].append(r2_score(y_val, y_pred) if len(y_val) > 1 else 0)
+            mask = y_val != 0
+            if mask.any():
+                scores['mape'].append(np.mean(np.abs((y_val[mask] - y_pred[mask]) / y_val[mask])) * 100)
+
+        # Entrenar modelo final con todos los datos
+        self.scaler = StandardScaler()
+        X_scaled = self.scaler.fit_transform(X)
+
+        if self.modelo_tipo == "random_forest":
+            self.modelo = RandomForestRegressor(n_estimators=100, max_depth=10, random_state=42, n_jobs=-1)
+        elif self.modelo_tipo == "gradient_boosting":
+            self.modelo = GradientBoostingRegressor(n_estimators=100, max_depth=5, random_state=42)
+        else:
+            self.modelo = Ridge(alpha=1.0)
+
+        self.modelo.fit(X_scaled, y)
+        self.is_trained = True
+
+        # Guardar estadísticas
+        self._media_historica = df[columna_objetivo].mean()
+        self._std_historica = df[columna_objetivo].std()
+        self._usar_modelo_simple = False
+
+        # Métricas agregadas
+        self.metrics = {
+            'mae': np.mean(scores['mae']),
+            'mae_std': np.std(scores['mae']),
+            'rmse': np.mean(scores['rmse']),
+            'rmse_std': np.std(scores['rmse']),
+            'r2': np.mean(scores['r2']),
+            'r2_std': np.std(scores['r2']),
+            'mape': np.mean(scores['mape']) if scores['mape'] else 0,
+            'cv_scores': scores,
+            'n_splits': n_splits
+        }
+
+        logger.info(f"CV completada: MAE={self.metrics['mae']:.2f} (±{self.metrics['mae_std']:.2f})")
+        return self.metrics
+
+    def _crear_features_temporales(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Crea features temporales completos para el modelo.
+
+        Incluye:
+        - Features cíclicos (sin/cos para día, mes, semana)
+        - Lags y rolling statistics
+        - Tendencias
+        - Features de calendario
+
+        Args:
+            df: DataFrame con ['fecha', 'cantidad']
+
+        Returns:
+            DataFrame con todos los features
+        """
+        df = df.copy()
+        df['fecha'] = pd.to_datetime(df['fecha'])
+        df = df.sort_values('fecha').reset_index(drop=True)
+
+        # Features temporales básicos
+        df['dia_semana'] = df['fecha'].dt.dayofweek
+        df['dia_mes'] = df['fecha'].dt.day
+        df['mes'] = df['fecha'].dt.month
+        df['trimestre'] = df['fecha'].dt.quarter
+        df['semana_ano'] = df['fecha'].dt.isocalendar().week.astype(int)
+        df['dia_ano'] = df['fecha'].dt.dayofyear
+
+        # Features de calendario
+        df['es_fin_mes'] = df['fecha'].dt.is_month_end.astype(int)
+        df['es_inicio_mes'] = df['fecha'].dt.is_month_start.astype(int)
+        df['es_fin_semana'] = (df['dia_semana'] >= 5).astype(int)
+        df['dias_hasta_fin_mes'] = (df['fecha'] + pd.offsets.MonthEnd(0) - df['fecha']).dt.days
+
+        # Codificación cíclica (captura patrones periódicos)
+        df['mes_sin'] = np.sin(2 * np.pi * df['mes'] / 12)
+        df['mes_cos'] = np.cos(2 * np.pi * df['mes'] / 12)
+        df['dia_sin'] = np.sin(2 * np.pi * df['dia_semana'] / 7)
+        df['dia_cos'] = np.cos(2 * np.pi * df['dia_semana'] / 7)
+        df['semana_sin'] = np.sin(2 * np.pi * df['semana_ano'] / 52)
+        df['semana_cos'] = np.cos(2 * np.pi * df['semana_ano'] / 52)
+
+        # Lags
+        if 'cantidad' in df.columns:
+            for lag in [1, 7, 14, 21, 28, 30]:
+                if len(df) > lag:
+                    df[f'cantidad_lag_{lag}'] = df['cantidad'].shift(lag)
+
+            # Rolling statistics
+            for window in [7, 14, 30]:
+                if len(df) >= window:
+                    df[f'cantidad_ma_{window}'] = df['cantidad'].rolling(window=window, min_periods=1).mean()
+                    df[f'cantidad_std_{window}'] = df['cantidad'].rolling(window=window, min_periods=1).std()
+
+            # EWMA (Exponential Weighted Moving Average)
+            for span in [7, 14, 30]:
+                if len(df) >= span:
+                    df[f'cantidad_ewma_{span}'] = df['cantidad'].ewm(span=span, min_periods=1).mean()
+
+            # Tendencia (diferencia)
+            df['cantidad_diff'] = df['cantidad'].diff()
+            df['cantidad_diff_7'] = df['cantidad'].diff(7)
+
+            # Aceleración (cambio de tendencia)
+            df['cantidad_accel'] = df['cantidad_diff'].diff()
+
+        return df
+
+    def calcular_baseline_metrics(
+        self,
+        df: pd.DataFrame,
+        columna_objetivo: str = 'cantidad'
+    ) -> Dict[str, float]:
+        """
+        Calcula métricas de modelos baseline para comparación.
+
+        Incluye:
+        - Naive (último valor)
+        - Seasonal naive (valor hace 7 días)
+        - Moving average (promedio últimos 30 días)
+
+        Args:
+            df: DataFrame con datos
+            columna_objetivo: Columna objetivo
+
+        Returns:
+            Dict con métricas de cada baseline
+        """
+        df = df.copy()
+        y = df[columna_objetivo].values
+
+        baselines = {}
+
+        # Naive: predicción = último valor
+        y_naive = np.roll(y, 1)
+        y_naive[0] = y[0]
+        baselines['naive_mae'] = mean_absolute_error(y[1:], y_naive[1:])
+
+        # Seasonal naive: predicción = valor hace 7 días
+        if len(y) > 7:
+            y_seasonal = np.roll(y, 7)
+            baselines['seasonal_mae'] = mean_absolute_error(y[7:], y_seasonal[7:])
+        else:
+            baselines['seasonal_mae'] = baselines['naive_mae']
+
+        # Moving average: predicción = promedio últimos 7 días
+        if len(y) > 7:
+            y_ma = pd.Series(y).rolling(7, min_periods=1).mean().shift(1).values
+            baselines['ma_mae'] = mean_absolute_error(y[1:], y_ma[1:])
+        else:
+            baselines['ma_mae'] = baselines['naive_mae']
+
+        # Mejor baseline
+        baselines['mejor_baseline'] = min(['naive', 'seasonal', 'ma'],
+                                          key=lambda x: baselines.get(f'{x}_mae', float('inf')))
+
+        return baselines
+
+    @property
+    def _feature_names(self) -> List[str]:
+        """Alias para compatibilidad"""
+        return self.feature_names
+
+    @property
+    def _modelo(self):
+        """Alias para compatibilidad"""
+        return self.modelo
+
+    @_modelo.setter
+    def _modelo(self, value):
+        self.modelo = value
+
+    @property
+    def _scaler(self):
+        """Alias para compatibilidad"""
+        return self.scaler
+
+    @_scaler.setter
+    def _scaler(self, value):
+        self.scaler = value
+
+    @property
+    def _entrenado(self) -> bool:
+        """Alias para compatibilidad"""
+        return self.is_trained
+
+    @_entrenado.setter
+    def _entrenado(self, value: bool):
+        self.is_trained = value
+
 
 class StockOptimizer:
     """

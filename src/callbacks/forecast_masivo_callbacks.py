@@ -2,16 +2,19 @@
 Callbacks del Tablero de Forecasting Masivo
 ============================================
 Procesamiento de multiples materiales con ML (paralelo)
-Con progreso en tiempo real
+Con progreso en tiempo real usando ProcessPoolExecutor
+para bypass del GIL en operaciones CPU-intensivas.
 """
 from dash import callback, Output, Input, State, no_update, html, ctx
 import dash_bootstrap_components as dbc
 from dash import dcc
 import pandas as pd
 from datetime import datetime
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing
+from multiprocessing import Manager
 import threading
+import os
 
 from src.data.excel_loader import (
     obtener_centros_desde_excel,
@@ -25,7 +28,8 @@ from src.utils.logger import get_logger
 logger = get_logger(__name__)
 
 # Numero de workers para procesamiento paralelo
-NUM_WORKERS = min(8, multiprocessing.cpu_count())
+# Usar menos workers que CPUs para dejar recursos al sistema
+NUM_WORKERS = max(1, min(6, multiprocessing.cpu_count() - 1))
 
 # Estado global del progreso (thread-safe)
 _progress_state = {
@@ -250,18 +254,45 @@ def iniciar_forecast_masivo(n_clicks, centro, almacen, modelo_tipo, horizonte, c
 
                 tareas.append((codigo, df_historico, descripcion, modelo_tipo, horizonte))
 
-            # Procesar en paralelo con tracking de progreso
+            # Procesar en paralelo con ProcessPoolExecutor para bypass del GIL
+            # Esto mejora el rendimiento en operaciones CPU-intensivas como ML
             resultados = []
             procesados = 0
 
-            with ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
-                futures = {executor.submit(procesar_material, tarea): tarea[0] for tarea in tareas}
+            # Usar ProcessPoolExecutor para verdadero paralelismo
+            # El método 'spawn' es más seguro en entornos web
+            try:
+                with ProcessPoolExecutor(max_workers=NUM_WORKERS) as executor:
+                    futures = {executor.submit(procesar_material, tarea): tarea[0] for tarea in tareas}
 
-                for future in as_completed(futures):
-                    resultado = future.result()
-                    resultados.append(resultado)
-                    procesados += 1
-                    _update_progress(procesados, total, f"Procesando material {procesados}/{total}")
+                    for future in as_completed(futures):
+                        try:
+                            resultado = future.result(timeout=60)  # 60s timeout por material
+                            resultados.append(resultado)
+                        except Exception as e:
+                            # Si un proceso falla, continuar con los demás
+                            codigo = futures[future]
+                            resultados.append({
+                                "codigo": codigo,
+                                "descripcion": str(codigo),
+                                "demanda_total": 0,
+                                "r2": 0,
+                                "mae": 0,
+                                "estado": f"Timeout/Error"
+                            })
+                        procesados += 1
+                        _update_progress(procesados, total, f"Procesando material {procesados}/{total}")
+            except Exception as pool_error:
+                logger.warning(f"ProcessPool falló, usando ThreadPool: {pool_error}")
+                # Fallback a ThreadPoolExecutor si ProcessPool falla
+                from concurrent.futures import ThreadPoolExecutor as FallbackExecutor
+                with FallbackExecutor(max_workers=NUM_WORKERS) as executor:
+                    futures = {executor.submit(procesar_material, tarea): tarea[0] for tarea in tareas}
+                    for future in as_completed(futures):
+                        resultado = future.result()
+                        resultados.append(resultado)
+                        procesados += 1
+                        _update_progress(procesados, total, f"Procesando material {procesados}/{total}")
 
             # Ordenar resultados
             resultados.sort(key=lambda x: x['codigo'])

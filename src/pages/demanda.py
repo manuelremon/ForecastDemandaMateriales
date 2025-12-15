@@ -16,6 +16,122 @@ from src.ml.strategies import listar_estrategias
 from src.utils.constants import MODELOS_ML, MODELO_DEFAULT
 
 
+def crear_componentes_descarga():
+    """Crea los componentes ocultos para descargas."""
+    return html.Div([
+        dcc.Download(id="download-forecast-csv"),
+        dcc.Download(id="download-forecast-pdf"),
+        dcc.Download(id="download-forecast-excel"),
+    ], style={"display": "none"})
+
+
+def crear_modal_gestion_modelos():
+    """Crea el modal para gestión de modelos guardados."""
+    return dbc.Modal([
+        dbc.ModalHeader([
+            dbc.ModalTitle([
+                lucide_icon("database", size="sm", className="me-2"),
+                "Gestión de Modelos"
+            ])
+        ], close_button=True),
+        dbc.ModalBody([
+            # Sección guardar modelo actual
+            html.Div([
+                html.H6([
+                    lucide_icon("save", size="xs", className="me-2"),
+                    "Guardar Modelo Actual"
+                ], className="mb-3"),
+                dbc.InputGroup([
+                    dbc.Input(
+                        id="input-nombre-modelo",
+                        placeholder="Nombre del modelo (opcional)",
+                        type="text"
+                    ),
+                    dbc.Button([
+                        lucide_icon("save", size="xs", className="me-1"),
+                        "Guardar"
+                    ], id="btn-guardar-modelo", color="primary")
+                ], className="mb-2"),
+                html.Div(id="status-guardar-modelo", className="small")
+            ], className="mb-4 p-3 bg-light rounded"),
+
+            # Sección modelos guardados
+            html.Div([
+                html.H6([
+                    lucide_icon("list", size="xs", className="me-2"),
+                    "Modelos Guardados"
+                ], className="mb-3"),
+                dcc.Loading(
+                    id="loading-lista-modelos",
+                    children=[
+                        html.Div(id="lista-modelos-guardados", children=[
+                            html.P("Seleccione un material para ver modelos guardados",
+                                   className="text-muted small")
+                        ])
+                    ]
+                )
+            ], className="p-3 bg-light rounded"),
+        ]),
+        dbc.ModalFooter([
+            dbc.Button("Cerrar", id="btn-cerrar-modal-modelos", color="secondary")
+        ])
+    ], id="modal-gestion-modelos", size="lg", is_open=False)
+
+
+def crear_modal_backtesting():
+    """Crea el modal para ejecutar y visualizar backtesting."""
+    return dbc.Modal([
+        dbc.ModalHeader([
+            dbc.ModalTitle([
+                lucide_icon("history", size="sm", className="me-2"),
+                "Backtesting - Validación Histórica"
+            ])
+        ], close_button=True),
+        dbc.ModalBody([
+            # Configuración del backtest
+            html.Div([
+                html.H6("Configuración", className="mb-3"),
+                dbc.Row([
+                    dbc.Col([
+                        html.Label("Ventana de prueba (días)", className="small"),
+                        dbc.Input(id="input-ventana-backtest", type="number",
+                                  value=30, min=7, max=90, step=1)
+                    ], md=4),
+                    dbc.Col([
+                        html.Label("Número de pasos", className="small"),
+                        dbc.Input(id="input-pasos-backtest", type="number",
+                                  value=5, min=2, max=10, step=1)
+                    ], md=4),
+                    dbc.Col([
+                        html.Label(" ", className="small d-block"),
+                        dbc.Button([
+                            lucide_icon("play", size="xs", className="me-1"),
+                            "Ejecutar Backtest"
+                        ], id="btn-ejecutar-backtest", color="primary", className="w-100")
+                    ], md=4)
+                ], className="mb-3")
+            ], className="mb-4 p-3 bg-light rounded"),
+
+            # Resultados
+            html.Div([
+                html.H6("Resultados del Backtest", className="mb-3"),
+                dcc.Loading(
+                    id="loading-backtest",
+                    children=[
+                        html.Div(id="resultados-backtest", children=[
+                            html.P("Configure y ejecute el backtest para ver resultados",
+                                   className="text-muted small text-center py-4")
+                        ])
+                    ]
+                )
+            ])
+        ]),
+        dbc.ModalFooter([
+            dbc.Button("Cerrar", id="btn-cerrar-modal-backtest", color="secondary")
+        ])
+    ], id="modal-backtesting", size="xl", is_open=False)
+
+
 def obtener_opciones_modelos():
     """
     Genera opciones de modelos para el dropdown con tooltips.
@@ -401,8 +517,31 @@ def crear_tabla_predicciones() -> html.Div:
     ], className="table-container")
 
 
+def crear_botones_avanzados():
+    """Crea los botones para funcionalidades avanzadas."""
+    return html.Div([
+        dbc.ButtonGroup([
+            dbc.Button([
+                lucide_icon("database", size="xs", className="me-1"),
+                "Modelos"
+            ], id="btn-abrir-modal-modelos", color="info", outline=True, size="sm"),
+            dbc.Button([
+                lucide_icon("history", size="xs", className="me-1"),
+                "Backtest"
+            ], id="btn-abrir-modal-backtest", color="warning", outline=True, size="sm"),
+        ], size="sm")
+    ], className="d-flex justify-content-end mb-2")
+
+
 # Layout principal del tablero de demanda - OPTIMIZADO
 layout = html.Div([
+    # Componentes de descarga (ocultos)
+    crear_componentes_descarga(),
+
+    # Modales
+    crear_modal_gestion_modelos(),
+    crear_modal_backtesting(),
+
     # Título de la página
     html.H4("FORECAST INDIVIDUAL", className="mb-3 text-center",
             style={"textShadow": "2px 2px 4px rgba(0,0,0,0.2)", "fontWeight": "700", "letterSpacing": "1px"}),
@@ -418,7 +557,10 @@ layout = html.Div([
 
     # 4. Análisis visual de patrones
     html.Div([
-        html.H5("Análisis de Patrones", className="mb-3"),
+        html.Div([
+            html.H5("Análisis de Patrones", className="mb-0"),
+            crear_botones_avanzados()
+        ], className="d-flex justify-content-between align-items-center mb-3"),
         crear_graficos_patrones(),
     ], className="mb-4"),
 
