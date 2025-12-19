@@ -191,7 +191,7 @@ def cargar_lista_modelos(is_open, material):
                     dbc.Button([
                         lucide_icon("download", size="xs")
                     ], id={"type": "btn-cargar-modelo", "index": modelo.get('model_id', '')},
-                       color="primary", size="sm", outline=True)
+                       color="primary", size="sm", outline=True, className="btn-icon")
                 ], className="d-flex justify-content-between align-items-center")
             )
 

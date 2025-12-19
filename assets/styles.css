@@ -18,13 +18,13 @@
     --ios-teal: #5AC8FA;
     --ios-light-blue: #34AADC;
 
-    /* Neutral Grays */
+    /* Neutral Grays - iOS Standard (no beige) */
     --ios-black: #1F1F21;
-    --ios-gray-dark: #8E8E93;
-    --ios-gray: #BDBEC2;
+    --ios-gray-dark: #3C3C43;  /* WCAG AA compliant */
+    --ios-gray: #8E8E93;
     --ios-gray-light: #C7C7CC;
-    --ios-gray-lighter: #D6CEC3;
-    --ios-white: #F7F7F7;
+    --ios-gray-lighter: #E5E5EA;  /* iOS neutral, not beige */
+    --ios-white: #F2F2F7;  /* iOS system background */
 
     /* Slate Grays (Tailwind equiv) */
     --slate-50: #f8fafc;
@@ -33,17 +33,38 @@
     --slate-500: #64748b;
     --slate-900: #0f172a;
 
-    /* Glassmorphism Effects */
-    --glass-bg: rgba(247, 247, 247, 0.72);
-    --glass-bg-light: rgba(247, 247, 247, 0.85);
-    --glass-blur: 20px;
-    --glass-border: rgba(247, 247, 247, 0.25);
-    --glass-shadow: 0 8px 32px rgba(31, 31, 33, 0.12);
-    --glass-shadow-hover: 0 12px 40px rgba(31, 31, 33, 0.18);
+    /* Glassmorphism Effects - DISABLED for iOS flat style */
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --glass-bg-light: rgba(255, 255, 255, 0.98);
+    --glass-blur: 0;  /* iOS uses flat surfaces, not blur */
+    --glass-border: rgba(60, 60, 67, 0.12);
+    --glass-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --glass-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
 
-    /* Dark Glass (Sidebar) */
-    --glass-dark-bg: rgba(31, 31, 33, 0.92);
-    --glass-dark-border: rgba(247, 247, 247, 0.1);
+    /* ============================================
+       SIDEBAR DESIGN TOKENS - Light Theme
+       WCAG AA Compliant (≥4.5:1 contrast)
+       ============================================ */
+    --sidebar-bg: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+    --sidebar-border: #cbd5e1;
+    --sidebar-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+    /* Text Colors - High Contrast */
+    --sidebar-text-primary: #1e293b;      /* Contrast 12.6:1 ✓ */
+    --sidebar-text-secondary: #334155;    /* Contrast 9.7:1 ✓ */
+    --sidebar-text-muted: #64748b;        /* Contrast 4.7:1 ✓ */
+    --sidebar-text-disabled: #94a3b8;     /* Contrast 3.0:1 (AA Large) */
+
+    /* Interactive Colors */
+    --sidebar-primary: #0284c7;           /* Sky-600 */
+    --sidebar-primary-hover: #0369a1;     /* Sky-700 */
+    --sidebar-primary-light: rgba(14, 165, 233, 0.12);
+    --sidebar-accent: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%);
+
+    /* States */
+    --sidebar-hover-bg: rgba(14, 165, 233, 0.08);
+    --sidebar-active-bg: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%);
+    --sidebar-divider: #e2e8f0;
 
     /* Spacing - OPTIMIZED */
     --space-xs: 2px;
@@ -114,103 +135,154 @@ small { font-size: var(--font-xs) !important; line-height: 1.4 !important; color
 label { font-size: var(--font-sm) !important; font-weight: 600 !important; color: var(--ios-gray-dark) !important; margin-bottom: var(--space-sm) !important; display: block !important; }
 
 /* ============================================
-   Sidebar - OPTIMIZADO
+   SIDEBAR - REDESIGNED (WCAG AA Compliant)
    ============================================ */
+
+/* Main Sidebar Container */
 #sidebar {
-    background: var(--glass-dark-bg) !important;
-    backdrop-filter: blur(var(--glass-blur)) !important;
-    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
-    border-right: 1px solid var(--glass-dark-border) !important;
-    width: 180px !important;
+    background: var(--sidebar-bg) !important;
+    border-right: 1px solid var(--sidebar-border) !important;
+    box-shadow: var(--sidebar-shadow) !important;
+    width: 130px !important;
     height: 100vh !important;
     min-height: 100vh !important;
-    padding: 0 !important;
+    padding: 16px 10px !important;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     overflow-y: auto !important;
+    overflow-x: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 1000 !important;
 }
 
-#sidebar .nav-link {
-    font-size: 9px !important;
-    font-weight: 500 !important;
-    padding: 6px 4px !important;
-    margin: 2px 4px !important;
-    border-radius: var(--radius-sm) !important;
-    color: rgba(247, 247, 247, 0.8) !important;
-    transition: all var(--transition-fast) !important;
-    line-height: 1.2 !important;
+/* Navigation Links - Default State (HIGH CONTRAST) */
+#sidebar .nav-link,
+.nav-link-sidebar {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 12px 8px !important;
+    margin: 4px 0 !important;
+    border-radius: 10px !important;
+    color: var(--sidebar-text-secondary) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
+    transition: all 0.2s ease !important;
+    line-height: 1.3 !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    gap: 2px !important;
+    gap: 6px !important;
+    text-decoration: none !important;
+    border: 1px solid rgba(203, 213, 225, 0.4) !important;
 }
 
-#sidebar .nav-link:hover {
-    background: rgba(247, 247, 247, 0.1) !important;
-    color: var(--ios-white) !important;
+/* Navigation Links - Hover */
+#sidebar .nav-link:hover,
+.nav-link-sidebar:hover {
+    background: var(--sidebar-hover-bg) !important;
+    color: var(--sidebar-primary) !important;
+    border-color: var(--sidebar-primary) !important;
+    /* iOS: no translateY */
 }
 
-#sidebar .nav-link.active {
-    background: var(--ios-blue) !important;
-    color: var(--ios-white) !important;
-    font-weight: 600 !important;
+/* Navigation Links - Active */
+#sidebar .nav-link.active,
+.nav-link-sidebar.active {
+    background: var(--sidebar-active-bg) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4) !important;
+    border-color: transparent !important;
 }
 
+/* Navigation Icons - Default (VISIBLE) */
+#sidebar .nav-link .lucide-icon,
+.nav-link-sidebar .lucide-icon,
 #sidebar .nav-link svg,
 #sidebar .nav-link i {
+    width: 22px !important;
+    height: 22px !important;
+    flex-shrink: 0 !important;
+    opacity: 1 !important;
+}
+
+/* Navigation Icons - Active (White) */
+#sidebar .nav-link.active .lucide-icon,
+.nav-link-sidebar.active .lucide-icon,
+#sidebar .nav-link.active svg {
+    filter: brightness(0) invert(1) !important;
+}
+
+/* Sidebar Headers */
+#sidebar h4,
+#sidebar .sidebar-brand {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: var(--sidebar-text-primary) !important;
+    padding: 8px 4px !important;
+    margin: 0 0 8px 0 !important;
+}
+
+/* Sidebar Dividers - VISIBLE */
+#sidebar hr {
+    border: none !important;
+    height: 1px !important;
+    background: var(--sidebar-divider) !important;
+    margin: 12px 0 !important;
+    opacity: 1 !important;
+}
+
+/* Sidebar Status Section (DB indicator) */
+.sidebar-status-section {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: var(--sidebar-text-secondary) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 8px !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    border-radius: 8px !important;
+    margin-bottom: 8px !important;
+}
+
+.sidebar-status-section .lucide-icon {
     width: 16px !important;
     height: 16px !important;
-    flex-shrink: 0 !important;
-    color: var(--ios-teal) !important;
-    opacity: 0.9;
+    opacity: 1 !important;
 }
 
-#sidebar .nav-link.active svg,
-#sidebar .nav-link.active i {
-    color: var(--ios-white) !important;
-}
-
-#sidebar h4, #sidebar .sidebar-brand {
-    font-size: var(--font-lg) !important;
-    font-weight: 700 !important;
-    color: var(--ios-white) !important;
-    padding: var(--space-lg) !important;
-    margin: 0 !important;
-    border-bottom: 1px solid rgba(247, 247, 247, 0.1) !important;
-}
-
-/* Sidebar Action Items - Sutil y elegante */
+/* Sidebar Action Items */
 .sidebar-action-item {
     display: flex !important;
     align-items: center !important;
-    padding: 8px 12px !important;
-    border-radius: var(--radius-sm) !important;
-    color: rgba(247, 247, 247, 0.6) !important;
+    justify-content: center !important;
+    padding: 10px 12px !important;
+    border-radius: 8px !important;
+    color: var(--sidebar-text-secondary) !important;
     font-size: 11px !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     cursor: pointer !important;
-    transition: all var(--transition-fast) !important;
-    background: transparent !important;
-    border: none !important;
+    transition: all 0.2s ease !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid var(--sidebar-divider) !important;
+    margin-bottom: 8px !important;
+    gap: 8px !important;
 }
 
 .sidebar-action-item:hover {
-    background: rgba(247, 247, 247, 0.08) !important;
-    color: rgba(247, 247, 247, 0.9) !important;
+    background: var(--sidebar-hover-bg) !important;
+    color: var(--sidebar-primary) !important;
+    border-color: var(--sidebar-primary) !important;
 }
 
 .sidebar-action-item .lucide-icon {
-    opacity: 0.6 !important;
-    flex-shrink: 0 !important;
-    filter: brightness(0) invert(1) drop-shadow(0 0 3px rgba(255, 255, 255, 0.15)) !important;
-    transition: all var(--transition-fast) !important;
-}
-
-.sidebar-action-item:hover .lucide-icon {
     opacity: 1 !important;
-    filter: brightness(0) invert(1) drop-shadow(0 0 6px rgba(255, 255, 255, 0.3)) !important;
-    transform: scale(1.1);
+    flex-shrink: 0 !important;
+    width: 16px !important;
+    height: 16px !important;
 }
 
 /* ============================================
@@ -248,6 +320,72 @@ label { font-size: var(--font-sm) !important; font-weight: 600 !important; color
     color: var(--ios-white) !important;
 }
 
+/* Sidebar Action Buttons - HIGH CONTRAST */
+.sidebar-action-btn {
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid var(--sidebar-border) !important;
+    color: var(--sidebar-text-secondary) !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 10px 12px !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+}
+
+.sidebar-action-btn:hover {
+    background: var(--sidebar-hover-bg) !important;
+    border-color: var(--sidebar-primary) !important;
+    color: var(--sidebar-primary) !important;
+    /* iOS: no translateY, opacity change instead */
+    opacity: 0.85 !important;
+}
+
+.sidebar-action-btn.btn-outline-primary {
+    background: rgba(14, 165, 233, 0.1) !important;
+    border-color: var(--sidebar-primary) !important;
+    color: var(--sidebar-primary) !important;
+}
+
+.sidebar-action-btn.btn-outline-primary:hover {
+    background: var(--sidebar-primary) !important;
+    color: #ffffff !important;
+}
+
+.sidebar-action-btn .lucide-icon {
+    width: 16px !important;
+    height: 16px !important;
+    opacity: 1 !important;
+}
+
+/* Sidebar Footer Info */
+.sidebar-footer {
+    margin-top: auto !important;
+    padding-top: 12px !important;
+}
+
+.sidebar-footer .btn-link {
+    color: var(--sidebar-text-muted) !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 10px 8px !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+.sidebar-footer .btn-link:hover {
+    color: var(--sidebar-primary) !important;
+    background: var(--sidebar-hover-bg) !important;
+}
+
+.sidebar-footer small {
+    color: var(--sidebar-text-muted) !important;
+    font-size: 10px !important;
+}
+
 .btn-lg {
     font-size: var(--font-base) !important;
     padding: 8px 16px !important;
@@ -255,7 +393,7 @@ label { font-size: var(--font-sm) !important; font-weight: 600 !important; color
 }
 
 .btn:hover {
-    transform: translateY(-1px) !important;
+    /* translateY removed - iOS uses opacity/color changes */
 }
 
 .btn:active {
@@ -332,13 +470,134 @@ label { font-size: var(--font-sm) !important; font-weight: 600 !important; color
 }
 
 .btn-outline-light {
-    background: transparent !important;
-    border: 1.5px solid var(--ios-gray) !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    border: 1.5px solid var(--ios-gray-light) !important;
     color: var(--ios-black) !important;
 }
 .btn-outline-light:hover {
-    background: rgba(189, 190, 194, 0.15) !important;
+    background: rgba(0, 122, 255, 0.08) !important;
+    border-color: var(--ios-blue) !important;
+    color: var(--ios-blue) !important;
+}
+.btn-outline-light.active {
+    background: var(--ios-blue) !important;
+    border-color: var(--ios-blue) !important;
+    color: var(--ios-white) !important;
+}
+
+/* ============================================
+   BUTTON SYSTEM - Unified Design
+   ============================================ */
+
+/* Enhanced Primary Button (CTA) */
+.btn-enhanced,
+.filter-action-btn {
+    background: linear-gradient(135deg, var(--ios-blue) 0%, #5856D6 100%) !important;
+    border: none !important;
+    color: var(--ios-white) !important;
+    font-weight: 700 !important;
+    padding: 8px 16px !important;
+    min-height: 36px !important;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3) !important;
+    transition: all 0.2s ease !important;
+}
+.btn-enhanced:hover,
+.filter-action-btn:hover {
+    /* iOS: no translateY, subtle brightness change */
+    filter: brightness(0.95) !important;
+}
+.btn-enhanced:active,
+.filter-action-btn:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3) !important;
+}
+
+/* Icon-only Button */
+.btn-icon {
+    padding: 6px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    border-radius: var(--radius-md) !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    color: var(--ios-gray-dark) !important;
+}
+.btn-icon:hover {
+    background: rgba(0, 122, 255, 0.08) !important;
+    color: var(--ios-blue) !important;
+    border-color: rgba(0, 122, 255, 0.2) !important;
+}
+
+/* Modal Buttons */
+.modal-footer .btn {
+    min-width: 100px !important;
+    font-weight: 600 !important;
+}
+.modal-footer .btn-secondary {
+    background: var(--slate-100) !important;
+    border: 1px solid var(--slate-200) !important;
     color: var(--ios-black) !important;
+}
+.modal-footer .btn-secondary:hover {
+    background: var(--slate-200) !important;
+    color: var(--ios-black) !important;
+}
+.modal-footer .btn-primary {
+    background: var(--ios-blue) !important;
+    border: none !important;
+    color: var(--ios-white) !important;
+}
+
+/* ButtonGroup - Period Selector */
+.btn-group .btn-outline-light {
+    background: var(--glass-bg-light) !important;
+    border: 1px solid var(--ios-gray-light) !important;
+    color: var(--ios-gray-dark) !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 4px 10px !important;
+    min-height: 28px !important;
+}
+.btn-group .btn-outline-light:hover {
+    background: rgba(0, 122, 255, 0.1) !important;
+    border-color: var(--ios-blue) !important;
+    color: var(--ios-blue) !important;
+}
+.btn-group .btn-outline-light.active,
+.btn-group .btn-outline-light:focus {
+    background: var(--ios-blue) !important;
+    border-color: var(--ios-blue) !important;
+    color: var(--ios-white) !important;
+    box-shadow: none !important;
+}
+
+/* Action Buttons (Modelos, Backtest) */
+.btn-action {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 6px 12px !important;
+    border-radius: var(--radius-md) !important;
+    transition: all 0.2s ease !important;
+}
+.btn-action:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Export Buttons */
+.btn-export {
+    font-size: 11px !important;
+    padding: 5px 10px !important;
+    font-weight: 600 !important;
+}
+
+/* Disabled State */
+.btn:disabled,
+.btn.disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 /* ============================================
@@ -453,7 +712,7 @@ textarea::placeholder {
 .card:hover,
 .glass-card:hover {
     box-shadow: var(--glass-shadow-hover) !important;
-    transform: translateY(-2px);
+    /* iOS: no translateY elevation */
 }
 
 .card-body {
@@ -510,7 +769,7 @@ textarea::placeholder {
 .kpi-card.kpi-purple::before { background: var(--ios-purple); }
 
 .kpi-card:hover {
-    transform: translateY(-3px);
+    /* iOS: no translateY, subtle shadow only */
     box-shadow: var(--glass-shadow-hover) !important;
 }
 
@@ -1416,7 +1675,7 @@ textarea::placeholder {
    ============================================ */
 @supports not (backdrop-filter: blur(20px)) {
     .card, .glass-card, .kpi-card { background: rgba(247, 247, 247, 0.95) !important; }
-    #sidebar { background: rgba(31, 31, 33, 0.98) !important; }
+    #sidebar { background: rgba(241, 245, 249, 0.98) !important; }
     .modal-content { background: rgba(247, 247, 247, 0.98) !important; }
     .dropdown-menu { background: rgba(247, 247, 247, 0.98) !important; }
 }
@@ -1582,10 +1841,11 @@ textarea::placeholder {
 
 /* Estado activo mejorado */
 #sidebar .nav-section .nav-link.active {
-    background: linear-gradient(135deg, rgba(0, 122, 255, 0.9) 0%, rgba(0, 122, 255, 0.7) 100%) !important;
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.9) 0%, rgba(139, 92, 246, 0.85) 100%) !important;
     color: #FFFFFF !important;
     font-weight: 600 !important;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35);
+    border-radius: 10px !important;
 }
 
 #sidebar .nav-section .nav-link.active::before {
@@ -1596,8 +1856,9 @@ textarea::placeholder {
     transform: translateY(-50%);
     width: 3px;
     height: 60%;
-    background: #FFFFFF;
+    background: linear-gradient(180deg, #0ea5e9 0%, #8b5cf6 100%);
     border-radius: 0 2px 2px 0;
+    box-shadow: 0 0 8px rgba(14, 165, 233, 0.5);
 }
 
 #sidebar .nav-section .nav-link.active .nav-icon,
@@ -1770,27 +2031,307 @@ body:has(.sidebar-expanded) .tooltip {
 
 
 /* ============================================
-   Forecast App - Sidebar Styles
+   Forecast App - Sidebar Styles (Light Theme)
+   Note: Main sidebar styles are defined earlier
+   in the SIDEBAR DESIGN TOKENS section
    ============================================ */
-.nav-link-sidebar {
-    color: rgba(255, 255, 255, 0.7) !important;
-    padding: 0.75rem 1rem !important;
-    border-radius: 8px !important;
-    margin-bottom: 0.25rem !important;
+
+/* ============================================
+   DROPDOWN MENUS - iOS Style
+   ============================================ */
+
+/* Dash dropdown menu container */
+.Select-menu-outer,
+.dash-dropdown .Select-menu-outer {
+    border-radius: 12px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15),
+                0 2px 10px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    margin-top: 4px !important;
+    overflow: hidden !important;
+    transform-origin: top center;
+}
+
+/* Dropdown options */
+.Select-option,
+.dash-dropdown .Select-option {
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: var(--ios-black) !important;
+    transition: all 0.15s ease !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+}
+
+.Select-option:last-child {
+    border-bottom: none !important;
+}
+
+.Select-option:hover,
+.Select-option.is-focused {
+    background: rgba(0, 122, 255, 0.08) !important;
+    color: var(--ios-blue) !important;
+}
+
+.Select-option.is-selected {
+    background: var(--ios-blue) !important;
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+.Select-option.is-selected:hover {
+    background: #0066cc !important;
+}
+
+/* Dropdown no results */
+.Select-noresults {
+    padding: 12px 14px !important;
+    color: var(--ios-gray-dark) !important;
+    font-size: 13px !important;
+    text-align: center !important;
+}
+
+/* ============================================
+   AG-GRID REFINEMENTS - iOS Style
+   ============================================ */
+
+/* Row hover with subtle elevation */
+.ag-theme-ios-glass .ag-row:hover,
+.ag-theme-alpine .ag-row:hover {
+    background: rgba(0, 122, 255, 0.04) !important;
     transition: all 0.2s ease !important;
 }
 
-.nav-link-sidebar:hover {
-    color: white !important;
-    background: rgba(255, 255, 255, 0.1) !important;
+/* Row selection */
+.ag-theme-ios-glass .ag-row-selected,
+.ag-theme-alpine .ag-row-selected {
+    background: rgba(0, 122, 255, 0.1) !important;
 }
 
-.nav-link-sidebar.active {
-    color: white !important;
+.ag-theme-ios-glass .ag-row-selected:hover,
+.ag-theme-alpine .ag-row-selected:hover {
+    background: rgba(0, 122, 255, 0.14) !important;
+}
+
+/* Header styling */
+.ag-theme-ios-glass .ag-header,
+.ag-theme-alpine .ag-header {
+    background: rgba(248, 250, 252, 0.95) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.ag-theme-ios-glass .ag-header-cell,
+.ag-theme-alpine .ag-header-cell {
+    font-weight: 600 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    color: var(--ios-gray-dark) !important;
+}
+
+/* Cell styling */
+.ag-theme-ios-glass .ag-cell,
+.ag-theme-alpine .ag-cell {
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+    border-right: none !important;
+}
+
+/* Grid lines subtle */
+.ag-theme-ios-glass .ag-row,
+.ag-theme-alpine .ag-row {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Scrollbar in grid */
+.ag-theme-ios-glass .ag-body-horizontal-scroll-viewport,
+.ag-theme-ios-glass .ag-body-vertical-scroll-viewport {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+/* Checkbox styling */
+.ag-theme-ios-glass .ag-checkbox-input-wrapper,
+.ag-theme-alpine .ag-checkbox-input-wrapper {
+    width: 18px !important;
+    height: 18px !important;
+}
+
+.ag-theme-ios-glass .ag-checkbox-input-wrapper.ag-checked::after,
+.ag-theme-alpine .ag-checkbox-input-wrapper.ag-checked::after {
     background: var(--ios-blue) !important;
+    border-radius: 4px !important;
 }
 
-.nav-link-sidebar .lucide-icon {
-    opacity: 0.8;
-    filter: brightness(0) invert(1);
+/* ============================================
+   FORM VALIDATION STATES
+   ============================================ */
+
+/* Error state */
+.form-control.is-invalid,
+.form-control:invalid:not(:placeholder-shown),
+input.is-invalid {
+    border-color: var(--ios-red) !important;
+    box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.12) !important;
+    background-image: none !important;
+}
+
+.form-control.is-invalid:focus {
+    border-color: var(--ios-red) !important;
+    box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.15) !important;
+}
+
+/* Success state */
+.form-control.is-valid,
+input.is-valid {
+    border-color: var(--ios-green) !important;
+    box-shadow: 0 0 0 3px rgba(76, 217, 100, 0.12) !important;
+    background-image: none !important;
+}
+
+.form-control.is-valid:focus {
+    border-color: var(--ios-green) !important;
+    box-shadow: 0 0 0 4px rgba(76, 217, 100, 0.15) !important;
+}
+
+/* Dropdown validation */
+.dash-dropdown.is-invalid .Select-control {
+    border-color: var(--ios-red) !important;
+    box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.12) !important;
+}
+
+.dash-dropdown.is-valid .Select-control {
+    border-color: var(--ios-green) !important;
+    box-shadow: 0 0 0 3px rgba(76, 217, 100, 0.12) !important;
+}
+
+/* Validation feedback text */
+.invalid-feedback,
+.form-text.text-danger {
+    color: var(--ios-red) !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    margin-top: 4px !important;
+}
+
+.valid-feedback,
+.form-text.text-success {
+    color: var(--ios-green) !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    margin-top: 4px !important;
+}
+
+/* ============================================
+   MODAL ENHANCEMENTS
+   ============================================ */
+
+/* Modal backdrop blur */
+.modal-backdrop.show {
+    background: rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+}
+
+/* Modal content iOS style */
+.modal-content {
+    border-radius: 16px !important;
+    border: none !important;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25),
+                0 10px 30px rgba(0, 0, 0, 0.15) !important;
+    overflow: hidden !important;
+}
+
+/* Modal header */
+.modal-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    padding: 16px 20px !important;
+}
+
+/* Modal footer */
+.modal-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+    padding: 12px 20px !important;
+    gap: 8px !important;
+}
+
+/* ============================================
+   TOOLTIP iOS STYLE
+   ============================================ */
+
+.tooltip .tooltip-inner {
+    background: rgba(31, 31, 33, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    color: #F7F7F7 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.tooltip .tooltip-arrow::before {
+    border-top-color: rgba(31, 31, 33, 0.95) !important;
+}
+
+/* ============================================
+   EMPTY STATE ENHANCEMENTS
+   ============================================ */
+
+.empty-state-container {
+    padding: 40px 20px !important;
+    text-align: center !important;
+}
+
+.empty-state-icon {
+    color: var(--ios-gray-dark) !important;
+    margin-bottom: 16px !important;
+}
+
+.empty-state-title {
+    color: var(--ios-black) !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+}
+
+.empty-state-subtitle {
+    color: var(--ios-gray-dark) !important;
+    font-size: 14px !important;
+    max-width: 300px !important;
+    margin: 0 auto !important;
+}
+
+/* ============================================
+   LOADING SPINNER iOS STYLE
+   ============================================ */
+
+._dash-loading {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+}
+
+._dash-loading-callback {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Custom iOS spinner */
+.spinner-ios {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(0, 122, 255, 0.15);
+    border-top-color: var(--ios-blue);
+    border-radius: 50%;
+    animation: ios-spin 0.8s linear infinite;
+}
+
+@keyframes ios-spin {
+    to { transform: rotate(360deg); }
 }

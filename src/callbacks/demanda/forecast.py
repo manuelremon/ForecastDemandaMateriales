@@ -114,7 +114,7 @@ def _crear_figura_forecast(df_historico, df_pred, confianza):
 
 
 def _crear_figura_patron_semanal(df_historico):
-    """Crea gráfico de patrón semanal."""
+    """Crea gráfico de patrón semanal con estilo iOS."""
     df_historico["dia_semana"] = df_historico["fecha"].dt.day_name()
     patron_semanal = df_historico.groupby("dia_semana")["cantidad"].mean()
 
@@ -122,9 +122,10 @@ def _crear_figura_patron_semanal(df_historico):
     dias_es = ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"]
     patron_semanal = patron_semanal.reindex(dias_orden)
 
+    # Colores iOS armonizados
     colores_dias = [
-        "#3b82f6", "#06b6d4", "#10b981", "#f59e0b",
-        "#ef4444", "#8b5cf6", "#ec4899"
+        "#007AFF", "#5856D6", "#4CD964", "#FF9500",
+        "#FF3B30", "#5AC8FA", "#FF2D55"
     ]
 
     fig = go.Figure()
@@ -133,35 +134,43 @@ def _crear_figura_patron_semanal(df_historico):
         y=patron_semanal.values,
         marker=dict(
             color=colores_dias,
-            line=dict(color="rgba(255,255,255,0.3)", width=2),
+            line=dict(color="rgba(255,255,255,0.5)", width=1),
             opacity=0.9
         ),
         text=[f"{v:.0f}" for v in patron_semanal.values],
         textposition="outside",
-        textfont=dict(size=11, color=COLORS["text_primary"]),
+        textfont=dict(size=11, color=COLORS["text_primary"], family="SF Pro Text, Inter, sans-serif"),
         hovertemplate='<b>%{x}</b><br>Demanda: %{y:,.0f}<extra></extra>'
     ))
 
     fig.update_layout(
         xaxis=dict(
-            tickfont=dict(size=11, color=COLORS["text_secondary"]),
-            showgrid=False
+            tickfont=dict(size=11, color=COLORS["text_secondary"], family="SF Pro Text, Inter, sans-serif"),
+            showgrid=False,
+            linecolor="rgba(0,0,0,0.08)"
         ),
         yaxis=dict(
-            tickfont=dict(size=10, color=COLORS["text_secondary"]),
-            gridcolor=COLORS["grid_color"],
-            gridwidth=0.5
+            tickfont=dict(size=10, color=COLORS["text_secondary"], family="SF Pro Text, Inter, sans-serif"),
+            gridcolor="rgba(0,0,0,0.04)",
+            gridwidth=1,
+            showgrid=True
         ),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=40, r=20, t=20, b=40),
-        showlegend=False
+        showlegend=False,
+        hoverlabel=dict(
+            bgcolor="rgba(31, 31, 33, 0.95)",
+            bordercolor="rgba(255,255,255,0.1)",
+            font=dict(color="#F7F7F7", family="SF Pro Text, Inter, sans-serif", size=12)
+        ),
+        bargap=0.25
     )
     return fig
 
 
 def _crear_figura_estacionalidad(df_historico):
-    """Crea gráfico de estacionalidad mensual."""
+    """Crea gráfico de estacionalidad mensual con estilo iOS."""
     df_historico["mes"] = df_historico["fecha"].dt.month
     patron_mensual = df_historico.groupby("mes")["cantidad"].mean()
 
@@ -173,45 +182,54 @@ def _crear_figura_estacionalidad(df_historico):
         x=meses_es[:len(patron_mensual)],
         y=patron_mensual.values,
         mode="lines+markers",
-        line=dict(color="#10b981", width=3, shape="spline"),
-        marker=dict(size=10, color="#10b981"),
+        line=dict(color="#4CD964", width=3, shape="spline"),  # iOS Green
+        marker=dict(size=8, color="#4CD964", line=dict(color="white", width=2)),
         fill="tozeroy",
-        fillcolor="rgba(16, 185, 129, 0.15)",
+        fillcolor="rgba(76, 217, 100, 0.12)",
         hovertemplate='<b>%{x}</b><br>Demanda: %{y:,.0f}<extra></extra>'
     ))
 
     fig.update_layout(
         xaxis=dict(
-            tickfont=dict(size=11, color=COLORS["text_secondary"]),
-            showgrid=False
+            tickfont=dict(size=11, color=COLORS["text_secondary"], family="SF Pro Text, Inter, sans-serif"),
+            showgrid=False,
+            linecolor="rgba(0,0,0,0.08)"
         ),
         yaxis=dict(
-            tickfont=dict(size=10, color=COLORS["text_secondary"]),
-            gridcolor=COLORS["grid_color"],
-            gridwidth=0.5
+            tickfont=dict(size=10, color=COLORS["text_secondary"], family="SF Pro Text, Inter, sans-serif"),
+            gridcolor="rgba(0,0,0,0.04)",
+            gridwidth=1,
+            showgrid=True
         ),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=40, r=20, t=20, b=40),
-        showlegend=False
+        showlegend=False,
+        hoverlabel=dict(
+            bgcolor="rgba(31, 31, 33, 0.95)",
+            bordercolor="rgba(255,255,255,0.1)",
+            font=dict(color="#F7F7F7", family="SF Pro Text, Inter, sans-serif", size=12)
+        )
     )
     return fig
 
 
 def _crear_figura_importancia(importance_df):
-    """Crea gráfico de importancia de features."""
+    """Crea gráfico de importancia de features con estilo iOS."""
     if len(importance_df) == 0:
         return crear_figura_vacia("Sin datos de importancia")
 
     top_features = importance_df.head(8).sort_values("importance")
     max_imp = top_features["importance"].max()
 
+    # Gradiente iOS Blue
     colores = []
     for imp in top_features["importance"]:
         intensidad = imp / max_imp if max_imp > 0 else 0
-        r = int(59 + (0 - 59) * intensidad)
-        g = int(130 + (115 - 130) * intensidad)
-        b = int(246 + (180 - 246) * intensidad)
+        # De azul claro a azul iOS intenso
+        r = int(90 + (0 - 90) * intensidad)
+        g = int(200 + (122 - 200) * intensidad)
+        b = int(250 + (255 - 250) * intensidad)
         colores.append(f"rgb({r},{g},{b})")
 
     fig = go.Figure()
@@ -219,28 +237,40 @@ def _crear_figura_importancia(importance_df):
         y=top_features["feature"],
         x=top_features["importance"],
         orientation="h",
-        marker=dict(color=colores, opacity=0.95),
+        marker=dict(
+            color=colores,
+            opacity=0.9,
+            line=dict(color="rgba(255,255,255,0.5)", width=1)
+        ),
         text=[f"{v:.1%}" for v in top_features["importance"]],
         textposition="outside",
-        textfont=dict(size=11, color=COLORS["text_primary"]),
+        textfont=dict(size=11, color=COLORS["text_primary"], family="SF Pro Text, Inter, sans-serif"),
         hovertemplate='<b>%{y}</b><br>Importancia: %{x:.2%}<extra></extra>'
     ))
 
     fig.update_layout(
         xaxis=dict(
-            tickfont=dict(size=10, color=COLORS["text_secondary"]),
-            gridcolor=COLORS["grid_color"],
-            gridwidth=0.5
+            tickfont=dict(size=10, color=COLORS["text_secondary"], family="SF Pro Text, Inter, sans-serif"),
+            gridcolor="rgba(0,0,0,0.04)",
+            gridwidth=1,
+            showgrid=True,
+            tickformat=".0%"
         ),
         yaxis=dict(
-            tickfont=dict(size=11, color=COLORS["text_primary"]),
+            tickfont=dict(size=11, color=COLORS["text_primary"], family="SF Pro Text, Inter, sans-serif"),
             autorange="reversed",
             showgrid=False
         ),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        margin=dict(l=120, r=40, t=20, b=40),
-        showlegend=False
+        margin=dict(l=100, r=50, t=20, b=40),
+        showlegend=False,
+        hoverlabel=dict(
+            bgcolor="rgba(31, 31, 33, 0.95)",
+            bordercolor="rgba(255,255,255,0.1)",
+            font=dict(color="#F7F7F7", family="SF Pro Text, Inter, sans-serif", size=12)
+        ),
+        bargap=0.2
     )
     return fig
 
@@ -340,23 +370,24 @@ def generar_forecast(n_clicks, material, centro, almacen, modelo_tipo,
     # Validar calidad de datos
     validator = DataValidator()
     validacion = validator.validar_completo(df_historico)
-    n_issues = len(validacion.get('issues', []))
-    log_validacion(validacion.get('score', 0), n_issues)
+    n_issues = len(validacion.issues)
+    log_validacion(validacion.score, n_issues)
 
-    if validacion.get('issues'):
-        for issue in validacion['issues']:
-            if issue.get('severidad') == 'error':
-                logger.warning(f"Problema de datos: {issue.get('mensaje')}")
-                log_warning(f"Problema de datos: {issue.get('mensaje')[:50]}")
+    if validacion.issues:
+        for issue in validacion.issues:
+            if issue.severidad.value == 'error':
+                logger.warning(f"Problema de datos: {issue.mensaje}")
+                log_warning(f"Problema de datos: {issue.mensaje[:50]}")
 
     # Ejecutar forecast usando el servicio
     service = get_forecast_service()
     config = ForecastConfig(
-        modelo=modelo_tipo,
+        material=material,
         horizonte=horizonte,
-        intervalo_confianza=confianza,
-        usar_validacion_cruzada=False,  # Más rápido para UI
-        auto_tuning=False
+        modelo_tipo=modelo_tipo,
+        nivel_confianza=confianza,
+        validar_datos=False,  # Ya validamos arriba
+        ejecutar_backtest=False  # Más rápido para UI
     )
 
     inicio_entrenamiento = time.time()
@@ -401,7 +432,7 @@ def generar_forecast(n_clicks, material, centro, almacen, modelo_tipo,
     # Extraer resultados
     df_pred = result.predicciones.copy()
     metrics = result.metricas
-    importance = result.importancia_features
+    importance = result.importancia_features if result.importancia_features is not None else pd.DataFrame()
 
     # Log de entrenamiento exitoso
     log_entrenamiento(modelo_tipo, duracion, metrics.get('mae', 0))
@@ -456,7 +487,7 @@ def generar_forecast(n_clicks, material, centro, almacen, modelo_tipo,
                             "limite_superior", "dia_semana"]].to_dict("records")
 
     # Info del modelo con validación
-    calidad_datos = validacion.get('score', 0)
+    calidad_datos = validacion.score
     color_calidad = 'success' if calidad_datos >= 80 else ('warning' if calidad_datos >= 60 else 'danger')
 
     info_modelo = html.Div([

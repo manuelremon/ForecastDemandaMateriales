@@ -43,12 +43,13 @@
 }
 
 .glass-card-enhanced.hoverable:hover {
-  transform: translateY(-4px);
+  /* iOS: no translateY elevation */
   box-shadow: var(--box-shadow-hover);
 }
 
 .glass-card-enhanced.hoverable:active {
-  transform: translateY(-2px);
+  /* iOS: subtle press effect */
+  opacity: 0.9;
 }
 
 /* === CHART CONTAINER MEJORADO === */
@@ -111,8 +112,9 @@
 }
 
 .btn-enhanced:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,122,255,0.3);
+  /* iOS: no translateY, subtle brightness */
+  box-shadow: 0 2px 8px rgba(0,122,255,0.2);
+  filter: brightness(0.95);
 }
 
 .btn-enhanced:active {
@@ -173,7 +175,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   color: white;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  /* iOS: no text-shadow */
   line-height: 24px;
   top: 0;
   left: 0;
@@ -438,9 +440,8 @@
 .form-group-enhanced label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #3C3C43;  /* iOS text-secondary for contrast */
+  /* iOS: no uppercase, no letter-spacing */
   margin-bottom: 0.5rem;
   display: block;
 }
@@ -488,9 +489,8 @@
 .filter-label-unified {
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #3C3C43;  /* iOS text-secondary for contrast */
+  /* iOS: no uppercase, no letter-spacing */
   margin-bottom: 4px;
   display: block;
   white-space: nowrap;

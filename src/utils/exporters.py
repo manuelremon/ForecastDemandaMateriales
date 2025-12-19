@@ -306,13 +306,14 @@ class ForecastExporter:
         elementos.append(Spacer(1, 20))
         return elementos
 
-    def _crear_validacion_pdf(self, validacion: Dict[str, Any]) -> List:
+    def _crear_validacion_pdf(self, validacion: Any) -> List:
         """Crea sección de validación"""
         elementos = []
 
         elementos.append(Paragraph("Calidad de Datos", self.styles['Subtitulo']))
 
-        score = validacion.get('score', 0)
+        # Support both dataclass and dict access
+        score = validacion.score if hasattr(validacion, 'score') else validacion.get('score', 0) if isinstance(validacion, dict) else 0
         color_score = self.COLOR_EXITO if score >= 70 else (self.COLOR_ALERTA if score >= 50 else self.COLOR_ERROR)
 
         elementos.append(Paragraph(
@@ -320,9 +321,10 @@ class ForecastExporter:
             self.styles['TextoNormal']
         ))
 
-        if validacion.get('resumen'):
+        resumen = validacion.resumen if hasattr(validacion, 'resumen') else validacion.get('resumen') if isinstance(validacion, dict) else None
+        if resumen:
             elementos.append(Paragraph(
-                validacion['resumen'],
+                resumen,
                 self.styles['TextoNormal']
             ))
 

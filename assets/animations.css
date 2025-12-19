@@ -1,0 +1,505 @@
+/* ============================================
+   iOS ANIMATIONS SYSTEM
+   ForecastDemandaMateriales
+   ============================================ */
+
+/* ============================================
+   KEYFRAMES - Base Animations
+   ============================================ */
+
+/* Fade In with subtle movement */
+@keyframes ios-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scale In - Modal style */
+@keyframes ios-scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Scale Out */
+@keyframes ios-scale-out {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* Slide Up */
+@keyframes ios-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Slide Down */
+@keyframes ios-slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Blur In */
+@keyframes ios-blur-in {
+    from {
+        opacity: 0;
+        filter: blur(8px);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+/* Pulse Subtle */
+@keyframes pulse-subtle {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Pulse Glow - for loading */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(0, 122, 255, 0);
+    }
+}
+
+/* Shimmer - Skeleton loading */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Spin - Loading spinner */
+@keyframes ios-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Bounce Subtle */
+@keyframes bounce-subtle {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+/* Ripple Effect */
+@keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}
+
+/* Counter Animation */
+@keyframes count-up {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   ANIMATION CLASSES
+   ============================================ */
+
+/* Basic Animations */
+.animate-fade-in {
+    animation: ios-fade-in 0.3s ease-out forwards;
+}
+
+.animate-scale-in {
+    animation: ios-scale-in 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slide-up {
+    animation: ios-slide-up 0.35s ease-out forwards;
+}
+
+.animate-slide-down {
+    animation: ios-slide-down 0.25s ease-out forwards;
+}
+
+.animate-blur-in {
+    animation: ios-blur-in 0.4s ease-out forwards;
+}
+
+.animate-pulse {
+    animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-bounce {
+    animation: bounce-subtle 0.6s ease-in-out;
+}
+
+.animate-spin {
+    animation: ios-spin 1s linear infinite;
+}
+
+/* ============================================
+   STAGGER ANIMATIONS
+   ============================================ */
+
+.animate-stagger > * {
+    opacity: 0;
+    animation: ios-fade-in 0.3s ease-out forwards;
+}
+
+.animate-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.animate-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+.animate-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.animate-stagger > *:nth-child(4) { animation-delay: 0.2s; }
+.animate-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.animate-stagger > *:nth-child(6) { animation-delay: 0.3s; }
+.animate-stagger > *:nth-child(7) { animation-delay: 0.35s; }
+.animate-stagger > *:nth-child(8) { animation-delay: 0.4s; }
+.animate-stagger > *:nth-child(9) { animation-delay: 0.45s; }
+.animate-stagger > *:nth-child(10) { animation-delay: 0.5s; }
+
+/* Fast stagger */
+.animate-stagger-fast > * {
+    opacity: 0;
+    animation: ios-fade-in 0.2s ease-out forwards;
+}
+
+.animate-stagger-fast > *:nth-child(1) { animation-delay: 0.02s; }
+.animate-stagger-fast > *:nth-child(2) { animation-delay: 0.04s; }
+.animate-stagger-fast > *:nth-child(3) { animation-delay: 0.06s; }
+.animate-stagger-fast > *:nth-child(4) { animation-delay: 0.08s; }
+.animate-stagger-fast > *:nth-child(5) { animation-delay: 0.1s; }
+
+/* ============================================
+   SKELETON LOADER
+   ============================================ */
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.04) 25%,
+        rgba(0, 0, 0, 0.08) 50%,
+        rgba(0, 0, 0, 0.04) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 8px;
+}
+
+.skeleton-text {
+    height: 14px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.skeleton-title {
+    height: 24px;
+    width: 60%;
+    margin-bottom: 12px;
+    border-radius: 6px;
+}
+
+.skeleton-card {
+    height: 120px;
+    border-radius: 12px;
+}
+
+.skeleton-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+/* ============================================
+   MODAL ANIMATIONS
+   ============================================ */
+
+.modal.show .modal-dialog {
+    animation: ios-scale-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-backdrop.show {
+    animation: ios-fade-in 0.2s ease-out;
+}
+
+/* ============================================
+   DROPDOWN ANIMATIONS
+   ============================================ */
+
+.Select-menu-outer,
+.dropdown-menu.show {
+    animation: ios-slide-down 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: top center;
+}
+
+/* ============================================
+   CARD ANIMATIONS
+   ============================================ */
+
+.card-animated {
+    animation: ios-fade-in 0.4s ease-out;
+}
+
+.kpi-card {
+    animation: ios-slide-up 0.4s ease-out;
+}
+
+/* KPI value counter effect */
+.kpi-value-animated {
+    animation: count-up 0.5s ease-out;
+}
+
+/* ============================================
+   BUTTON RIPPLE EFFECT
+   ============================================ */
+
+.btn-ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-ripple::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 10%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+.btn-ripple:active::after {
+    transform: scale(10);
+    opacity: 1;
+    transition: 0s;
+}
+
+/* ============================================
+   LOADING OVERLAY
+   ============================================ */
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: ios-fade-in 0.2s ease-out;
+}
+
+/* iOS Style Spinner */
+.ios-spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid rgba(0, 122, 255, 0.2);
+    border-top-color: #007AFF;
+    border-radius: 50%;
+    animation: ios-spin 0.8s linear infinite;
+}
+
+/* ============================================
+   TABLE ROW ANIMATIONS
+   ============================================ */
+
+.ag-row {
+    transition: all 0.2s ease;
+}
+
+.ag-row-animation-enter {
+    animation: ios-fade-in 0.3s ease-out;
+}
+
+/* ============================================
+   ALERT ANIMATIONS
+   ============================================ */
+
+.alert {
+    animation: ios-slide-down 0.3s ease-out;
+}
+
+.alert-dismissible .btn-close {
+    transition: opacity 0.2s ease;
+}
+
+/* ============================================
+   TOOLTIP ANIMATIONS
+   ============================================ */
+
+.tooltip.show {
+    animation: ios-fade-in 0.15s ease-out;
+}
+
+/* ============================================
+   EMPTY STATE ANIMATIONS
+   ============================================ */
+
+.empty-state {
+    animation: ios-fade-in 0.5s ease-out;
+}
+
+.empty-state .lucide-icon {
+    animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+/* ============================================
+   GRAPH CONTAINER ANIMATIONS
+   ============================================ */
+
+.chart-container {
+    animation: ios-blur-in 0.4s ease-out;
+}
+
+/* ============================================
+   NAV LINK ANIMATIONS
+   ============================================ */
+
+.nav-link-sidebar {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-link-sidebar:hover {
+    transform: translateX(2px);
+}
+
+.nav-link-sidebar.active {
+    animation: ios-scale-in 0.2s ease-out;
+}
+
+/* ============================================
+   BADGE ANIMATIONS
+   ============================================ */
+
+.badge-animated {
+    animation: ios-scale-in 0.2s ease-out;
+}
+
+.badge-pulse {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ============================================
+   PROGRESS BAR ANIMATIONS
+   ============================================ */
+
+.progress-bar {
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-bar-animated {
+    animation: progress-stripe 1s linear infinite;
+}
+
+@keyframes progress-stripe {
+    0% {
+        background-position: 1rem 0;
+    }
+    100% {
+        background-position: 0 0;
+    }
+}
+
+/* ============================================
+   HOVER TRANSITIONS
+   ============================================ */
+
+/* Card hover lift */
+.hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Button press effect */
+.press-effect {
+    transition: transform 0.1s ease;
+}
+
+.press-effect:active {
+    transform: scale(0.97);
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

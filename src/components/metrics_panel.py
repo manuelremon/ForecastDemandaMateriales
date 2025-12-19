@@ -271,14 +271,14 @@ def crear_comparacion_baseline(
 
 
 def crear_panel_calidad_datos(
-    validacion: Dict[str, Any],
+    validacion: Any,
     compacto: bool = False
 ) -> html.Div:
     """
     Crea panel de calidad de datos.
 
     Args:
-        validacion: Resultado de validación
+        validacion: Resultado de validación (DataQualityReport dataclass)
         compacto: Si mostrar versión compacta
 
     Returns:
@@ -286,9 +286,9 @@ def crear_panel_calidad_datos(
     """
     from src.components.icons import lucide_icon
 
-    score = validacion.get('score', 0)
-    issues = validacion.get('issues', [])
-    outliers = validacion.get('outlier_reports', [])
+    score = validacion.score if hasattr(validacion, 'score') else 0
+    issues = validacion.issues if hasattr(validacion, 'issues') else []
+    outliers = validacion.outlier_reports if hasattr(validacion, 'outlier_reports') else []
 
     # Color según score
     if score >= 80:
@@ -330,27 +330,28 @@ def crear_panel_calidad_datos(
         ], className="mb-3"),
 
         # Resumen
-        html.P(validacion.get('resumen', ''), className="text-muted small")
+        html.P(validacion.resumen if hasattr(validacion, 'resumen') else '', className="text-muted small")
     ]
 
     # Issues (si hay)
     if issues:
-        warnings = [i for i in issues if i.get('severidad') in ['warning', 'error']]
+        # ValidationIssue is a dataclass with severidad as enum
+        warnings = [i for i in issues if hasattr(i, 'severidad') and i.severidad.value in ['warning', 'error']]
         if warnings:
             contenido.append(html.Hr())
             contenido.append(html.H6("Advertencias", className="text-muted"))
             for issue in warnings[:3]:  # Limitar a 3
-                severidad = issue.get('severidad', 'info')
+                severidad = issue.severidad.value if hasattr(issue, 'severidad') else 'info'
                 color_issue = 'warning' if severidad == 'warning' else 'danger'
                 contenido.append(
                     html.Div([
                         lucide_icon("alert-triangle", size="xs", className=f"text-{color_issue} me-2"),
-                        html.Span(issue.get('mensaje', ''), className="small")
+                        html.Span(issue.mensaje if hasattr(issue, 'mensaje') else '', className="small")
                     ], className="mb-1")
                 )
 
     # Outliers (si hay)
-    total_outliers = sum(o.get('n_outliers', 0) for o in outliers)
+    total_outliers = sum(o.n_outliers if hasattr(o, 'n_outliers') else 0 for o in outliers)
     if total_outliers > 0:
         contenido.append(
             html.Div([

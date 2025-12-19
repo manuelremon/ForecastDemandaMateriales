@@ -39,23 +39,14 @@ from src.pages import demanda, forecast_masivo
 # Importar callbacks
 from src.callbacks import demanda_callbacks, forecast_masivo_callbacks
 
-# Estilos del sidebar
+# Estilos del sidebar - Mínimo inline, resto en CSS (zz_ios_overrides.css)
+# Solo propiedades de layout críticas que no pueden ser CSS puro en Dash
 SIDEBAR_STYLE = {
-    "position": "fixed",
-    "top": 0,
-    "left": 0,
-    "bottom": 0,
-    "width": "120px",
-    "padding": "0.75rem",
-    "backgroundColor": "#1e293b",
-    "color": "white",
-    "zIndex": 1000,
-    "display": "flex",
-    "flexDirection": "column",
+    # Layout básico - el resto está en #sidebar en CSS
 }
 
 CONTENT_STYLE = {
-    "marginLeft": "140px",
+    "marginLeft": "150px",
     "padding": "2rem",
     "minHeight": "100vh",
     "overflow": "visible",
@@ -63,74 +54,84 @@ CONTENT_STYLE = {
 
 
 def create_sidebar():
-    """Crea el sidebar de navegacion compacto (120px)"""
+    """Crea el sidebar de navegacion - Estilos en CSS (zz_ios_overrides.css)"""
     from src.components.icons import lucide_icon
 
     return html.Div([
-        # Logo de la aplicación
+        # ===== LOGO SECTION =====
         html.Div([
-            html.Img(src="/assets/logo.png", style={"width": "90px", "height": "auto", "margin": "0 auto"}),
-        ], className="text-center mb-3 pb-2", style={"borderBottom": "1px solid rgba(255,255,255,0.1)"}),
+            html.Img(src="/assets/logo.png", className="sidebar-logo"),
+        ], className="sidebar-logo-section"),
 
-        # Navegacion compacta
+        # ===== NAVIGATION SECTION =====
         dbc.Nav([
             dbc.NavLink([
-                lucide_icon("line-chart", size="sm"),
-                html.Div("Individual", style={"fontSize": "0.65rem", "marginTop": "2px"})
-            ], href="/", active="exact", className="nav-link-sidebar text-center flex-column py-2"),
+                lucide_icon("line-chart", size="md"),
+                html.Span("Individual")
+            ], href="/", active="exact", className="nav-link-sidebar"),
             dbc.NavLink([
-                lucide_icon("layers", size="sm"),
-                html.Div("Masivo", style={"fontSize": "0.65rem", "marginTop": "2px"})
-            ], href="/masivo", active="exact", className="nav-link-sidebar text-center flex-column py-2"),
-        ], vertical=True, pills=True),
+                lucide_icon("layers", size="md"),
+                html.Span("Masivo")
+            ], href="/masivo", active="exact", className="nav-link-sidebar"),
+        ], vertical=True, pills=True, className="sidebar-nav"),
 
-        # Seccion Datos compacta
+        # ===== DATA SECTION =====
         html.Div([
-            html.Hr(style={"borderColor": "rgba(255,255,255,0.1)", "margin": "0.5rem 0"}),
+            html.Hr(),
 
             # Estado de Datos
             html.Div([
-                lucide_icon("database", size="xs"),
-                html.Span(id="indicador-estado-datos", className="ms-1")
-            ], className="text-center mb-2", style={"fontSize": "0.65rem"}),
+                lucide_icon("database", size="sm"),
+                html.Span(id="indicador-estado-datos", className="ms-2")
+            ], className="sidebar-status-section"),
 
-            # Boton descargar plantilla (solo icono)
-            dbc.Button(
-                lucide_icon("download", size="sm"),
-                id="btn-descargar-plantilla-sidebar", color="secondary",
-                outline=True, size="sm", className="w-100 mb-2",
-                title="Descargar plantilla Excel"),
+            # Botones de acción
+            html.Div([
+                # Botón descargar plantilla
+                dbc.Button(
+                    [lucide_icon("file-down", size="sm"), html.Span("Plantilla")],
+                    id="btn-descargar-plantilla-sidebar",
+                    color="secondary",
+                    outline=True,
+                    size="sm",
+                    className="w-100 sidebar-action-btn mb-2",
+                    title="Descargar plantilla Excel"
+                ),
 
-            # Upload de archivo (solo icono)
-            dcc.Upload(
-                id="upload-excel-sidebar",
-                children=dbc.Button(
-                    lucide_icon("arrow-up", size="sm"),
-                    color="primary", outline=True, size="sm", className="w-100",
-                    title="Importar datos Excel"),
-                accept=".xlsx,.xls",
-                style={"width": "100%"}
-            ),
+                # Botón importar datos
+                dcc.Upload(
+                    id="upload-excel-sidebar",
+                    children=dbc.Button(
+                        [lucide_icon("file-up", size="sm"), html.Span("Importar")],
+                        color="primary",
+                        outline=True,
+                        size="sm",
+                        className="w-100 sidebar-action-btn",
+                        title="Importar datos Excel"
+                    ),
+                    accept=".xlsx,.xls",
+                    className="sidebar-upload"
+                ),
+            ], className="sidebar-actions"),
 
             # Indicador de archivo cargado
-            html.Div(id="info-archivo-sidebar", className="mt-2 text-center",
-                    style={"fontSize": "0.6rem"})
+            html.Div(id="info-archivo-sidebar", className="sidebar-file-info")
 
-        ], className="mt-2"),
+        ], className="sidebar-data-section"),
 
-        # Espaciador flexible
-        html.Div(style={"flex": "1"}),
+        # ===== SPACER =====
+        html.Div(className="sidebar-spacer"),
 
-        # Footer con botón Información
+        # ===== FOOTER SECTION =====
         html.Div([
-            html.Hr(style={"borderColor": "rgba(255,255,255,0.1)", "margin": "0.5rem 0"}),
+            html.Hr(),
             dbc.Button([
                 lucide_icon("info", size="sm"),
-                html.Div("Info", style={"fontSize": "0.65rem", "marginTop": "2px"})
-            ], id="btn-info-modal", color="link", className="w-100 text-white d-flex flex-column align-items-center py-2"),
-            html.Small("v1.0", className="text-muted d-block text-center", style={"fontSize": "0.6rem"})
-        ])
-    ], style=SIDEBAR_STYLE)
+                html.Span("Info")
+            ], id="btn-info-modal", color="link", className="sidebar-info-btn"),
+            html.Small("v1.0", className="sidebar-version")
+        ], className="sidebar-footer")
+    ], id="sidebar")
 
 
 def create_info_modal():

@@ -71,59 +71,59 @@ GRADIENTS = {
     "dark": "linear-gradient(135deg, rgba(31, 31, 33, 0.95) 0%, rgba(20, 20, 22, 0.95) 100%)",
 }
 
-# Template de Plotly para tema claro iOS
+# Template de Plotly para tema iOS 17/18
 PLOTLY_TEMPLATE = {
     "layout": {
-        "paper_bgcolor": "rgba(255, 255, 255, 0)",
-        "plot_bgcolor": "rgba(255, 255, 255, 0.5)",
+        "paper_bgcolor": "rgba(0, 0, 0, 0)",
+        "plot_bgcolor": "rgba(0, 0, 0, 0)",
         "font": {
             "color": "#1F1F21",
-            "family": "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
-            "size": 12
+            "family": "-apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif",
+            "size": 13
         },
         "title": {
             "font": {
                 "color": "#1F1F21",
-                "size": 16,
-                "family": "Inter, -apple-system, sans-serif"
+                "size": 17,
+                "family": "-apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif"
             }
         },
         "xaxis": {
-            "gridcolor": "rgba(199, 199, 204, 0.3)",
-            "linecolor": "#C7C7CC",
-            "tickcolor": "#8E8E93",
-            "zerolinecolor": "#C7C7CC",
-            "tickfont": {"color": "#8E8E93"}
+            "gridcolor": "rgba(60, 60, 67, 0.08)",
+            "linecolor": "rgba(60, 60, 67, 0.12)",
+            "tickcolor": "rgba(0, 0, 0, 0)",
+            "zerolinecolor": "rgba(60, 60, 67, 0.12)",
+            "tickfont": {"color": "#8E8E93", "size": 11}
         },
         "yaxis": {
-            "gridcolor": "rgba(199, 199, 204, 0.3)",
-            "linecolor": "#C7C7CC",
-            "tickcolor": "#8E8E93",
-            "zerolinecolor": "#C7C7CC",
-            "tickfont": {"color": "#8E8E93"}
+            "gridcolor": "rgba(60, 60, 67, 0.08)",
+            "linecolor": "rgba(60, 60, 67, 0.12)",
+            "tickcolor": "rgba(0, 0, 0, 0)",
+            "zerolinecolor": "rgba(60, 60, 67, 0.12)",
+            "tickfont": {"color": "#8E8E93", "size": 11}
         },
         "legend": {
-            "bgcolor": "rgba(255, 255, 255, 0.8)",
-            "bordercolor": "rgba(199, 199, 204, 0.5)",
+            "bgcolor": "rgba(255, 255, 255, 0.92)",
+            "bordercolor": "rgba(60, 60, 67, 0.12)",
             "borderwidth": 1,
-            "font": {"color": "#1F1F21", "family": "Inter, sans-serif"}
+            "font": {"color": "#1F1F21", "family": "-apple-system, system-ui, sans-serif", "size": 12}
         },
         "colorway": [
             "#007AFF",  # iOS Blue
-            "#4CD964",  # iOS Green
+            "#34C759",  # iOS Green
             "#FF9500",  # iOS Orange
             "#FF3B30",  # iOS Red
-            "#5856D6",  # iOS Purple
+            "#AF52DE",  # iOS Purple
             "#5AC8FA",  # iOS Teal
             "#FF2D55",  # iOS Pink
             "#FFCC00",  # iOS Yellow
         ],
         "hoverlabel": {
-            "bgcolor": "rgba(255, 255, 255, 0.95)",
-            "bordercolor": "#C7C7CC",
-            "font": {"color": "#1F1F21", "family": "Inter, sans-serif"}
+            "bgcolor": "rgba(28, 28, 30, 0.95)",
+            "bordercolor": "rgba(255, 255, 255, 0.1)",
+            "font": {"color": "#FFFFFF", "family": "-apple-system, system-ui, sans-serif", "size": 13}
         },
-        "margin": {"l": 50, "r": 30, "t": 50, "b": 50}
+        "margin": {"l": 48, "r": 16, "t": 48, "b": 48}
     }
 }
 

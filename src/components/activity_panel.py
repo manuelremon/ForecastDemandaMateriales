@@ -135,7 +135,7 @@ def crear_panel_actividad(
             id=f"{id_componente}-limpiar",
             color="link",
             size="sm",
-            className="p-0 text-muted"
+            className="btn-icon"
         ) if mostrar_limpiar else None
     ], className="d-flex justify-content-between align-items-center mb-2")
 

@@ -1,0 +1,2647 @@
+/* ============================================
+   iOS Design System - Sprint 1: Base Tokens
+   ============================================
+
+   GUIA DE TOKENS iOS 17/18
+   ========================
+
+   Este archivo define los Design Tokens oficiales de iOS y
+   aplica overrides para eliminar patrones anti-iOS.
+
+   TOKENS PRINCIPALES:
+   --ios-bg                  : Fondo principal (system grouped background)
+   --ios-bg-secondary        : Fondo secundario agrupado
+   --ios-surface             : Superficie de cards/contenedores
+   --ios-surface-elevated    : Superficie elevada (modales, popovers)
+   --ios-text                : Texto principal
+   --ios-text-secondary      : Texto secundario
+   --ios-text-tertiary       : Texto terciario/placeholder
+   --ios-separator           : Separadores y bordes
+   --ios-separator-opaque    : Separadores opacos
+   --ios-accent              : Color de acento (azul iOS)
+   --ios-destructive         : Color destructivo (rojo iOS)
+   --ios-shadow-sm           : Sombra pequeña
+   --ios-shadow-md           : Sombra mediana
+   --ios-shadow-lg           : Sombra grande
+
+   USO:
+   - Importar este archivo AL FINAL de los stylesheets
+   - Usar variables con fallback: var(--ios-bg, #F2F2F7)
+
+   ============================================ */
+
+/* ============================================
+   LIGHT MODE (Default)
+   Basado en iOS 17 System Colors
+   ============================================ */
+:root {
+    /* === BACKGROUNDS === */
+    /* System Grouped Background (pantallas con grupos de contenido) */
+    --ios-bg: #F2F2F7;
+    --ios-bg-secondary: #FFFFFF;
+    --ios-bg-tertiary: #F2F2F7;
+
+    /* System Background (pantallas individuales) */
+    --ios-surface: #FFFFFF;
+    --ios-surface-secondary: #F2F2F7;
+    --ios-surface-elevated: #FFFFFF;
+
+    /* === TEXT COLORS === */
+    --ios-text: #000000;
+    --ios-text-secondary: #3C3C43;
+    --ios-text-tertiary: #3C3C4399;  /* 60% opacity */
+    --ios-text-quaternary: #3C3C434D; /* 30% opacity */
+    --ios-text-placeholder: #3C3C4380; /* 50% opacity */
+
+    /* === SEPARATORS === */
+    --ios-separator: rgba(60, 60, 67, 0.29);
+    --ios-separator-opaque: #C6C6C8;
+
+    /* === FILLS === */
+    --ios-fill: rgba(120, 120, 128, 0.2);
+    --ios-fill-secondary: rgba(120, 120, 128, 0.16);
+    --ios-fill-tertiary: rgba(118, 118, 128, 0.12);
+    --ios-fill-quaternary: rgba(116, 116, 128, 0.08);
+
+    /* === ACCENT COLORS (iOS Standard) === */
+    --ios-accent: #007AFF;
+    --ios-accent-dark: #0051D4;
+    --ios-destructive: #FF3B30;
+    --ios-destructive-dark: #D32F2F;
+    --ios-success: #34C759;
+    --ios-warning: #FF9500;
+    --ios-info: #5AC8FA;
+
+    /* === GRAYS (iOS Neutral - NO BEIGE) === */
+    --ios-gray-1: #8E8E93;
+    --ios-gray-2: #AEAEB2;
+    --ios-gray-3: #C7C7CC;
+    --ios-gray-4: #D1D1D6;
+    --ios-gray-5: #E5E5EA;
+    --ios-gray-6: #F2F2F7;
+
+    /* === SHADOWS (iOS Style - Subtle) === */
+    --ios-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --ios-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --ios-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --ios-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    /* === BLUR (iOS Style - Reduced) === */
+    --ios-blur-sm: 8px;
+    --ios-blur-md: 10px;
+    --ios-blur-lg: 16px;
+
+    /* === BORDER RADIUS (iOS Standard) === */
+    --ios-radius-xs: 4px;
+    --ios-radius-sm: 6px;
+    --ios-radius-md: 8px;
+    --ios-radius-lg: 10px;
+    --ios-radius-xl: 12px;
+    --ios-radius-2xl: 14px;
+    --ios-radius-card: 12px;
+    --ios-radius-modal: 14px;
+
+    /* === TYPOGRAPHY === */
+    --ios-font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --ios-font-mono: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, monospace;
+
+    /* Font Weights */
+    --ios-font-regular: 400;
+    --ios-font-medium: 500;
+    --ios-font-semibold: 600;
+    --ios-font-bold: 700;
+
+    /* Font Sizes (iOS Dynamic Type - Large) */
+    --ios-text-xs: 11px;
+    --ios-text-sm: 13px;
+    --ios-text-base: 15px;
+    --ios-text-lg: 17px;
+    --ios-text-xl: 20px;
+    --ios-text-2xl: 22px;
+    --ios-text-3xl: 28px;
+    --ios-text-4xl: 34px;
+
+    /* === TRANSITIONS === */
+    --ios-transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --ios-transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --ios-transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   DARK MODE - DESHABILITADO
+   Solo Light Theme activo
+   ============================================ */
+/* Dark mode removido - solo light theme */
+
+/* ============================================
+   OVERRIDES - Sprint 1 Fixes
+   ============================================ */
+
+/* === 1. TIPOGRAFIA: Stack de sistema iOS === */
+*, *::before, *::after {
+    font-family: var(--ios-font-family) !important;
+}
+
+/* === 2. FONDO: Eliminar degradé, usar fondo plano iOS === */
+body, html {
+    background: var(--ios-bg) !important;
+    background-image: none !important;
+    color: var(--ios-text) !important;
+}
+
+/* Contenedor principal también sin degradé */
+#_dash-app-content,
+._dash-loading,
+.dash-debug-menu {
+    background: var(--ios-bg) !important;
+}
+
+/* === 3. HEADINGS: Sin uppercase forzado, sin letterSpacing agresivo === */
+h1, h2, h3, h4, h5, h6 {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    text-shadow: none !important;
+    font-family: var(--ios-font-family) !important;
+}
+
+/* h6 específico - era uppercase con letter-spacing */
+h6 {
+    text-transform: none !important;
+    letter-spacing: -0.01em !important;
+    font-weight: var(--ios-font-semibold) !important;
+    color: var(--ios-text-secondary) !important;
+}
+
+/* === 4. LABELS: Sin uppercase, sin letterSpacing === */
+label,
+.form-label,
+.filter-label,
+.form-group-enhanced label,
+.filter-label-unified {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    text-shadow: none !important;
+    font-weight: var(--ios-font-medium) !important;
+    color: var(--ios-text-secondary) !important;
+    font-size: var(--ios-text-sm) !important;
+}
+
+/* === 5. ELIMINAR TEXT-SHADOW en todos lados === */
+.progress-label,
+.badge,
+.btn,
+.card-title,
+.card-text,
+span,
+p,
+div {
+    text-shadow: none !important;
+}
+
+/* === 6. GRISES CORREGIDOS: Reemplazar beige por grises neutros === */
+/* Override de variables antiguas con beige */
+:root {
+    /* Corregir grises beige del sistema anterior */
+    --ios-gray: #8E8E93 !important;          /* Era #BDBEC2 (beige) */
+    --ios-gray-light: #C7C7CC !important;    /* Neutro */
+    --ios-gray-lighter: #E5E5EA !important;  /* Era #D6CEC3 (beige arena) */
+}
+
+/* ============================================
+   SPRINT 2: SIDEBAR iOS
+   ============================================ */
+
+/* === SIDEBAR CONTAINER === */
+#sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 130px !important;
+    padding: 16px 10px !important;
+    /* Fondo sólido iOS - sin degradé */
+    background: var(--ios-surface) !important;
+    background-image: none !important;
+    /* Borde sutil iOS */
+    border-right: 1px solid var(--ios-separator-opaque) !important;
+    /* Sombra muy sutil */
+    box-shadow: var(--ios-shadow-sm) !important;
+    /* Color de texto */
+    color: var(--ios-text) !important;
+    /* Layout */
+    z-index: 1000 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+/* === LOGO SECTION === */
+#sidebar .text-center.mb-3.pb-3 {
+    border-bottom: 1px solid var(--ios-separator) !important;
+}
+
+#sidebar img {
+    width: 100px !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    display: block !important;
+}
+
+/* === NAVIGATION SECTION === */
+#sidebar .nav {
+    gap: 4px !important;
+}
+
+/* === NAV LINKS - Default State === */
+#sidebar .nav-link,
+.nav-link-sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 12px 8px !important;
+    margin: 2px 0 !important;
+    /* iOS pill style */
+    border-radius: var(--ios-radius-lg) !important;
+    /* Colores default */
+    background: transparent !important;
+    color: var(--ios-text-secondary) !important;
+    /* Sin borde por defecto */
+    border: none !important;
+    /* Texto */
+    font-size: var(--ios-text-xs) !important;
+    font-weight: var(--ios-font-semibold) !important;
+    line-height: 1.3 !important;
+    text-decoration: none !important;
+    /* Transición suave iOS */
+    transition: background-color var(--ios-transition-fast),
+                color var(--ios-transition-fast),
+                opacity var(--ios-transition-fast) !important;
+}
+
+/* === NAV LINKS - Hover (sutil, sin translateY) === */
+#sidebar .nav-link:hover,
+.nav-link-sidebar:hover {
+    background: var(--ios-fill-tertiary) !important;
+    color: var(--ios-accent) !important;
+    /* SIN transform translateY - esto es anti-iOS */
+    transform: none !important;
+}
+
+/* === NAV LINKS - Active State (pill iOS) === */
+#sidebar .nav-link.active,
+.nav-link-sidebar.active {
+    /* Fondo surface-elevated con tinte de acento */
+    background: var(--ios-fill-secondary) !important;
+    /* Texto con color de acento */
+    color: var(--ios-accent) !important;
+    font-weight: var(--ios-font-bold) !important;
+    /* Sin sombra exagerada */
+    box-shadow: none !important;
+    /* Sin borde */
+    border: none !important;
+}
+
+/* === NAV LINK ICONS === */
+#sidebar .nav-link .lucide-icon,
+.nav-link-sidebar .lucide-icon {
+    width: 22px !important;
+    height: 22px !important;
+    /* Color hereda del padre */
+    color: inherit !important;
+    /* Sin transiciones de color separadas */
+    transition: none !important;
+}
+
+/* === NAV LINK TEXT === */
+#sidebar .nav-link span,
+.nav-link-sidebar span {
+    font-size: var(--ios-text-xs) !important;
+    font-weight: var(--ios-font-semibold) !important;
+    margin-top: 4px !important;
+}
+
+/* === DATA SECTION === */
+#sidebar hr {
+    border-color: var(--ios-separator) !important;
+    opacity: 1 !important;
+    margin: 8px 0 !important;
+}
+
+/* Status section */
+.sidebar-status-section {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 8px !important;
+    font-size: var(--ios-text-xs) !important;
+    color: var(--ios-text-secondary) !important;
+}
+
+.sidebar-status-section .lucide-icon {
+    width: 14px !important;
+    height: 14px !important;
+    color: var(--ios-gray-1) !important;
+}
+
+/* === ACTION BUTTONS === */
+.sidebar-action-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 8px 12px !important;
+    font-size: var(--ios-text-xs) !important;
+    font-weight: var(--ios-font-medium) !important;
+    border-radius: var(--ios-radius-md) !important;
+    /* Transición suave */
+    transition: background-color var(--ios-transition-fast),
+                opacity var(--ios-transition-fast) !important;
+}
+
+.sidebar-action-btn:hover {
+    /* Sin translateY - solo cambio de opacidad/color */
+    transform: none !important;
+    opacity: 0.8 !important;
+}
+
+.sidebar-action-btn .lucide-icon {
+    width: 14px !important;
+    height: 14px !important;
+}
+
+/* === FOOTER SECTION === */
+.sidebar-footer {
+    margin-top: auto !important;
+}
+
+.sidebar-footer .btn-link {
+    color: var(--ios-text-tertiary) !important;
+    text-decoration: none !important;
+}
+
+.sidebar-footer .btn-link:hover {
+    color: var(--ios-accent) !important;
+    transform: none !important;
+}
+
+/* === LOGO SECTION === */
+.sidebar-logo-section {
+    text-align: center !important;
+    margin-bottom: 12px !important;
+    padding-bottom: 12px !important;
+    border-bottom: 1px solid var(--ios-separator) !important;
+}
+
+.sidebar-logo {
+    width: 100px !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    display: block !important;
+}
+
+/* === NAVIGATION === */
+.sidebar-nav {
+    margin-bottom: 12px !important;
+    gap: 4px !important;
+}
+
+/* === DATA SECTION === */
+.sidebar-data-section {
+    margin-top: 8px !important;
+}
+
+.sidebar-actions {
+    margin-top: 8px !important;
+}
+
+.sidebar-upload {
+    width: 100% !important;
+}
+
+/* === FILE INFO === */
+.sidebar-file-info {
+    margin-top: 8px !important;
+    text-align: center !important;
+    font-size: 10px !important;
+    color: var(--ios-text-tertiary) !important;
+    font-weight: var(--ios-font-medium) !important;
+}
+
+/* === SPACER === */
+.sidebar-spacer {
+    flex: 1 !important;
+}
+
+/* === INFO BUTTON === */
+.sidebar-info-btn {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 8px !important;
+    color: var(--ios-text-tertiary) !important;
+    text-decoration: none !important;
+    border-radius: var(--ios-radius-md) !important;
+    transition: color var(--ios-transition-fast),
+                background-color var(--ios-transition-fast) !important;
+}
+
+.sidebar-info-btn:hover {
+    color: var(--ios-accent) !important;
+    background: var(--ios-fill-quaternary) !important;
+    transform: none !important;
+}
+
+.sidebar-info-btn span {
+    font-size: var(--ios-text-xs) !important;
+    font-weight: var(--ios-font-semibold) !important;
+}
+
+.sidebar-info-btn .lucide-icon {
+    width: 18px !important;
+    height: 18px !important;
+}
+
+/* === VERSION === */
+.sidebar-version {
+    display: block !important;
+    text-align: center !important;
+    font-size: 10px !important;
+    color: var(--ios-text-quaternary) !important;
+    font-weight: var(--ios-font-medium) !important;
+    margin-top: 4px !important;
+}
+
+/* === 8. BLUR REDUCIDO: De 20px a 10px máximo === */
+.glass-card,
+.glass-card-enhanced,
+.filter-card,
+.card,
+.modal-content,
+.dropdown-menu,
+.alert {
+    backdrop-filter: blur(var(--ios-blur-md)) !important;
+    -webkit-backdrop-filter: blur(var(--ios-blur-md)) !important;
+}
+
+/* === 9. SOMBRAS SUAVIZADAS === */
+.card,
+.glass-card,
+.glass-card-enhanced,
+.kpi-card {
+    box-shadow: var(--ios-shadow-card) !important;
+}
+
+.modal-content {
+    box-shadow: var(--ios-shadow-lg) !important;
+}
+
+/* === 10. SUPERFICIES: Aplicar tokens a elementos comunes === */
+.card,
+.glass-card,
+.glass-card-enhanced,
+.filter-card {
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator) !important;
+}
+
+/* Contenido principal */
+.page-content,
+#page-content,
+[style*="marginLeft: 140px"],
+[style*="margin-left: 140px"] {
+    background: var(--ios-bg) !important;
+}
+
+/* === 11. SEPARADORES === */
+hr,
+.divider,
+.separator {
+    border-color: var(--ios-separator) !important;
+    background-color: var(--ios-separator-opaque) !important;
+}
+
+/* ============================================
+   SPRINT 3: CONTROLES iOS (Inputs, Dropdowns, Botones)
+   ============================================ */
+
+/* === INPUTS & TEXTAREAS === */
+input,
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea,
+.form-control {
+    /* Dimensiones iOS */
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 10px 16px !important;
+    /* Apariencia */
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-lg) !important;
+    font-weight: var(--ios-font-regular) !important;
+    letter-spacing: normal !important;
+    color: var(--ios-text) !important;
+    /* Fondo y borde */
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator-opaque) !important;
+    border-radius: var(--ios-radius-lg) !important;
+    /* Sin sombras internas */
+    box-shadow: none !important;
+    /* Transición suave */
+    transition: border-color var(--ios-transition-fast),
+                box-shadow var(--ios-transition-fast) !important;
+}
+
+textarea.form-control {
+    height: auto !important;
+    min-height: 88px !important;
+}
+
+/* === INPUT FOCUS RING iOS === */
+input:focus,
+textarea:focus,
+.form-control:focus {
+    outline: none !important;
+    border-color: var(--ios-accent) !important;
+    /* Focus ring iOS: sombra suave con accent */
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2) !important;
+}
+
+/* === INPUT PLACEHOLDER === */
+input::placeholder,
+textarea::placeholder,
+.form-control::placeholder {
+    color: var(--ios-text-placeholder) !important;
+    opacity: 1 !important;
+}
+
+/* === INPUT DISABLED === */
+input:disabled,
+textarea:disabled,
+.form-control:disabled {
+    background: var(--ios-fill-quaternary) !important;
+    color: var(--ios-text-tertiary) !important;
+    border-color: var(--ios-separator) !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+}
+
+/* === INPUT ERROR STATE === */
+input.is-invalid,
+textarea.is-invalid,
+.form-control.is-invalid {
+    border-color: var(--ios-destructive) !important;
+    box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.15) !important;
+}
+
+input.is-invalid:focus,
+.form-control.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.25) !important;
+}
+
+/* === SELECT / DROPDOWN BASE === */
+select,
+.form-select {
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 10px 40px 10px 16px !important;
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-lg) !important;
+    font-weight: var(--ios-font-regular) !important;
+    color: var(--ios-text) !important;
+    background-color: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator-opaque) !important;
+    border-radius: var(--ios-radius-lg) !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    transition: border-color var(--ios-transition-fast),
+                box-shadow var(--ios-transition-fast) !important;
+    /* Flecha personalizada */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238E8E93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    background-size: 16px !important;
+}
+
+select:focus,
+.form-select:focus {
+    outline: none !important;
+    border-color: var(--ios-accent) !important;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2) !important;
+}
+
+/* === DASH DROPDOWN (dcc.Dropdown) === */
+.dash-dropdown .Select-control,
+.Select-control {
+    height: 44px !important;
+    min-height: 44px !important;
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator-opaque) !important;
+    border-radius: var(--ios-radius-lg) !important;
+    box-shadow: none !important;
+    transition: border-color var(--ios-transition-fast),
+                box-shadow var(--ios-transition-fast) !important;
+}
+
+.dash-dropdown .Select-control:hover {
+    border-color: var(--ios-gray-2) !important;
+}
+
+.dash-dropdown.is-focused .Select-control,
+.Select.is-focused .Select-control {
+    border-color: var(--ios-accent) !important;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2) !important;
+}
+
+.dash-dropdown .Select-value,
+.Select-value {
+    line-height: 42px !important;
+    padding-left: 16px !important;
+}
+
+.dash-dropdown .Select-value-label,
+.Select-value-label {
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-base) !important;
+    color: var(--ios-text) !important;
+}
+
+.dash-dropdown .Select-placeholder,
+.Select-placeholder {
+    line-height: 42px !important;
+    padding-left: 16px !important;
+    color: var(--ios-text-placeholder) !important;
+    font-size: var(--ios-text-base) !important;
+}
+
+.dash-dropdown .Select-input,
+.Select-input {
+    height: 42px !important;
+    padding-left: 16px !important;
+}
+
+.dash-dropdown .Select-input > input,
+.Select-input > input {
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-base) !important;
+    color: var(--ios-text) !important;
+    padding: 10px 0 !important;
+}
+
+/* Dropdown Menu */
+.dash-dropdown .Select-menu-outer,
+.Select-menu-outer {
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator-opaque) !important;
+    border-radius: var(--ios-radius-lg) !important;
+    box-shadow: var(--ios-shadow-lg) !important;
+    margin-top: 4px !important;
+    overflow: hidden !important;
+}
+
+.dash-dropdown .Select-option,
+.Select-option {
+    padding: 12px 16px !important;
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-base) !important;
+    color: var(--ios-text) !important;
+    background: transparent !important;
+    transition: background-color var(--ios-transition-fast) !important;
+}
+
+.dash-dropdown .Select-option:hover,
+.Select-option:hover {
+    background: var(--ios-fill-tertiary) !important;
+}
+
+.dash-dropdown .Select-option.is-selected,
+.Select-option.is-selected {
+    background: var(--ios-fill-secondary) !important;
+    color: var(--ios-accent) !important;
+    font-weight: var(--ios-font-medium) !important;
+}
+
+.dash-dropdown .Select-option.is-focused,
+.Select-option.is-focused {
+    background: var(--ios-fill-tertiary) !important;
+}
+
+/* Arrow indicator */
+.dash-dropdown .Select-arrow-zone,
+.Select-arrow-zone {
+    padding-right: 12px !important;
+}
+
+.dash-dropdown .Select-arrow,
+.Select-arrow {
+    border-color: var(--ios-gray-1) transparent transparent !important;
+}
+
+/* Clear indicator */
+.dash-dropdown .Select-clear-zone,
+.Select-clear-zone {
+    padding-right: 8px !important;
+}
+
+/* === BOTONES iOS === */
+
+/* Reset base para todos los botones */
+.btn,
+button {
+    font-family: var(--ios-font-family) !important;
+    font-weight: var(--ios-font-semibold) !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    text-shadow: none !important;
+    border-radius: var(--ios-radius-lg) !important;
+    transition: background-color var(--ios-transition-fast),
+                opacity var(--ios-transition-fast),
+                border-color var(--ios-transition-fast) !important;
+    /* SIN translateY en ningún estado */
+    transform: none !important;
+}
+
+/* === BOTON PRIMARY (Accent) === */
+.btn-primary,
+.btn.btn-primary {
+    height: 44px !important;
+    padding: 0 20px !important;
+    /* Color sólido iOS - SIN gradiente */
+    background: var(--ios-accent) !important;
+    background-image: none !important;
+    border: none !important;
+    color: #FFFFFF !important;
+    font-size: var(--ios-text-lg) !important;
+}
+
+.btn-primary:hover,
+.btn.btn-primary:hover {
+    background: var(--ios-accent-dark) !important;
+    /* SIN translateY */
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.btn-primary:focus,
+.btn.btn-primary:focus {
+    background: var(--ios-accent) !important;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.3) !important;
+}
+
+.btn-primary:active,
+.btn.btn-primary:active {
+    background: var(--ios-accent-dark) !important;
+    opacity: 0.9 !important;
+}
+
+.btn-primary:disabled,
+.btn.btn-primary:disabled {
+    background: var(--ios-fill-secondary) !important;
+    color: var(--ios-text-tertiary) !important;
+    opacity: 0.6 !important;
+}
+
+/* === BOTON SECONDARY (Surface + Border) === */
+.btn-secondary,
+.btn.btn-secondary,
+.btn-outline-secondary {
+    height: 44px !important;
+    padding: 0 20px !important;
+    background: var(--ios-surface) !important;
+    background-image: none !important;
+    border: 1px solid var(--ios-separator-opaque) !important;
+    color: var(--ios-text) !important;
+    font-size: var(--ios-text-lg) !important;
+}
+
+.btn-secondary:hover,
+.btn-outline-secondary:hover {
+    background: var(--ios-fill-tertiary) !important;
+    border-color: var(--ios-gray-2) !important;
+    transform: none !important;
+}
+
+.btn-secondary:focus,
+.btn-outline-secondary:focus {
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2) !important;
+}
+
+/* === BOTON TERTIARY (Text only) === */
+.btn-link,
+.btn.btn-link {
+    height: auto !important;
+    padding: 8px 12px !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--ios-accent) !important;
+    font-size: var(--ios-text-base) !important;
+    text-decoration: none !important;
+}
+
+.btn-link:hover {
+    background: var(--ios-fill-quaternary) !important;
+    color: var(--ios-accent-dark) !important;
+    text-decoration: none !important;
+    transform: none !important;
+}
+
+/* === BOTON DESTRUCTIVE === */
+.btn-danger,
+.btn.btn-danger {
+    height: 44px !important;
+    padding: 0 20px !important;
+    background: var(--ios-destructive) !important;
+    background-image: none !important;
+    border: none !important;
+    color: #FFFFFF !important;
+}
+
+.btn-danger:hover {
+    background: var(--ios-destructive-dark) !important;
+    transform: none !important;
+}
+
+/* === BOTON OUTLINE PRIMARY === */
+.btn-outline-primary {
+    height: 44px !important;
+    padding: 0 20px !important;
+    background: transparent !important;
+    border: 1px solid var(--ios-accent) !important;
+    color: var(--ios-accent) !important;
+}
+
+.btn-outline-primary:hover {
+    background: rgba(0, 122, 255, 0.08) !important;
+    transform: none !important;
+}
+
+/* === BOTON SIZES === */
+.btn-sm {
+    height: 34px !important;
+    padding: 0 14px !important;
+    font-size: var(--ios-text-sm) !important;
+    border-radius: var(--ios-radius-md) !important;
+}
+
+.btn-lg {
+    height: 50px !important;
+    padding: 0 28px !important;
+    font-size: var(--ios-text-xl) !important;
+}
+
+/* === BTN-ENHANCED Override (eliminar gradiente) === */
+.btn-enhanced {
+    background: var(--ios-accent) !important;
+    background-image: none !important;
+    border: none !important;
+}
+
+.btn-enhanced:hover {
+    background: var(--ios-accent-dark) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* === ICON BUTTONS === */
+.btn-icon {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: var(--ios-fill-tertiary) !important;
+    border: none !important;
+    border-radius: var(--ios-radius-lg) !important;
+    color: var(--ios-text-secondary) !important;
+}
+
+.btn-icon:hover {
+    background: var(--ios-fill-secondary) !important;
+    color: var(--ios-accent) !important;
+    transform: none !important;
+}
+
+/* === BUTTON GROUPS === */
+.btn-group {
+    border-radius: var(--ios-radius-lg) !important;
+    overflow: hidden !important;
+}
+
+.btn-group .btn {
+    border-radius: 0 !important;
+}
+
+.btn-group .btn:first-child {
+    border-top-left-radius: var(--ios-radius-lg) !important;
+    border-bottom-left-radius: var(--ios-radius-lg) !important;
+}
+
+.btn-group .btn:last-child {
+    border-top-right-radius: var(--ios-radius-lg) !important;
+    border-bottom-right-radius: var(--ios-radius-lg) !important;
+}
+
+/* ============================================
+   BARRA DE FILTROS - iOS Inset Grouped Style
+   ============================================ */
+
+/* Contenedor principal de filtros */
+.filters-container-enhanced,
+.filters-container {
+    /* iOS Inset Grouped Card */
+    background: var(--ios-surface-elevated, var(--ios-surface)) !important;
+    border-radius: var(--ios-radius-xl) !important;
+    border: 1px solid var(--ios-separator) !important;
+    box-shadow: var(--ios-shadow-card) !important;
+    padding: 16px 20px !important;
+    margin-bottom: 16px !important;
+}
+
+/* Grupos de filtros individuales */
+.filters-container-enhanced > div,
+.filters-container > div {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+}
+
+/* Cada control de filtro */
+.filters-container-enhanced > div > div,
+.filter-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+}
+
+/* Labels de filtros - SIN uppercase */
+.filter-label-unified,
+.filter-label,
+.filters-container label {
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-xs) !important;
+    font-weight: var(--ios-font-medium) !important;
+    color: var(--ios-text-secondary) !important;
+    /* SIN uppercase ni letter-spacing */
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    text-shadow: none !important;
+    margin-bottom: 4px !important;
+}
+
+/* Dropdowns dentro de filtros - más compactos */
+.filter-dropdown .Select-control,
+.filters-container .dash-dropdown .Select-control {
+    height: 38px !important;
+    min-height: 38px !important;
+    font-size: var(--ios-text-sm) !important;
+}
+
+.filter-dropdown .Select-value,
+.filters-container .dash-dropdown .Select-value {
+    line-height: 36px !important;
+}
+
+.filter-dropdown .Select-placeholder,
+.filters-container .dash-dropdown .Select-placeholder {
+    line-height: 36px !important;
+    font-size: var(--ios-text-sm) !important;
+}
+
+/* Inputs dentro de filtros */
+.filter-control,
+.filters-container input {
+    height: 38px !important;
+    min-height: 38px !important;
+    font-size: var(--ios-text-sm) !important;
+    padding: 8px 12px !important;
+}
+
+/* Botón de acción en filtros */
+.filter-action-btn {
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 16px !important;
+    font-size: var(--ios-text-sm) !important;
+}
+
+/* Separadores visuales entre grupos de filtros (opcional) */
+.filter-separator {
+    width: 1px !important;
+    height: 38px !important;
+    background: var(--ios-separator) !important;
+    margin: 0 8px !important;
+    align-self: flex-end !important;
+}
+
+/* === SLIDER iOS === */
+.rc-slider {
+    height: 38px !important;
+    padding-top: 14px !important;
+}
+
+.rc-slider-rail {
+    background: var(--ios-fill-tertiary) !important;
+    height: 4px !important;
+    border-radius: 2px !important;
+}
+
+.rc-slider-track {
+    background: var(--ios-accent) !important;
+    height: 4px !important;
+    border-radius: 2px !important;
+}
+
+.rc-slider-handle {
+    width: 24px !important;
+    height: 24px !important;
+    margin-top: -10px !important;
+    background: var(--ios-surface) !important;
+    border: 2px solid var(--ios-accent) !important;
+    box-shadow: var(--ios-shadow-sm) !important;
+}
+
+.rc-slider-handle:hover,
+.rc-slider-handle:focus {
+    border-color: var(--ios-accent-dark) !important;
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.2) !important;
+}
+
+.rc-slider-mark-text {
+    font-family: var(--ios-font-family) !important;
+    font-size: 10px !important;
+    color: var(--ios-text-tertiary) !important;
+}
+
+/* Tooltip del slider */
+.rc-slider-tooltip {
+    font-family: var(--ios-font-family) !important;
+}
+
+.rc-slider-tooltip-inner {
+    background: var(--ios-text) !important;
+    color: var(--ios-surface) !important;
+    font-size: var(--ios-text-xs) !important;
+    padding: 4px 8px !important;
+    border-radius: var(--ios-radius-sm) !important;
+    box-shadow: var(--ios-shadow-md) !important;
+}
+
+/* ============================================
+   SPRINT 4: CARDS iOS (Surface sólida, sin glassmorphism)
+   ============================================ */
+
+/* === BASE CARD iOS === */
+.card,
+.glass-card,
+.glass-card-enhanced {
+    /* Surface sólida iOS - SIN glassmorphism */
+    background: var(--ios-surface) !important;
+    background-image: none !important;
+    /* SIN backdrop-filter blur */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    /* Border sutil */
+    border: 1px solid var(--ios-separator) !important;
+    /* Radius iOS */
+    border-radius: var(--ios-radius-xl) !important;
+    /* Sombra mínima */
+    box-shadow: var(--ios-shadow-sm) !important;
+    /* Transición suave */
+    transition: box-shadow var(--ios-transition-fast) !important;
+}
+
+.card:hover,
+.glass-card:hover,
+.glass-card-enhanced:hover {
+    /* Hover muy sutil - solo sombra ligeramente más visible */
+    box-shadow: var(--ios-shadow-card) !important;
+    /* SIN translateY ni elevación */
+    transform: none !important;
+}
+
+/* Hoverable cards - opcional */
+.card.hoverable:hover,
+.glass-card-enhanced.hoverable:hover {
+    box-shadow: var(--ios-shadow-md) !important;
+    transform: none !important;
+}
+
+/* === KPI CARDS iOS === */
+.kpi-card {
+    /* Surface elevada para KPIs */
+    background: var(--ios-surface) !important;
+    background-image: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    /* Border sutil */
+    border: 1px solid var(--ios-separator) !important;
+    /* Radius iOS card */
+    border-radius: var(--ios-radius-xl) !important;
+    /* Sombra mínima */
+    box-shadow: var(--ios-shadow-sm) !important;
+    /* Overflow para contenido */
+    overflow: hidden !important;
+}
+
+.kpi-card:hover {
+    /* Hover muy sutil */
+    box-shadow: var(--ios-shadow-card) !important;
+    transform: none !important;
+}
+
+.kpi-card.hoverable:hover {
+    box-shadow: var(--ios-shadow-md) !important;
+}
+
+/* KPI Card Body */
+.kpi-card .card-body {
+    padding: 16px 20px !important;
+}
+
+/* === KPI TYPOGRAPHY HIERARCHY === */
+
+/* KPI Label (Caption) - Texto pequeño secundario */
+.kpi-title {
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-sm) !important;
+    font-weight: var(--ios-font-medium) !important;
+    color: var(--ios-text-secondary) !important;
+    /* SIN uppercase ni letter-spacing */
+    text-transform: none !important;
+    letter-spacing: -0.01em !important;
+    text-shadow: none !important;
+    margin-bottom: 4px !important;
+    line-height: 1.3 !important;
+}
+
+/* KPI Value (Title) - Valor prominente */
+.kpi-value,
+.kpi-card h2 {
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-3xl) !important;
+    font-weight: var(--ios-font-bold) !important;
+    line-height: 1.1 !important;
+    margin-bottom: 4px !important;
+    letter-spacing: -0.02em !important;
+}
+
+/* KPI Subtitle (Secondary) - Texto de apoyo */
+.kpi-subtitle,
+.kpi-card .kpi-subtitle,
+.kpi-card small {
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-xs) !important;
+    font-weight: var(--ios-font-regular) !important;
+    color: var(--ios-text-tertiary) !important;
+    line-height: 1.4 !important;
+}
+
+/* KPI Info Icon */
+.kpi-info-icon {
+    color: var(--ios-gray-2) !important;
+    cursor: pointer !important;
+    opacity: 0.6 !important;
+    transition: opacity var(--ios-transition-fast),
+                color var(--ios-transition-fast) !important;
+}
+
+.kpi-info-icon:hover {
+    opacity: 1 !important;
+    color: var(--ios-accent) !important;
+}
+
+/* KPI Decorative Icon */
+.kpi-card .kpi-icon,
+.kpi-card .lucide-icon {
+    opacity: 0.12 !important;
+}
+
+/* KPI Trend indicators */
+.kpi-trend {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    font-size: var(--ios-text-xs) !important;
+    font-weight: var(--ios-font-medium) !important;
+}
+
+.kpi-trend.positive {
+    color: var(--ios-success) !important;
+}
+
+.kpi-trend.negative {
+    color: var(--ios-destructive) !important;
+}
+
+.kpi-trend.neutral {
+    color: var(--ios-text-tertiary) !important;
+}
+
+/* === SUMMARY CARDS === */
+.summary-card {
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator) !important;
+    border-radius: var(--ios-radius-lg) !important;
+    box-shadow: var(--ios-shadow-sm) !important;
+    padding: 12px 16px !important;
+}
+
+.summary-card .card-body {
+    padding: 0 !important;
+}
+
+.summary-card-title {
+    font-size: var(--ios-text-xs) !important;
+    font-weight: var(--ios-font-medium) !important;
+    color: var(--ios-text-secondary) !important;
+    margin-bottom: 4px !important;
+}
+
+.summary-card-value {
+    font-size: var(--ios-text-xl) !important;
+    font-weight: var(--ios-font-bold) !important;
+    line-height: 1.2 !important;
+}
+
+/* === iOS GROUPED LIST CARD === */
+.ios-grouped-card {
+    background: var(--ios-surface) !important;
+    border-radius: var(--ios-radius-xl) !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+}
+
+.ios-grouped-card .card-body {
+    padding: 0 !important;
+}
+
+/* Items dentro de grouped card */
+.ios-grouped-item {
+    padding: 12px 16px !important;
+    border-bottom: 1px solid var(--ios-separator) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+.ios-grouped-item:last-child {
+    border-bottom: none !important;
+}
+
+/* === HAIRLINE SEPARATORS === */
+.ios-separator,
+.hairline {
+    height: 1px !important;
+    background: var(--ios-separator) !important;
+    border: none !important;
+    margin: 0 !important;
+}
+
+.ios-separator-inset {
+    height: 1px !important;
+    background: var(--ios-separator) !important;
+    border: none !important;
+    margin-left: 16px !important;
+}
+
+/* HR elements como separadores iOS */
+hr {
+    height: 1px !important;
+    background-color: var(--ios-separator) !important;
+    border: none !important;
+    opacity: 1 !important;
+    margin: 12px 0 !important;
+}
+
+/* Separador de sección */
+.section-separator {
+    height: 8px !important;
+    background: var(--ios-bg) !important;
+    border: none !important;
+    margin: 0 -20px !important;
+}
+
+/* === SECTION HEADERS iOS === */
+.section-header,
+.ios-section-header {
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-sm) !important;
+    font-weight: var(--ios-font-regular) !important;
+    color: var(--ios-text-secondary) !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    padding: 8px 16px 8px 16px !important;
+    margin: 0 !important;
+}
+
+/* === FILTER CARD === */
+.filter-card {
+    background: var(--ios-surface) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid var(--ios-separator) !important;
+    border-radius: var(--ios-radius-xl) !important;
+    box-shadow: var(--ios-shadow-sm) !important;
+}
+
+/* === CHART CONTAINERS === */
+.chart-container,
+.chart-container-enhanced {
+    background: var(--ios-surface) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid var(--ios-separator) !important;
+    border-radius: var(--ios-radius-xl) !important;
+    box-shadow: var(--ios-shadow-sm) !important;
+    padding: 16px !important;
+}
+
+/* Chart header */
+.chart-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 12px !important;
+    border-bottom: 1px solid var(--ios-separator) !important;
+}
+
+/* === CHART TITLES === */
+.chart-title {
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-lg) !important;
+    font-weight: var(--ios-font-semibold) !important;
+    color: var(--ios-text) !important;
+    text-transform: none !important;
+    letter-spacing: -0.01em !important;
+    margin: 0 !important;
+}
+
+.chart-subtitle {
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-xs) !important;
+    font-weight: var(--ios-font-regular) !important;
+    color: var(--ios-text-tertiary) !important;
+    margin-top: 2px !important;
+}
+
+/* === PANEL / CONTAINER SECTIONS === */
+.panel,
+.ios-panel {
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator) !important;
+    border-radius: var(--ios-radius-xl) !important;
+    box-shadow: var(--ios-shadow-sm) !important;
+    margin-bottom: 16px !important;
+}
+
+.panel-header {
+    padding: 12px 16px !important;
+    border-bottom: 1px solid var(--ios-separator) !important;
+}
+
+.panel-body {
+    padding: 16px !important;
+}
+
+.panel-footer {
+    padding: 12px 16px !important;
+    border-top: 1px solid var(--ios-separator) !important;
+    background: var(--ios-fill-quaternary) !important;
+}
+
+/* ============================================
+   SPRINT 5: AG-GRID iOS (Inset Grouped Style)
+   ============================================ */
+
+/* === AG-GRID THEME VARIABLES === */
+.ag-theme-ios-glass,
+.ag-theme-alpine,
+.ag-theme-alpine-dark,
+.ag-root-wrapper {
+    /* Background colors */
+    --ag-background-color: var(--ios-surface) !important;
+    --ag-header-background-color: var(--ios-bg-secondary) !important;
+    --ag-odd-row-background-color: var(--ios-surface) !important;
+    --ag-row-hover-color: var(--ios-fill-quaternary) !important;
+    --ag-selected-row-background-color: rgba(0, 122, 255, 0.08) !important;
+
+    /* Border colors */
+    --ag-border-color: var(--ios-separator) !important;
+    --ag-secondary-border-color: var(--ios-separator) !important;
+    --ag-row-border-color: var(--ios-separator) !important;
+    --ag-header-column-separator-color: var(--ios-separator) !important;
+
+    /* Font */
+    --ag-font-family: var(--ios-font-family) !important;
+    --ag-font-size: 14px !important;
+
+    /* Sizing */
+    --ag-row-height: 44px !important;
+    --ag-header-height: 40px !important;
+    --ag-cell-horizontal-padding: 16px !important;
+
+    /* Focus */
+    --ag-range-selection-border-color: var(--ios-accent) !important;
+    --ag-input-focus-border-color: var(--ios-accent) !important;
+
+    /* Colors */
+    --ag-foreground-color: var(--ios-text) !important;
+    --ag-secondary-foreground-color: var(--ios-text-secondary) !important;
+    --ag-disabled-foreground-color: var(--ios-text-tertiary) !important;
+
+    /* Accent */
+    --ag-alpine-active-color: var(--ios-accent) !important;
+    --ag-checkbox-checked-color: var(--ios-accent) !important;
+    --ag-input-focus-box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2) !important;
+}
+
+/* === AG-GRID CONTAINER === */
+.ag-theme-ios-glass {
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator) !important;
+    border-radius: var(--ios-radius-xl) !important;
+    overflow: hidden !important;
+    box-shadow: var(--ios-shadow-sm) !important;
+}
+
+/* === HEADER === */
+.ag-theme-ios-glass .ag-header,
+.ag-header {
+    background: var(--ios-bg-secondary) !important;
+    border-bottom: 1px solid var(--ios-separator) !important;
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-xs) !important;
+    font-weight: var(--ios-font-semibold) !important;
+    color: var(--ios-text-secondary) !important;
+    /* Sin uppercase */
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+.ag-theme-ios-glass .ag-header-row,
+.ag-header-row {
+    height: 40px !important;
+}
+
+.ag-theme-ios-glass .ag-header-cell,
+.ag-header-cell {
+    padding: 0 16px !important;
+    border-right: none !important;
+    background: transparent !important;
+}
+
+.ag-theme-ios-glass .ag-header-cell:not(:last-child)::after {
+    content: '' !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: 25% !important;
+    height: 50% !important;
+    width: 1px !important;
+    background: var(--ios-separator) !important;
+}
+
+.ag-theme-ios-glass .ag-header-cell-label,
+.ag-header-cell-label {
+    justify-content: flex-start !important;
+    text-align: left !important;
+    font-weight: var(--ios-font-medium) !important;
+}
+
+/* Header hover */
+.ag-theme-ios-glass .ag-header-cell:hover {
+    background: var(--ios-fill-quaternary) !important;
+}
+
+/* === ROWS === */
+.ag-theme-ios-glass .ag-row,
+.ag-row {
+    border-bottom: 1px solid var(--ios-separator) !important;
+    background: var(--ios-surface) !important;
+    transition: background-color var(--ios-transition-fast) !important;
+}
+
+.ag-theme-ios-glass .ag-row:last-child {
+    border-bottom: none !important;
+}
+
+/* Row heights */
+.ag-theme-ios-glass .ag-row {
+    height: 44px !important;
+    min-height: 44px !important;
+}
+
+/* Row hover - muy sutil */
+.ag-theme-ios-glass .ag-row-hover,
+.ag-row-hover {
+    background: var(--ios-fill-quaternary) !important;
+}
+
+/* Row selected - azul translúcido iOS */
+.ag-theme-ios-glass .ag-row-selected,
+.ag-row-selected {
+    background: rgba(0, 122, 255, 0.08) !important;
+}
+
+.ag-theme-ios-glass .ag-row-selected:hover {
+    background: rgba(0, 122, 255, 0.12) !important;
+}
+
+/* Alternate rows - muy sutil */
+.ag-theme-ios-glass .ag-row-odd {
+    background: var(--ios-surface) !important;
+}
+
+.ag-theme-ios-glass .ag-row-even {
+    background: var(--ios-surface) !important;
+}
+
+/* === CELLS === */
+.ag-theme-ios-glass .ag-cell,
+.ag-cell {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 16px !important;
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-sm) !important;
+    color: var(--ios-text) !important;
+    border: none !important;
+    line-height: 44px !important;
+}
+
+/* Cell focus */
+.ag-theme-ios-glass .ag-cell-focus,
+.ag-cell-focus {
+    outline: none !important;
+    border: none !important;
+}
+
+.ag-theme-ios-glass .ag-cell-focus:not(.ag-cell-range-selected) {
+    background: rgba(0, 122, 255, 0.04) !important;
+}
+
+/* === CHECKBOX === */
+.ag-theme-ios-glass .ag-checkbox-input-wrapper,
+.ag-checkbox-input-wrapper {
+    width: 22px !important;
+    height: 22px !important;
+    border: 2px solid var(--ios-gray-2) !important;
+    border-radius: 6px !important;
+    background: var(--ios-surface) !important;
+    transition: all var(--ios-transition-fast) !important;
+}
+
+.ag-theme-ios-glass .ag-checkbox-input-wrapper::after,
+.ag-checkbox-input-wrapper::after {
+    content: '' !important;
+    display: block !important;
+}
+
+.ag-theme-ios-glass .ag-checkbox-input-wrapper.ag-checked,
+.ag-checkbox-input-wrapper.ag-checked {
+    background: var(--ios-accent) !important;
+    border-color: var(--ios-accent) !important;
+}
+
+.ag-theme-ios-glass .ag-checkbox-input-wrapper.ag-checked::after,
+.ag-checkbox-input-wrapper.ag-checked::after {
+    content: '✓' !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #FFFFFF !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+}
+
+/* === PAGINATION === */
+.ag-theme-ios-glass .ag-paging-panel,
+.ag-paging-panel {
+    background: var(--ios-bg-secondary) !important;
+    border-top: 1px solid var(--ios-separator) !important;
+    padding: 8px 16px !important;
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-xs) !important;
+    color: var(--ios-text-secondary) !important;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.ag-theme-ios-glass .ag-paging-button,
+.ag-paging-button {
+    background: transparent !important;
+    border: none !important;
+    color: var(--ios-accent) !important;
+    padding: 4px 8px !important;
+    border-radius: var(--ios-radius-sm) !important;
+    cursor: pointer !important;
+    transition: background-color var(--ios-transition-fast) !important;
+}
+
+.ag-theme-ios-glass .ag-paging-button:hover:not(.ag-disabled),
+.ag-paging-button:hover:not(.ag-disabled) {
+    background: var(--ios-fill-tertiary) !important;
+}
+
+.ag-theme-ios-glass .ag-paging-button.ag-disabled,
+.ag-paging-button.ag-disabled {
+    color: var(--ios-text-tertiary) !important;
+    cursor: not-allowed !important;
+}
+
+/* Page size selector */
+.ag-theme-ios-glass .ag-paging-page-size .ag-select,
+.ag-paging-page-size .ag-select {
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator-opaque) !important;
+    border-radius: var(--ios-radius-md) !important;
+    padding: 4px 8px !important;
+    font-size: var(--ios-text-xs) !important;
+}
+
+/* === ICONS === */
+.ag-theme-ios-glass .ag-icon,
+.ag-icon {
+    font-family: var(--ios-font-family) !important;
+    font-style: normal !important;
+    color: var(--ios-text-secondary) !important;
+}
+
+/* Sort icons */
+.ag-theme-ios-glass .ag-icon-asc::before { content: '↑' !important; }
+.ag-theme-ios-glass .ag-icon-desc::before { content: '↓' !important; }
+.ag-theme-ios-glass .ag-icon-none::before { content: '' !important; }
+
+/* Menu/filter icons */
+.ag-theme-ios-glass .ag-icon-menu::before { content: '⋯' !important; }
+.ag-theme-ios-glass .ag-icon-filter::before {
+    content: '' !important;
+    display: inline-block !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-left: 4px solid transparent !important;
+    border-right: 4px solid transparent !important;
+    border-top: 5px solid var(--ios-text-secondary) !important;
+}
+
+/* Pagination icons */
+.ag-theme-ios-glass .ag-icon-first::before { content: '⟪' !important; }
+.ag-theme-ios-glass .ag-icon-previous::before { content: '‹' !important; font-size: 18px !important; }
+.ag-theme-ios-glass .ag-icon-next::before { content: '›' !important; font-size: 18px !important; }
+.ag-theme-ios-glass .ag-icon-last::before { content: '⟫' !important; }
+
+/* === NO ROWS OVERLAY (Empty State) === */
+.ag-theme-ios-glass .ag-overlay-no-rows-wrapper,
+.ag-overlay-no-rows-wrapper {
+    background: var(--ios-surface) !important;
+    padding: 40px !important;
+}
+
+.ag-theme-ios-glass .ag-overlay-no-rows-center,
+.ag-overlay-no-rows-center {
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-base) !important;
+    font-weight: var(--ios-font-regular) !important;
+    color: var(--ios-text-tertiary) !important;
+    text-align: center !important;
+    padding: 32px !important;
+}
+
+/* Custom empty state */
+.ag-theme-ios-glass .ag-overlay-no-rows-center::before {
+    content: '📊' !important;
+    display: block !important;
+    font-size: 32px !important;
+    margin-bottom: 12px !important;
+    opacity: 0.5 !important;
+}
+
+/* === LOADING OVERLAY === */
+.ag-theme-ios-glass .ag-overlay-loading-wrapper,
+.ag-overlay-loading-wrapper {
+    background: rgba(255, 255, 255, 0.9) !important;
+}
+
+.ag-theme-ios-glass .ag-overlay-loading-center,
+.ag-overlay-loading-center {
+    font-family: var(--ios-font-family) !important;
+    color: var(--ios-text-secondary) !important;
+}
+
+/* === COLUMN RESIZE === */
+.ag-theme-ios-glass .ag-header-cell-resize,
+.ag-header-cell-resize {
+    width: 8px !important;
+}
+
+.ag-theme-ios-glass .ag-header-cell-resize::after {
+    background: transparent !important;
+}
+
+.ag-theme-ios-glass .ag-header-cell-resize:hover::after {
+    background: var(--ios-accent) !important;
+    width: 2px !important;
+}
+
+/* === CONTEXT MENU === */
+.ag-theme-ios-glass .ag-menu,
+.ag-menu {
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator) !important;
+    border-radius: var(--ios-radius-lg) !important;
+    box-shadow: var(--ios-shadow-lg) !important;
+    overflow: hidden !important;
+}
+
+.ag-theme-ios-glass .ag-menu-option,
+.ag-menu-option {
+    padding: 10px 16px !important;
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-sm) !important;
+    color: var(--ios-text) !important;
+}
+
+.ag-theme-ios-glass .ag-menu-option:hover,
+.ag-menu-option:hover {
+    background: var(--ios-fill-tertiary) !important;
+}
+
+.ag-theme-ios-glass .ag-menu-option-active,
+.ag-menu-option-active {
+    background: var(--ios-fill-secondary) !important;
+}
+
+/* === FILTER POPUP === */
+.ag-theme-ios-glass .ag-filter,
+.ag-filter {
+    background: var(--ios-surface) !important;
+    border-radius: var(--ios-radius-lg) !important;
+    padding: 12px !important;
+}
+
+.ag-theme-ios-glass .ag-filter-body-wrapper {
+    padding: 8px 0 !important;
+}
+
+/* Filter inputs */
+.ag-theme-ios-glass .ag-filter input,
+.ag-filter input {
+    height: 34px !important;
+    padding: 6px 12px !important;
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator-opaque) !important;
+    border-radius: var(--ios-radius-md) !important;
+    font-family: var(--ios-font-family) !important;
+    font-size: var(--ios-text-sm) !important;
+}
+
+.ag-theme-ios-glass .ag-filter input:focus {
+    border-color: var(--ios-accent) !important;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2) !important;
+}
+
+/* === EXPORT BUTTONS (Coherent with Sprint 3) === */
+.ag-theme-ios-glass + .export-buttons,
+.table-export-buttons,
+.export-buttons {
+    display: flex !important;
+    gap: 8px !important;
+    margin-top: 12px !important;
+    justify-content: flex-end !important;
+}
+
+.export-btn,
+.btn-export {
+    height: 34px !important;
+    padding: 0 14px !important;
+    font-size: var(--ios-text-sm) !important;
+    font-weight: var(--ios-font-medium) !important;
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator-opaque) !important;
+    border-radius: var(--ios-radius-md) !important;
+    color: var(--ios-text) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    cursor: pointer !important;
+    transition: background-color var(--ios-transition-fast),
+                border-color var(--ios-transition-fast) !important;
+}
+
+.export-btn:hover,
+.btn-export:hover {
+    background: var(--ios-fill-tertiary) !important;
+    border-color: var(--ios-gray-2) !important;
+    transform: none !important;
+}
+
+.export-btn .lucide-icon,
+.btn-export .lucide-icon {
+    width: 14px !important;
+    height: 14px !important;
+}
+
+/* === SCROLLBAR iOS === */
+.ag-theme-ios-glass .ag-body-viewport::-webkit-scrollbar,
+.ag-theme-ios-glass .ag-body-horizontal-scroll-viewport::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+}
+
+.ag-theme-ios-glass .ag-body-viewport::-webkit-scrollbar-track,
+.ag-theme-ios-glass .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-track {
+    background: var(--ios-fill-quaternary) !important;
+    border-radius: 4px !important;
+}
+
+.ag-theme-ios-glass .ag-body-viewport::-webkit-scrollbar-thumb,
+.ag-theme-ios-glass .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb {
+    background: var(--ios-gray-3) !important;
+    border-radius: 4px !important;
+}
+
+.ag-theme-ios-glass .ag-body-viewport::-webkit-scrollbar-thumb:hover,
+.ag-theme-ios-glass .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb:hover {
+    background: var(--ios-gray-2) !important;
+}
+
+/* === PINNED COLUMNS === */
+.ag-theme-ios-glass .ag-pinned-left-header,
+.ag-theme-ios-glass .ag-pinned-left-cols-container {
+    border-right: 1px solid var(--ios-separator-opaque) !important;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.04) !important;
+}
+
+.ag-theme-ios-glass .ag-pinned-right-header,
+.ag-theme-ios-glass .ag-pinned-right-cols-container {
+    border-left: 1px solid var(--ios-separator-opaque) !important;
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* === STATUS BAR === */
+.ag-theme-ios-glass .ag-status-bar,
+.ag-status-bar {
+    background: var(--ios-bg-secondary) !important;
+    border-top: 1px solid var(--ios-separator) !important;
+    padding: 8px 16px !important;
+    font-size: var(--ios-text-xs) !important;
+    color: var(--ios-text-secondary) !important;
+}
+
+/* ============================================
+   UTILITIES iOS
+   ============================================ */
+
+/* Clase para forzar fondo iOS */
+.ios-bg {
+    background: var(--ios-bg) !important;
+}
+
+.ios-surface {
+    background: var(--ios-surface) !important;
+}
+
+.ios-text {
+    color: var(--ios-text) !important;
+}
+
+.ios-text-secondary {
+    color: var(--ios-text-secondary) !important;
+}
+
+/* Clase para eliminar cualquier transformación */
+.no-transform {
+    transform: none !important;
+}
+
+/* Clase para sombra iOS estándar */
+.ios-shadow {
+    box-shadow: var(--ios-shadow-card) !important;
+}
+
+.ios-shadow-lg {
+    box-shadow: var(--ios-shadow-lg) !important;
+}
+
+/* ============================================
+   SPRINT 6: Charts (Plotly) + QA Visual Final
+   ============================================ */
+
+/* === PAGE TITLES iOS === */
+.page-title-ios {
+    font-family: var(--ios-font-family) !important;
+    font-size: 22px !important;
+    font-weight: 600 !important;
+    color: var(--ios-text) !important;
+    letter-spacing: -0.02em !important;
+    text-shadow: none !important;
+    text-transform: none !important;
+    margin-bottom: 16px !important;
+}
+
+/* === PLOTLY CHART CONTAINERS === */
+.js-plotly-plot,
+.plotly-graph-div {
+    background: transparent !important;
+    border-radius: var(--ios-radius-xl) !important;
+}
+
+/* Contenedor de graficos con surface */
+.chart-container,
+.graph-container,
+[id*="graph"],
+[id*="chart"] {
+    background: var(--ios-surface) !important;
+    border-radius: var(--ios-radius-xl) !important;
+    padding: 16px !important;
+    box-shadow: var(--ios-shadow-card) !important;
+    border: none !important;
+}
+
+/* Plotly modebar (toolbar) */
+.modebar-container {
+    top: 8px !important;
+    right: 8px !important;
+}
+
+.modebar-group {
+    background: var(--ios-fill-tertiary) !important;
+    border-radius: var(--ios-radius-md) !important;
+    padding: 4px !important;
+}
+
+.modebar-btn {
+    color: var(--ios-gray-1) !important;
+    transition: color 0.2s ease !important;
+}
+
+.modebar-btn:hover {
+    color: var(--ios-accent) !important;
+}
+
+.modebar-btn.active {
+    color: var(--ios-accent) !important;
+}
+
+/* Plotly legend styling */
+.legend {
+    font-family: var(--ios-font-family) !important;
+}
+
+/* Plotly hover tooltip - ya definido en theme.py pero reforzamos */
+.hoverlayer .hovertext {
+    font-family: var(--ios-font-family) !important;
+}
+
+/* === QA: KILL REMAINING translateY HOVER EFFECTS === */
+/* Sobrescribir todos los translateY de hover en styles.css y custom_styles.css */
+
+/* styles.css translateY hovers */
+.nav-link:hover,
+.sidebar-action-btn:hover,
+.btn:hover,
+.btn-enhanced:hover,
+.card:hover,
+.kpi-card:hover {
+    transform: none !important;
+}
+
+/* custom_styles.css translateY hovers */
+.glass-card-enhanced:hover,
+.glass-card-enhanced.hoverable:hover,
+.kpi-card-enhanced:hover,
+.progress-card:hover {
+    transform: none !important;
+}
+
+/* animations.css hover-lift class */
+.hover-lift:hover {
+    transform: none !important;
+}
+
+/* Kpi cards - quitar CUALQUIER elevación */
+.kpi-card:hover,
+[class*="kpi"]:hover {
+    transform: none !important;
+    box-shadow: var(--ios-shadow-card) !important;
+}
+
+/* === QA: KILL REMAINING text-shadow === */
+.progress-label,
+.progress-enhanced .progress-label,
+[class*="progress"] span,
+h1, h2, h3, h4, h5, h6,
+.card-title,
+.kpi-value,
+.kpi-title {
+    text-shadow: none !important;
+}
+
+/* === QA: KILL REMAINING uppercase/letter-spacing (refuerzo) === */
+/* custom_styles.css labels */
+.form-group-enhanced label,
+.filter-label-unified {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+/* styles.css dead code selectors (planificación page) - override anyway */
+.control-ribbon label,
+.filtros-avanzados label,
+.planificacion-page label,
+.table-section label {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+/* === QA: PROGRESS BARS iOS === */
+.progress,
+.progress-enhanced,
+.progress-bar {
+    background: var(--ios-fill-secondary) !important;
+    border-radius: 999px !important;
+    overflow: hidden !important;
+}
+
+.progress-bar {
+    background: var(--ios-accent) !important;
+    border-radius: 999px !important;
+}
+
+.progress-label {
+    font-family: var(--ios-font-family) !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: var(--ios-text) !important;
+    text-shadow: none !important;
+}
+
+/* === QA: MODAL REFINEMENTS === */
+.modal-content {
+    border-radius: var(--ios-radius-xl) !important;
+    box-shadow: var(--ios-shadow-lg) !important;
+    border: none !important;
+}
+
+.modal-header {
+    background: var(--ios-surface) !important;
+    border-bottom: 1px solid var(--ios-separator) !important;
+    border-radius: var(--ios-radius-xl) var(--ios-radius-xl) 0 0 !important;
+}
+
+.modal-footer {
+    background: var(--ios-bg) !important;
+    border-top: 1px solid var(--ios-separator) !important;
+    border-radius: 0 0 var(--ios-radius-xl) var(--ios-radius-xl) !important;
+}
+
+/* === QA: FILTER LABEL iOS (from components.py) === */
+.filter-label-ios {
+    font-family: var(--ios-font-family) !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: var(--ios-text-secondary) !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    margin-bottom: 6px !important;
+}
+
+/* === QA: ENSURE RESPONSIVE SCALING === */
+@media screen and (min-resolution: 144dpi),
+       screen and (-webkit-min-device-pixel-ratio: 1.5) {
+    /* 150% scaling adjustments */
+    :root {
+        --ios-text-xs: 11px;
+        --ios-text-sm: 12px;
+        --ios-text-base: 14px;
+    }
+
+    .page-title-ios {
+        font-size: 20px !important;
+    }
+
+    .kpi-value {
+        font-size: 26px !important;
+    }
+}
+
+/* === QA: FINAL CONSISTENCY CHECKS === */
+
+/* All cards should have consistent styling */
+.card,
+.glass-card,
+.glass-card-enhanced,
+.summary-card,
+.kpi-card {
+    background: var(--ios-surface) !important;
+    border: none !important;
+    border-radius: var(--ios-radius-xl) !important;
+    box-shadow: var(--ios-shadow-card) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* All buttons should have consistent focus ring */
+button:focus-visible,
+.btn:focus-visible,
+[role="button"]:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.25) !important;
+}
+
+/* All inputs should have consistent focus */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+    outline: none !important;
+    border-color: var(--ios-accent) !important;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2) !important;
+}
+
+/* Disabled states */
+:disabled,
+[disabled],
+.disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+/* Error states */
+.is-invalid,
+.has-error,
+[aria-invalid="true"] {
+    border-color: var(--ios-destructive) !important;
+}
+
+.is-invalid:focus,
+.has-error:focus,
+[aria-invalid="true"]:focus {
+    border-color: var(--ios-destructive) !important;
+    box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.2) !important;
+}
+
+.invalid-feedback,
+.error-message {
+    color: var(--ios-destructive) !important;
+    font-size: 12px !important;
+    margin-top: 4px !important;
+}
+
+/* Success states */
+.is-valid,
+.has-success {
+    border-color: var(--ios-success) !important;
+}
+
+.is-valid:focus,
+.has-success:focus {
+    border-color: var(--ios-success) !important;
+    box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.2) !important;
+}
+
+/* ============================================
+   SPRINT 7 QA FIXES - Final Polish
+   ============================================ */
+
+/* === REINFORCE LABEL CONTRAST (WCAG AA) === */
+label,
+.form-label,
+.filter-label,
+.filter-label-ios,
+.filter-label-unified,
+.form-group-enhanced label,
+.kpi-title,
+.chart-subtitle,
+.summary-card-title,
+h6 {
+    color: var(--ios-text-secondary) !important;  /* #3C3C43 - 7.5:1 ratio */
+}
+
+/* === REINFORCE NO GLASSMORPHISM === */
+.card,
+.glass-card,
+.glass-card-enhanced,
+.kpi-card,
+.filter-card,
+.chart-container,
+.chart-container-enhanced,
+.filters-container-enhanced {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: var(--ios-surface) !important;
+}
+
+/* === REINFORCE NO TRANSLATEY === */
+*:hover {
+    transform: none;
+}
+
+/* Specific high-priority selectors */
+.btn:hover,
+.btn-enhanced:hover,
+.card:hover,
+.glass-card:hover,
+.glass-card-enhanced:hover,
+.kpi-card:hover,
+.nav-link:hover,
+.sidebar-action-btn:hover {
+    transform: none !important;
+}
+
+/* === UNIFORM BORDER STYLE === */
+.card,
+.glass-card,
+.glass-card-enhanced,
+.kpi-card {
+    border: none !important;
+    box-shadow: var(--ios-shadow-card) !important;
+}
+
+/* === KPI CARDS SPECIFIC === */
+.kpi-card .card-body {
+    background: transparent !important;
+}
+
+.kpi-card h2,
+.kpi-card h3,
+.kpi-value {
+    color: var(--ios-text) !important;
+}
+
+/* ============================================
+   SPRINT 8: POLISH FINAL - Screenshot Fixes
+   ============================================ */
+
+/* === 1. KPI CARDS: Eliminar barras de color superiores === */
+.kpi-card::before {
+    display: none !important;
+    content: none !important;
+}
+
+/* Eliminar todos los colores de barra superiores */
+.kpi-card.kpi-danger::before,
+.kpi-card.kpi-warning::before,
+.kpi-card.kpi-success::before,
+.kpi-card.kpi-primary::before,
+.kpi-card.kpi-info::before,
+.kpi-card.kpi-purple::before {
+    display: none !important;
+}
+
+/* KPI cards completamente limpias iOS */
+.kpi-card {
+    background: var(--ios-surface) !important;
+    border-radius: var(--ios-radius-xl) !important;
+    border: none !important;
+    box-shadow: var(--ios-shadow-card) !important;
+    overflow: visible !important;
+}
+
+/* === 2. SIDEBAR ACTIVE: Fondo iOS fill, sin glassmorphism === */
+#sidebar .nav-link.active,
+.nav-link-sidebar.active {
+    background: rgba(0, 122, 255, 0.12) !important;
+    color: var(--ios-accent) !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* === 3. FILTER BAR: Fondo blanco puro === */
+.filters-container-enhanced,
+.filters-container {
+    background: #FFFFFF !important;
+    background-image: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid var(--ios-separator) !important;
+    box-shadow: var(--ios-shadow-sm) !important;
+}
+
+/* === 4. EXPORT BUTTONS: Ambos outline gris neutro === */
+.btn-export,
+.export-btn,
+[id*="exportar"],
+[id*="export"],
+#btn-exportar-pdf,
+#btn-exportar-masivo-excel,
+#btn-exportar-excel {
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator-opaque) !important;
+    color: var(--ios-text) !important;
+    box-shadow: none !important;
+}
+
+.btn-export:hover,
+.export-btn:hover,
+[id*="exportar"]:hover,
+[id*="export"]:hover {
+    background: var(--ios-fill-tertiary) !important;
+    border-color: var(--ios-gray-2) !important;
+    color: var(--ios-text) !important;
+}
+
+/* Reset danger/success colors on export buttons */
+.btn-danger.btn-export,
+.btn-success.btn-export,
+.btn-outline-danger,
+.btn-outline-success {
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator-opaque) !important;
+    color: var(--ios-text) !important;
+}
+
+/* === 5. KPI ICONS: Aumentar opacity === */
+.kpi-card .lucide-icon,
+.kpi-card .kpi-icon,
+.kpi-icon-bg {
+    opacity: 0.18 !important;
+}
+
+/* === 6. HORIZONTE SELECTOR: Estilo consistente === */
+/* Pill buttons group */
+.btn-group .btn {
+    background: var(--ios-surface) !important;
+    border: 1px solid var(--ios-separator-opaque) !important;
+    color: var(--ios-text-secondary) !important;
+}
+
+.btn-group .btn.active,
+.btn-group .btn:checked,
+.btn-group .btn[aria-pressed="true"] {
+    background: var(--ios-accent) !important;
+    border-color: var(--ios-accent) !important;
+    color: #FFFFFF !important;
+}
+
+/* ============================================
+   SPRINT 9: FILTER AREA POLISH
+   ============================================ */
+
+/* === 1. SLIDER TOOLTIP - Estilo iOS pill (no badge circular) === */
+.rc-slider-tooltip {
+    padding: 0 !important;
+    opacity: 1 !important;
+}
+
+.rc-slider-tooltip-inner {
+    background: var(--ios-accent) !important;
+    border-radius: 6px !important;
+    padding: 4px 10px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    min-height: auto !important;
+    height: auto !important;
+    line-height: 1.4 !important;
+    box-shadow: var(--ios-shadow-sm) !important;
+    min-width: auto !important;
+}
+
+.rc-slider-tooltip-arrow {
+    border-top-color: var(--ios-accent) !important;
+}
+
+/* Slider track y handle iOS */
+.rc-slider {
+    height: 4px !important;
+    padding: 6px 0 !important;
+}
+
+.rc-slider-track {
+    background: var(--ios-accent) !important;
+    height: 4px !important;
+    border-radius: 2px !important;
+}
+
+.rc-slider-rail {
+    background: var(--ios-fill-tertiary) !important;
+    height: 4px !important;
+    border-radius: 2px !important;
+}
+
+.rc-slider-handle {
+    border: 2px solid var(--ios-accent) !important;
+    background: white !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin-top: -8px !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+    opacity: 1 !important;
+}
+
+.rc-slider-handle:hover,
+.rc-slider-handle:active,
+.rc-slider-handle:focus {
+    border-color: var(--ios-accent) !important;
+    box-shadow: 0 2px 8px rgba(0,122,255,0.3) !important;
+}
+
+.rc-slider-mark-text {
+    font-size: 10px !important;
+    color: var(--ios-text-secondary) !important;
+    font-weight: 500 !important;
+}
+
+.rc-slider-mark-text-active {
+    color: var(--ios-accent) !important;
+}
+
+/* === 2. MULTI-SELECT CHIPS - Estilo iOS === */
+.Select-multi-value-wrapper {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    padding: 4px !important;
+}
+
+.Select-value {
+    background: var(--ios-fill-tertiary) !important;
+    border: none !important;
+    border-radius: 6px !important;
+    margin: 0 !important;
+    padding: 2px 8px !important;
+    line-height: 1.4 !important;
+}
+
+.Select-value-label {
+    color: var(--ios-text) !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+}
+
+.Select-value-icon {
+    border-right: none !important;
+    padding: 0 4px !important;
+    color: var(--ios-text-secondary) !important;
+    font-size: 14px !important;
+}
+
+.Select-value-icon:hover {
+    background: transparent !important;
+    color: var(--ios-destructive) !important;
+}
+
+/* === 3. FILTER LABELS - Alineacion consistente === */
+.filter-label-unified,
+.filter-label-ios,
+.filters-container-enhanced label {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: var(--ios-text-secondary) !important;
+    margin-bottom: 6px !important;
+    display: block !important;
+    text-align: center !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    white-space: nowrap !important;
+}
+
+/* === 4. FILTER CONTAINER - Spacing consistente === */
+.filters-container-enhanced {
+    padding: 16px 24px !important;
+    border-radius: 12px !important;
+}
+
+.filters-container-enhanced > .d-flex {
+    gap: 12px !important;
+}
+
+/* === 5. INPUT GROUPS - Codigo SAP alineado === */
+.filters-container-enhanced .d-flex.align-items-center {
+    gap: 4px !important;
+}
+
+/* Boton icono junto a input */
+.btn-icon {
+    height: 36px !important;
+    width: 36px !important;
+    min-width: 36px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 8px !important;
+    background: var(--ios-accent) !important;
+    border: none !important;
+    color: white !important;
+}
+
+.btn-icon:hover {
+    background: #0066D6 !important;
+}
+
+/* === 6. DROPDOWNS - Altura y padding consistentes === */
+.filter-dropdown .Select-control,
+.dash-dropdown .Select-control {
+    height: 36px !important;
+    min-height: 36px !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--ios-separator-opaque) !important;
+    background: var(--ios-surface) !important;
+}
+
+.filter-dropdown .Select-placeholder,
+.dash-dropdown .Select-placeholder {
+    line-height: 34px !important;
+    font-size: 13px !important;
+    color: var(--ios-text-tertiary) !important;
+}
+
+.filter-dropdown .Select-value-label,
+.dash-dropdown .Select-value-label {
+    line-height: 34px !important;
+    font-size: 13px !important;
+}
+
+.filter-dropdown .Select-input,
+.dash-dropdown .Select-input {
+    height: 34px !important;
+}
+
+.filter-dropdown .Select-input input,
+.dash-dropdown .Select-input input {
+    padding: 8px 0 !important;
+    font-size: 13px !important;
+}
+
+/* Dropdown arrow */
+.filter-dropdown .Select-arrow-zone,
+.dash-dropdown .Select-arrow-zone {
+    padding-right: 8px !important;
+}
+
+/* === 7. FILTER INPUT NUMBER === */
+.filter-control,
+.filter-control.filter-number {
+    height: 36px !important;
+    text-align: center !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--ios-separator-opaque) !important;
+    background: var(--ios-surface) !important;
+    color: var(--ios-text) !important;
+}
+
+.filter-control:focus {
+    border-color: var(--ios-accent) !important;
+    box-shadow: 0 0 0 3px rgba(0,122,255,0.15) !important;
+    outline: none !important;
+}
+
+/* === 8. FILTER ACTION BUTTON === */
+.filter-action-btn {
+    height: 36px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 0 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+}
+
+/* === 9. DROPDOWN MENU STYLING === */
+.Select-menu-outer {
+    border-radius: 8px !important;
+    border: 1px solid var(--ios-separator) !important;
+    box-shadow: var(--ios-shadow-md) !important;
+    margin-top: 4px !important;
+    overflow: hidden !important;
+}
+
+.Select-menu {
+    max-height: 250px !important;
+}
+
+.Select-option {
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+    color: var(--ios-text) !important;
+}
+
+.Select-option.is-focused {
+    background: var(--ios-fill-tertiary) !important;
+}
+
+.Select-option.is-selected {
+    background: rgba(0,122,255,0.1) !important;
+    color: var(--ios-accent) !important;
+    font-weight: 500 !important;
+}

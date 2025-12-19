@@ -170,8 +170,8 @@ layout = html.Div([
     dcc.Interval(id="interval-forecast-progress", interval=500, disabled=True),
 
     # Título de la página
-    html.H4("FORECAST MASIVO", className="mb-3 text-center",
-            style={"textShadow": "2px 2px 4px rgba(0,0,0,0.2)", "fontWeight": "700", "letterSpacing": "1px"}),
+    html.H4("Forecast Masivo", className="page-title-ios mb-3 text-center",
+            style={"fontWeight": "600", "color": "#1F1F21"}),
 
     # 1. Configuración del forecast
     crear_area_configuracion(),

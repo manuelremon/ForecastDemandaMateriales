@@ -1,6 +1,7 @@
 """
 Componentes reutilizables para MRP Analytics
-Glassmorphism iOS Design System
+iOS Design System - Surface solida, sin glassmorphism
+Estilos en: assets/zz_ios_overrides.css
 """
 import dash_bootstrap_components as dbc
 from dash import html, dcc
@@ -20,7 +21,8 @@ def kpi_card(
     tooltip: Optional[str] = None,
     tooltip_id: Optional[str] = None,
     valor_id: Optional[str] = None,
-    hoverable: bool = False
+    hoverable: bool = False,
+    animated: bool = True
 ) -> Union[dbc.Card, html.Div]:
     """
     Tarjeta KPI con estilo Glassmorphism iOS
@@ -36,6 +38,7 @@ def kpi_card(
         tooltip_id: ID unico para el tooltip (requerido si tooltip se proporciona)
         valor_id: ID para el elemento del valor (util para actualizaciones dinamicas)
         hoverable: Si True, agrega efecto hover con elevacion (default False)
+        animated: Si True, aplica animacion de entrada iOS (default True)
     """
     # Colores iOS con fallback
     color_map = {
@@ -49,6 +52,7 @@ def kpi_card(
     accent_color = color_map.get(color, "#007AFF")
     kpi_class = f"kpi-{color}"
     hover_class = " hoverable" if hoverable else ""
+    animation_class = " animate-slide-up" if animated else ""
 
     # Contenido de tendencia
     tendencia_content = []
@@ -58,46 +62,29 @@ def kpi_card(
             html.Span(tendencia.get('valor', ''), className=tendencia.get('clase', ''))
         ]
 
-    # Titulo con tooltip opcional
+    # Titulo con tooltip opcional - Estilos en CSS (zz_ios_overrides.css)
     titulo_content = html.H6(
         titulo,
-        className="mb-2 text-uppercase",
-        style={
-            "fontSize": "0.7rem",
-            "letterSpacing": "0.5px",
-            "fontWeight": "600",
-            "color": "#8E8E93"
-        }
+        className="kpi-title mb-2"
     )
 
     if tooltip and tooltip_id:
         titulo_content = html.Div([
-            html.H6(titulo, className="mb-2 text-uppercase d-inline",
-                   style={
-                       "fontSize": "0.7rem",
-                       "letterSpacing": "0.5px",
-                       "fontWeight": "600",
-                       "color": "#8E8E93"
-                   }),
-            lucide_icon("info", size="xs", className="ms-2", style={"color": "#BDBEC2", "cursor": "pointer"}, id=tooltip_id)
+            html.H6(titulo, className="kpi-title mb-2 d-inline"),
+            lucide_icon("info", size="xs", className="ms-2 kpi-info-icon", id=tooltip_id)
         ])
 
-    # Valor principal
+    # Valor principal - Estilos en CSS (.kpi-value)
     valor_props = {
-        "className": "mb-1",
-        "style": {
-            "fontWeight": "700",
-            "color": accent_color,
-            "fontSize": "1.75rem",
-            "lineHeight": "1.2"
-        }
+        "className": "kpi-value mb-1",
+        "style": {"color": accent_color}  # Solo el color dinámico
     }
     if valor_id:
         valor_props["id"] = valor_id
 
     valor_element = html.H2(valor, **valor_props)
 
-    # Card con glassmorphism
+    # Card iOS - Surface sólida, sin glassmorphism
     card = dbc.Card([
         dbc.CardBody([
             dbc.Row([
@@ -105,22 +92,18 @@ def kpi_card(
                     titulo_content,
                     valor_element,
                     html.Div([
-                        html.Small(subtitulo, className="me-2",
-                                  style={"color": "#8E8E93"}) if subtitulo else None,
-                        html.Small(tendencia_content, className="d-inline") if tendencia else None,
+                        html.Small(subtitulo, className="kpi-subtitle me-2") if subtitulo else None,
+                        html.Small(tendencia_content, className="kpi-trend d-inline") if tendencia else None,
                     ])
                 ], width=9),
                 dbc.Col([
                     html.Div([
-                        lucide_icon(icono, size="2x", color=accent_color, style={"opacity": "0.25"})
+                        lucide_icon(icono, size="2x", color=accent_color, className="kpi-icon")
                     ], className="text-end")
                 ], width=3, className="d-flex align-items-center justify-content-end")
             ])
-        ], style={"padding": "20px"})
-    ], className=f"h-100 kpi-card glass-card-enhanced {kpi_class}{hover_class}",
-       style={
-           "borderRadius": "20px",
-       })
+        ])
+    ], className=f"h-100 kpi-card {kpi_class}{hover_class}{animation_class}")
 
     if tooltip and tooltip_id:
         return html.Div([
@@ -131,13 +114,14 @@ def kpi_card(
     return card
 
 
-def status_badge(estado: str, texto: str = None) -> html.Span:
+def status_badge(estado: str, texto: str = None, animated: bool = True) -> html.Span:
     """
     Badge de estado con colores iOS
 
     Args:
         estado: Tipo de estado (quiebre, bajo_punto_pedido, normal, etc.)
         texto: Texto a mostrar (si None, usa el estado)
+        animated: Si True, aplica animacion de entrada iOS (default True)
     """
     config = {
         "quiebre": {"bg": "#FF3B30", "texto": "Quiebre"},
@@ -152,9 +136,11 @@ def status_badge(estado: str, texto: str = None) -> html.Span:
     cfg = config.get(estado, {"bg": "#8E8E93", "texto": estado})
     display_text = texto if texto else cfg["texto"]
     text_color = cfg.get("text_color", "#FFFFFF")
+    animation_class = "badge-animated" if animated else ""
 
     return html.Span(
         display_text,
+        className=animation_class,
         style={
             "backgroundColor": cfg["bg"],
             "color": text_color,
@@ -171,16 +157,18 @@ def summary_card(
     titulo: str,
     valor: int,
     color: str = "primary",
-    icono: str = "fa-box"
+    icono: str = "fa-box",
+    animated: bool = True
 ) -> dbc.Card:
     """
-    Tarjeta de resumen compacta con glassmorphism - OPTIMIZADA
+    Tarjeta de resumen compacta iOS - Surface solida
 
     Args:
         titulo: Titulo de la tarjeta
         valor: Valor numerico
-        color: Color del borde (primary, success, warning, danger, info, purple)
+        color: Color del acento (primary, success, warning, danger, info, purple)
         icono: Clase FontAwesome
+        animated: Si True, aplica animacion de entrada iOS (default True)
     """
     color_map = {
         "primary": "#007AFF",
@@ -191,28 +179,19 @@ def summary_card(
         "purple": "#5856D6",
     }
     accent = color_map.get(color, "#007AFF")
+    animation_class = " animate-fade-in" if animated else ""
 
     return dbc.Card([
         dbc.CardBody([
             html.Div([
                 lucide_icon(icono, size="sm", color=accent, className="me-2"),
-                html.Span(titulo,
-                         style={"fontSize": "0.75rem", "color": "#8E8E93", "fontWeight": "500"})
-            ], className="mb-1", style={"display": "flex", "alignItems": "center"}),
-            html.H3(formato_numero(valor),
-                   style={"fontWeight": "700", "color": accent, "margin": "0", "fontSize": "1.4rem"})
-        ], className="py-2 px-3", style={"paddingBottom": "8px !important"})
-    ], className="summary-card",
-       style={
-           "background": "rgba(255, 255, 255, 0.85)",
-           "backdropFilter": "blur(20px)",
-           "WebkitBackdropFilter": "blur(20px)",
-           "border": "1px solid rgba(255,255,255,0.25)",
-           "borderLeft": f"4px solid {accent}",
-           "borderRadius": "12px",
-           "boxShadow": "0 4px 16px rgba(31, 31, 33, 0.08)",
-           "minHeight": "100px"
-       })
+                html.Span(titulo, className="summary-card-title")
+            ], className="d-flex align-items-center mb-1"),
+            html.H3(formato_numero(valor), className="summary-card-value",
+                   style={"color": accent})  # Solo color dinámico
+        ])
+    ], className=f"summary-card summary-card-{color}{animation_class}",
+       style={"borderLeft": f"3px solid {accent}"})
 
 
 def empty_state(
@@ -221,7 +200,8 @@ def empty_state(
     subtitulo: str = "Sube un archivo Excel o CSV para comenzar",
     variant: str = "default",
     action_button: Optional[dict] = None,
-    size: str = "medium"
+    size: str = "medium",
+    animated: bool = True
 ) -> html.Div:
     """
     Estado vacio con estilo glassmorphism iOS
@@ -233,6 +213,7 @@ def empty_state(
         variant: Tipo de empty state ('default', 'table', 'chart', 'filter', 'search', 'upload', 'error')
         action_button: Dict opcional con 'text', 'id', 'color' para agregar un boton de accion
         size: Tamano del empty state ('small', 'medium', 'large')
+        animated: Si True, aplica animacion de entrada iOS (default True)
     """
     # Configuracion de variantes predefinidas
     variant_configs = {
@@ -293,6 +274,7 @@ def empty_state(
     }
 
     size_config = size_configs.get(size, size_configs["medium"])
+    animation_class = " animate-fade-in empty-state" if animated else " empty-state"
 
     # Mapear tamanos de icono
     icon_size_map = {"fa-2x": "2x", "fa-4x": "4x", "fa-5x": "5x"}
@@ -339,7 +321,7 @@ def empty_state(
 
     return html.Div(
         elements,
-        className=f"text-center {size_config['padding']}",
+        className=f"text-center {size_config['padding']}{animation_class}",
         style={
             "borderRadius": "16px",
             "backgroundColor": "rgba(255, 255, 255, 0.5)",
@@ -386,15 +368,17 @@ def error_state(
     show_retry_button: bool = False,
     retry_button_id: str = "btn-reintentar",
     size: str = "medium",
-    error_details: Optional[str] = None
+    error_details: Optional[str] = None,
+    animated: bool = True
 ) -> html.Div:
-    """Estado de error con estilo iOS"""
+    """Estado de error con estilo iOS y animacion"""
     size_configs = {
         "small": {"icon_size": "2x", "padding": "py-3", "title_class": "h6"},
         "medium": {"icon_size": "4x", "padding": "py-5", "title_class": "h5"},
         "large": {"icon_size": "5x", "padding": "py-5", "title_class": "h4"}
     }
     size_config = size_configs.get(size, size_configs["medium"])
+    animation_class = " animate-fade-in" if animated else ""
 
     elements = [
         lucide_icon(icono, size=size_config['icon_size'], className="mb-3", color="#FF3B30"),
@@ -414,11 +398,11 @@ def error_state(
         )
 
     if show_retry_button:
-        elements.append(dbc.Button([lucide_icon("refresh-cw", size="sm", className="me-2"), "Reintentar"], id=retry_button_id, color="danger", outline=True, className="mt-3", size="sm"))
+        elements.append(dbc.Button([lucide_icon("refresh-cw", size="sm", className="me-2"), "Reintentar"], id=retry_button_id, color="danger", outline=True, className="mt-3 btn-action", size="sm"))
 
     return html.Div(
         elements,
-        className=f"text-center {size_config['padding']}",
+        className=f"text-center {size_config['padding']}{animation_class}",
         style={
             "borderRadius": "16px",
             "backgroundColor": "rgba(255, 59, 48, 0.08)",
@@ -437,15 +421,17 @@ def warning_state(
     action_button_id: str = "btn-accion-warning",
     action_button_text: str = "Revisar",
     size: str = "medium",
-    warning_items: Optional[List[str]] = None
+    warning_items: Optional[List[str]] = None,
+    animated: bool = True
 ) -> html.Div:
-    """Estado de advertencia con estilo iOS"""
+    """Estado de advertencia con estilo iOS y animacion"""
     size_configs = {
         "small": {"icon_size": "2x", "padding": "py-3", "title_class": "h6"},
         "medium": {"icon_size": "4x", "padding": "py-5", "title_class": "h5"},
         "large": {"icon_size": "5x", "padding": "py-5", "title_class": "h4"}
     }
     size_config = size_configs.get(size, size_configs["medium"])
+    animation_class = " animate-fade-in" if animated else ""
 
     elements = [
         lucide_icon(icono, size=size_config['icon_size'], className="mb-3", color="#FF9500"),
@@ -462,11 +448,11 @@ def warning_state(
         elements.append(items_list)
 
     if show_action_button:
-        elements.append(dbc.Button([lucide_icon("check", size="sm", className="me-2"), action_button_text], id=action_button_id, color="warning", outline=True, className="mt-3", size="sm"))
+        elements.append(dbc.Button([lucide_icon("check", size="sm", className="me-2"), action_button_text], id=action_button_id, color="warning", outline=True, className="mt-3 btn-action", size="sm"))
 
     return html.Div(
         elements,
-        className=f"text-center {size_config['padding']}",
+        className=f"text-center {size_config['padding']}{animation_class}",
         style={
             "borderRadius": "16px",
             "backgroundColor": "rgba(255, 149, 0, 0.08)",
@@ -477,19 +463,24 @@ def warning_state(
     )
 
 
-def loading_spinner() -> dbc.Spinner:
-    """Spinner de carga iOS style"""
-    return dbc.Spinner(color="primary", type="border", size="lg")
+def loading_spinner(size: str = "lg") -> html.Div:
+    """Spinner de carga iOS style con animacion"""
+    return html.Div(
+        html.Div(className="ios-spinner"),
+        className="loading-overlay"
+    )
 
 
-def alert_message(mensaje: str, tipo: str = "info") -> dbc.Alert:
+def alert_message(mensaje: str, tipo: str = "info", animated: bool = True) -> dbc.Alert:
     """
-    Mensaje de alerta con estilo iOS
+    Mensaje de alerta con estilo iOS y animacion
 
     Args:
         mensaje: Texto del mensaje
         tipo: Tipo de alerta (success, warning, danger, info)
+        animated: Si True, aplica animacion de entrada iOS (default True)
     """
+    animation_class = "animate-slide-down alert" if animated else "alert"
     iconos = {
         "success": "check-circle",
         "warning": "alert-triangle",
@@ -508,6 +499,7 @@ def alert_message(mensaje: str, tipo: str = "info") -> dbc.Alert:
         lucide_icon(iconos.get(tipo, 'info'), size="md", className="me-2"),
         mensaje
     ], color=tipo, dismissable=True, duration=6000,
+       className=animation_class,
        style={
            "borderRadius": "12px",
            "border": "none",
@@ -615,9 +607,9 @@ def filter_row(
 
         col_content = []
         if label:
-            col_content.append(html.Label(label, style={
-                "fontSize": "11px", "fontWeight": "600", "color": "#8E8E93",
-                "textTransform": "uppercase", "letterSpacing": "0.5px", "marginBottom": "4px", "display": "block"
+            col_content.append(html.Label(label, className="filter-label-ios", style={
+                "fontSize": "13px", "fontWeight": "500", "color": "#3C3C43",
+                "marginBottom": "6px", "display": "block"
             }))
         if component is not None:
             col_content.append(component)

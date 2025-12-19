@@ -182,8 +182,7 @@ def crear_controles_forecast() -> html.Div:
                     dbc.Button(
                         lucide_icon("search", size="sm"),
                         id="btn-buscar-material", size="sm",
-                        style={"border": "none", "boxShadow": "none", "background": "none",
-                               "color": "#6B7280", "padding": "0", "marginLeft": "4px"}),
+                        className="btn-icon"),
                 ], className="d-flex align-items-center"),
             ], style=w_codigo),
             # Centro
@@ -524,11 +523,11 @@ def crear_botones_avanzados():
             dbc.Button([
                 lucide_icon("database", size="xs", className="me-1"),
                 "Modelos"
-            ], id="btn-abrir-modal-modelos", color="info", outline=True, size="sm"),
+            ], id="btn-abrir-modal-modelos", color="primary", outline=True, size="sm", className="btn-action"),
             dbc.Button([
                 lucide_icon("history", size="xs", className="me-1"),
                 "Backtest"
-            ], id="btn-abrir-modal-backtest", color="warning", outline=True, size="sm"),
+            ], id="btn-abrir-modal-backtest", color="primary", outline=True, size="sm", className="btn-action"),
         ], size="sm")
     ], className="d-flex justify-content-end mb-2")
 
@@ -543,8 +542,8 @@ layout = html.Div([
     crear_modal_backtesting(),
 
     # Título de la página
-    html.H4("FORECAST INDIVIDUAL", className="mb-3 text-center",
-            style={"textShadow": "2px 2px 4px rgba(0,0,0,0.2)", "fontWeight": "700", "letterSpacing": "1px"}),
+    html.H4("Forecast Individual", className="page-title-ios mb-3 text-center",
+            style={"fontWeight": "600", "color": "#1F1F21"}),
 
     # 1. Controles de entrada y configuración
     crear_controles_forecast(),

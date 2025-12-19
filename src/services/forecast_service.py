@@ -72,6 +72,7 @@ class ForecastResult:
     modelo_id: Optional[str] = None
     mensaje: str = ""
     warnings: List[str] = field(default_factory=list)
+    importancia_features: Optional[pd.DataFrame] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -85,7 +86,8 @@ class ForecastResult:
             'auto_select': self.auto_select.to_dict() if self.auto_select else None,
             'config': self.config.to_dict(),
             'tiempo_ejecucion': round(self.tiempo_ejecucion, 2),
-            'modelo_id': self.modelo_id
+            'modelo_id': self.modelo_id,
+            'importancia_features': self.importancia_features.to_dict('records') if self.importancia_features is not None else None
         }
 
 
@@ -225,6 +227,16 @@ class ForecastService:
             predictor = DemandPredictor(modelo=modelo_tipo)
             metricas = predictor.entrenar(df_prep, columna_cantidad)
 
+            # Obtener importancia de features
+            importancia_features = None
+            try:
+                importancia_features = predictor.get_feature_importance()
+            except Exception as e:
+                logger.debug(f"No se pudo obtener importancia de features: {e}")
+
+            # Guardar referencia al predictor
+            self.predictor = predictor
+
             # 5. Generar predicciones
             logger.debug(f"Generando predicciones para {config.horizonte} días...")
             predicciones = predictor.predecir(df_prep, config.horizonte)
@@ -272,7 +284,8 @@ class ForecastService:
                 tiempo_ejecucion=tiempo_total,
                 modelo_id=modelo_id,
                 mensaje="Forecast generado exitosamente",
-                warnings=warnings_list
+                warnings=warnings_list,
+                importancia_features=importancia_features
             )
 
         except Exception as e:
